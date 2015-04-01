@@ -86,7 +86,11 @@
         </div>
         <div class="wds-content">
             <h3 id="project-info-show" style="padding-left:0; text-align:center; cursor:pointer; margin-bottom:0;" onclick="document.getElementById('project-info').style.display='block';document.getElementById('project-info-show').style.display='none';document.getElementById('project-info-hide').style.display='block'"> 查看详情</h3>
-
+            <% if(errors&&errors.length>0){  %>
+                <div>
+                    <%= errors[0].msg %>
+                </div>
+            <% } %>
             <h3 id="project-info-hide"
                 style="padding-left:0; display:none; text-align:center; cursor:pointer; margin-bottom:0;"
                 onclick="document.getElementById('project-info').style.display='none';document.getElementById('project-info-show').style.display='block';document.getElementById('project-info-hide').style.display='none'">

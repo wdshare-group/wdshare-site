@@ -24,14 +24,14 @@ function checkForm(elem) {
         _content = elem.content,
         _chi = elem.chi,
         _cookie;
-    if ( !checkFormMail(_mail) ) {
-        _mail.select();
-        return false;
-    };
-    if ( !checkFormName(_name) ) {
-        _name.select();
-        return false;
-    };
+    //if ( !checkFormMail(_mail) ) {
+    //    _mail.select();
+    //    return false;
+    //};
+    //if ( !checkFormName(_name) ) {
+    //    _name.select();
+    //    return false;
+    //};
 
 
     // 第五期面试主题收集技能信息使用

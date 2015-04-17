@@ -1,5 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://localhost:27017/wdshare';
+var url = 'mongodb://localhost:50000,localhost:50001/wdshare?w=0&readPreference=secondary';
 var Q = require('q');
 var activeControl = {};
 

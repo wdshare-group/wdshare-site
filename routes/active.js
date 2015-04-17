@@ -4,6 +4,7 @@ var acCon = require('../controllers/active.js');
 var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res) {
+    console.log(req.body);
     res.render('active/list', { title: 'Express' });
 });
 

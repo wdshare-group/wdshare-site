@@ -1,0 +1,40 @@
+* html .u4_selected {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u4_selected.png");
+}
+
+* html .u4_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u4_normal.png");
+}
+
+* html .u23_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u23_normal.png");
+}
+
+* html .u25_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u25_normal.png");
+}
+
+* html .u38_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u38_normal.png");
+}
+
+* html .u40_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u38_normal.png");
+}
+
+* html .u42_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u38_normal.png");
+}
+
+* html .u44_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="我的主页_files/u38_normal.png");
+}
+

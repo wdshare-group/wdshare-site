@@ -33,6 +33,35 @@ router.post('/create/', function(req, res,next) {
     }
 });
 
+router.post('/joinControl/', function(req, res,next) {
+    req.checkBody('name', '活动名称不能为空').notEmpty();
+    var errors = req.validationErrors();
+    if (errors) {
+        res.end(JSON.stringify({status:false,errors:errors}));
+    }else{
+        var params = req.body;
+        acCon.create(params).then(function(result){
+        },function(err){
+            res.end(JSON.stringify({status:true}));
+        });
+    }
+});
+
+router.post('/createControl/', function(req, res,next) {
+    req.checkBody('name', '活动名称不能为空').notEmpty();
+    var errors = req.validationErrors();
+    if (errors) {
+        res.end(JSON.stringify({status:false,errors:errors}));
+    }else{
+        var params = req.body;
+        acCon.create(params).then(function(result){
+        },function(err){
+            res.end(JSON.stringify({status:true}));
+        });
+    }
+});
+
+
 router.post('/sign/',function(req,res,next){
     console.log(req.body);
     req.checkBody('mail', '邮件不正确').notEmpty().isEmail();

@@ -1,0 +1,15 @@
+* html .u4_selected {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="活动_files/u4_selected.png");
+}
+
+* html .u4_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="活动_files/u4_normal.png");
+}
+
+* html .u37_normal {
+    background-image: none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="活动_files/u37_normal.png");
+}
+

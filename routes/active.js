@@ -17,19 +17,32 @@ router.get('/create/', function(req, res,next) {
     res.render('active/create', { title: 'Express',errors:undefined });
 });
 
-router.post('/create/', function(req, res,next) {
+
+
+router.post('/joinControl/', function(req, res,next) {
     req.checkBody('name', '活动名称不能为空').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-        console.log(errors);
-        res.render('active/join', {errors:errors});
+        res.end(JSON.stringify({status:false,errors:errors}));
     }else{
         var params = req.body;
-
         acCon.create(params).then(function(result){
-
         },function(err){
+            res.end(JSON.stringify({status:true}));
+        });
+    }
+});
 
+router.post('/createControl/', function(req, res,next) {
+    req.checkBody('name', '活动名称不能为空').notEmpty();
+    var errors = req.validationErrors();
+    if (errors) {
+        res.end(JSON.stringify({status:false,errors:errors}));
+    }else{
+        var params = req.body;
+        acCon.create(params).then(function(result){
+        },function(err){
+            res.end(JSON.stringify({status:true}));
         });
     }
 });

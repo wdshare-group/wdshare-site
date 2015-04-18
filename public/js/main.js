@@ -16,6 +16,29 @@ function getCookie(name) {
     return null;
 };
 
+$(document).ready(function(){
+    if($('#joinSubmit')[0]){
+        $('#joinSubmit')[0].disabled = false;
+    }
+    $('#joinSubmit').on('click',function(ev){
+        ev.preventDefault();
+        console.log('click');
+        var result = checkForm($('#joinform')[0]);
+        console.log(result)
+        if(result){
+            var formData = $('#joinform').serialize();
+            $.ajax({
+                method: "POST",
+                url: "/active/joinControl/",
+                data: formData,
+                success:function( msg ) {
+                    console.log(msg);
+                }
+            })
+        }
+    })
+});
+
 function checkForm(elem) {
     var _mail = elem.mail,
         _name = elem.name,
@@ -32,7 +55,6 @@ function checkForm(elem) {
     //    _name.select();
     //    return false;
     //};
-
 
     // 第五期面试主题收集技能信息使用
     var skill = '';
@@ -73,11 +95,6 @@ function checkForm(elem) {
     };
 
 
-
-
-
-
-
     // 信息存如cookie，用于下次报名自动填写
     _cookie = '{"mail":"'+ _mail.value +'", "name":"'+ _name.value +'", "com":"'+ _com.value +'", "web":"'+ _web.value +'", "content":"'+ _content.value +'", "chi":"'+ _chi.value +'"}';
     setCookie("userinfor", _cookie, 1000*60*60*24*365);
@@ -86,12 +103,10 @@ function checkForm(elem) {
     // 第五期面试主题收集技能信息添加至内容字段
     _content.value = skill + "留言：" + elem.content_temp.value;
 
-
-
     elem.button.value = "数据提交中...";
-    elem.button.disabled = true;
+    //elem.button.disabled = true;
     elem.button.style.backgroundColor = "#999";
-    // return false;
+    return true;
 };
 
 function checkFormMail(_mail) {

@@ -14,11 +14,15 @@
 <%- include ../module/header %>
 
 <div class="mod">
-    <h4 class="mod-head"><em>WDShare 西安交流会 第2期 活动报名</em></h4>
+    <h4 class="mod-head"><em><%= activeInfo.aName %></em></h4>
 
     <div class="mod-body">
-        <div class="mod-summary"><strong>活动时间：</strong>2014-8-31 14:00 -- 18:00 报名截止日期：2014-8-29
-            <br/><strong>活动地点：</strong>西安-高新 林凯国际大厦19楼东方网力 【百度地图搜索“林凯国际”（亚美大厦对面）】 <br/><strong>活动须知：</strong>本活动纯属公益，不收取任何费用。活动提供学习交流和交朋友的机会。为了您能得到更贴身的技能，请务必如实填写以下信息。
+        <div class="mod-summary">
+            <strong>活动时间：</strong><%= activeInfo.aTime %> 报名截止日期：<%= activeInfo.aJoinEndTime %>
+            <br/>
+            <strong>活动地点：</strong><%= activeInfo.aAddress %> <br/>
+            <strong>活动须知：</strong>
+            本活动纯属公益，不收取任何费用。活动提供学习交流和交朋友的机会。为了您能得到更贴身的技能，请务必如实填写以下信息。
         </div>
         <div><strong style="display:block; padding:15px 0 5px; font-weight:bold; font-size:16px;">告诉朋友一起报名：</strong>
 
@@ -35,73 +39,22 @@
         </div>
         <div class="wds-content" id="project-info" style="display:none;">
             <h3>活动内容</h3>
-            <dl>
-                <dt>13:30 ‐ 14:00</dt>
-                <dd>签到送拥抱</dd>
-            </dl>
-            <dl>
-                <dt>14:00 ‐ 14:30</dt>
-                <dd><strong>东方网力HR</strong><br><span>东道主开场介绍及招聘</span></dd>
-            </dl>
-            <dl>
-                <dt>14:30 ‐ 15:00</dt>
-                <dd><strong>第一位嘉宾：番茄</strong><br><span>这是一位很出色的讲师，从事前端行业多年，经验丰厚。</span></dd>
-            </dl>
-            <dl>
-                <dt>15:00 ‐ 15:20</dt>
-                <dd><strong>第三位嘉宾：李伟</strong><br><span>草根级的前端从业者，讲述他在工作中的点点滴滴</span></dd>
-            </dl>
-            <dl>
-                <dt>15:20 ‐ 15:30</dt>
-                <dd>休息十分钟</dd>
-            </dl>
-            <dl>
-                <dt>15:30 ‐ 16:30</dt>
-                <dd><strong>第三位嘉：小天【HTML5中的特性如何用于产品设计】</strong><br><span>重磅出击，新技术与产品的结合</span></dd>
-            </dl>
-
-            <dl>
-                <dt>16:30 ‐ 17:00</dt>
-                <dd><strong>第四位嘉：北河</strong><br><span>阿里混出来的大牛，用自己的眼光描述你看不到的东西</span></dd>
-            </dl>
-            <dl>
-                <dt>17:00 ‐ 17:30</dt>
-                <dd><strong>作品分享</strong><span>   如果你想加入，请联系QQ：106324307【F7】</span></dd>
-            </dl>
-            <dl>
-                <dt>17:30 ‐ 18:00</dt>
-                <dd><strong>个人介绍+自由交流 或者 分组讨论</strong></dd>
-            </dl>
-            <dl>
-                <dt>18:00 ‐ 18:10</dt>
-                <dd><strong>集体合影留念</strong></dd>
-            </dl>
-            <dl>
-                <dt>18:20 ‐ 结束</dt>
-                <dd><strong>令人难忘的AA聚餐，欢乐多多，美女多多</strong></dd>
-            </dl>
-            <dl>
-                <dd>期待您的下次参与！</dd>
-            </dl>
+            <%= activeInfo.aContent %>
         </div>
         <div class="wds-content">
             <h3 id="project-info-show" style="padding-left:0; text-align:center; cursor:pointer; margin-bottom:0;" onclick="document.getElementById('project-info').style.display='block';document.getElementById('project-info-show').style.display='none';document.getElementById('project-info-hide').style.display='block'"> 查看详情</h3>
-            <% if(errors&&errors.length>0){  %>
-                <div>
-                    <%= errors[0].msg %>
-                </div>
-            <% } %>
             <h3 id="project-info-hide"
                 style="padding-left:0; display:none; text-align:center; cursor:pointer; margin-bottom:0;"
                 onclick="document.getElementById('project-info').style.display='none';document.getElementById('project-info-show').style.display='block';document.getElementById('project-info-hide').style.display='none'">
                 收起</h3></div>
         <div class="wds-content wds-join"><h3></h3>
 
-            <form name="joinform" id="joinform" method="post" onsubmit="return checkForm(this);" action="/active/sign/">
-                <input type="hidden" name="type" value="add"/> <input type="hidden" name="aid" value="4"/>
-
-                <div style="display:none;"><textarea name="title">WDShare 西安交流会 第2期</textarea> <textarea name="time">2014-8-31 14:00 -- 18:00     报名截止日期：2014-8-29</textarea>
-                    <textarea name="address">西安-高新 林凯国际大厦19楼东方网力   【百度地图搜索“林凯国际”（亚美大厦对面）】</textarea></div>
+            <form name="joinform" id="joinform">
+                <input type="hidden" name="aId" value="<%= activeInfo._id %>" />
+                <div style="display:none;">
+                    <textarea name="title"><%= activeInfo.aName %></textarea>
+                    <textarea name="time"><%= activeInfo.aTime %>     报名截止日期：<%= activeInfo.aJoinEndTime %></textarea>
+                    <textarea name="address"><%= activeInfo.aAddress %></textarea></div>
                 <dl>
                     <dt>邮箱：</dt>
                     <dd><input type="text" name="mail" placeholder="请填写您的常用邮箱"
@@ -167,7 +120,7 @@
                                     type="radio" name="chi" value="0"/> 否</label></dd>
                 </dl>
                 <dl>
-                    <dd class="mod-but"><input type="submit" name="button" value="提交报名"/></dd>
+                    <dd class="mod-but"><input type="submit" name="button" id="joinSubmit" value="提交报名"/></dd>
                 </dl>
             </form>
         </div>

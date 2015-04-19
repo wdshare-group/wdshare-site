@@ -4,13 +4,14 @@ var mongo = require('mongodb');
 var acCon = require('../controllers/active.js');
 var router = express.Router();
 var ObjectId = mongo.ObjectID;
-/* GET home page. */
+
+/**
+ * path:  /active
+ * 显示所有活动
+ */
 router.get('/', function(req, res) {
-    console.log('list');
-    console.log('fuck');
     acCon.find({}).then(function(result){
         var openArr = [],disArr = [];
-        //console.log('each');
         result.forEach(function(item){
             if(item.aStatus == '1'){
                 openArr.push(item);
@@ -30,7 +31,10 @@ router.get('/', function(req, res) {
 
 });
 
-
+/**
+ * path:  /active/create/
+ * 创建一个活动
+ */
 router.get('/create/', function(req, res,next) {
     res.render('active/create', { title: 'Express',activeInfo:false });
 });
@@ -52,7 +56,10 @@ router.get('/update/:aId', function(req, res,next) {
     }
 });
 
-
+/**
+ * path:  /active/updateControl/
+ * 更新活动接口（创建也使用此接口）
+ */
 router.post('/updateControl/', function(req, res,next) {
     req.checkBody('aName', '活动名称不能为空').notEmpty();
     var errors = req.validationErrors();
@@ -78,7 +85,10 @@ router.post('/updateControl/', function(req, res,next) {
 });
 
 
-/* GET home page. */
+/**
+ * path:  /active/join/{活动id}
+ * 参加活动页面
+ */
 router.get('/join/:aId', function(req, res,next) {
     if(req.params.aId){
         var aId = req.params.aId;
@@ -97,14 +107,16 @@ router.get('/join/:aId', function(req, res,next) {
 
 });
 
-
+/**
+ * path:  /active/joinControl/
+ * 参加活动接口
+ */
 router.post('/joinControl/', function(req, res,next) {
-    console.log(req.body);
     req.checkBody('mail', '邮件不正确').notEmpty().isEmail();
     req.checkBody('name', '姓名不能为空').notEmpty();
     var errors = req.validationErrors();
     if (errors) {
-        console.log(errors);
+        res.end(JSON.stringify(errors));
     }else{
         var params = req.body;
         var aId = params['aId'];
@@ -115,16 +127,36 @@ router.post('/joinControl/', function(req, res,next) {
             web:params['web'],
             other:params['other'],
             content:params['content'],
-            oContent:params['content_temp']
+            oContent:params['content_temp'],
+            chi:params['chi']
         }
-        //console.log(aId);
-        //console.log(joinObj);
         acCon.join(aId,joinObj).then(function(result){
-
             res.end(JSON.stringify(result));
         },function(err){
             res.end(JSON.stringify(err));
         });
+    }
+});
+
+/**
+ * path:  /active/users/{活动id}
+ * 参加活动页面
+ */
+
+router.get('/users/:aId', function(req, res,next) {
+    if(req.params.aId){
+        var aId = req.params.aId;
+        acCon.find({_id:new ObjectId(aId)}).then(function(result){
+            if(result&&result[0]){
+                res.render('active/users', { title: '活动用户列表',activeInfo:result[0]});
+            }else{
+                res.render('active/users', { title: '无活动',activeInfo:null});
+            }
+        },function(err){
+            res.render('502',{status:false,error:err});
+        });
+    }else{
+        res.render('404');
     }
 });
 

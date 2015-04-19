@@ -16,11 +16,11 @@ activeControl.create = function(ao){
         ao.aUsers = [];
         collection.findOneAndReplace({aName:ao.aName},ao,{w:1, upsert: true}, function(err, result) {
             if(err){
+                db.close();
                 deferred.reject(err);
                 return;
             }
-            console.log(result);
-
+            db.close();
             deferred.resolve(err);
         });
 
@@ -32,6 +32,7 @@ activeControl.update = function(id,ao){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
+            db.close();
             deferred.reject(err);
             return ;
         }
@@ -47,9 +48,11 @@ activeControl.update = function(id,ao){
         }
         collection.findOneAndUpdate({_id:new ObjectId(id)},obj,{w:1, upsert: true}, function(err, result) {
             if(err){
+                db.close();
                 deferred.reject(err);
                 return;
             }
+            db.close();
             deferred.resolve(result);
         });
     });
@@ -60,15 +63,18 @@ activeControl.find = function(query){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
+            db.close();
             deferred.reject(err);
             return ;
         }
         var collection = db.collection('active');
         collection.find(query).toArray(function(err, result) {
             if(err){
+                db.close();
                 deferred.reject(err);
                 return;
             }
+            db.close();
             deferred.resolve(result);
         });
 
@@ -80,6 +86,7 @@ activeControl.join = function(aid,joinObj){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
+            db.close();
             deferred.reject(err);
             return ;
         }
@@ -98,10 +105,11 @@ activeControl.join = function(aid,joinObj){
                     {w:1},
                     function(err,result){
                         if(err){
-                            console.log('err',err);
+                            db.close();
                             deferred.reject(err);
                             return;
                         }
+                        db.close();
                         deferred.resolve(result);
                     })
             }else{
@@ -113,35 +121,30 @@ activeControl.join = function(aid,joinObj){
                     {w:1},
                     function(err,result){
                         if(err){
-                            console.log('err',err);
+                            db.close();
                             deferred.reject(err);
                             return;
                         }
+                        db.close();
                         deferred.resolve(result);
                     });
             }
         });
 
-
-        //{
-        //    }
-        //},
-        //function(err, result) {
-        //    if(err){
-        //        deferred.reject(err);
-        //        return;
-        //    }
-        //    console.log('ele',result);
-        //    deferred.resolve(err);
-        //}
-
-        //collection.insert([joinObj],function(err,result){
-        //    console.log("Connected correctly to server");
-        //    deferred.resolve(result);
-        //    db.close();
-        //});
     });
     return deferred.promise;
 };
+
+
+// todo:显示所有用户
+activeControl.listAllUsers = function(){
+
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+
+    });
+    return deferred.promise;
+};
+
 
 module.exports = activeControl;

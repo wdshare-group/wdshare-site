@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>WDShare 西安前端交流会</title>
+    <meta name="keywords" content="WDShare,西安前端交流会"/>
+    <meta name="description" content="WDShare，W3C Developer Share 西安前端开发人员分享交流会"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+
+<body>
+<%- include ../module/header.ejs %>
+
+<div class="mod">
+    <div><%= activeInfo.aName %></div>
+    <div>活动时间:<%= activeInfo.aTime %></div>
+    <div>报名截止日期：<%= activeInfo.aJoinEndTime %></div>
+    <div>
+        <%
+        var aUsers = activeInfo.aUsers;
+        if(aUsers.length>0){
+        %>
+        <table>
+            <thead>
+            <tr>
+                <th>姓名</th>
+                <th>邮箱</th>
+                <th>公司</th>
+                <th>聚餐</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%
+                for(var i=0; i<aUsers.length; i++) {
+                var user = aUsers[i];
+            %>
+                <tr>
+                    <td>
+                        <%= user['name'] %>
+                    </td>
+                    <td>
+                        <%= user['mail'] %>
+                    </td>
+                    <td>
+                        <%= user['web'] %>
+                    </td>
+                    <td>
+                        <%= user['chi']=='1'?"是":"否" %>
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+        <% } %>
+    </div>
+</div>
+
+<%- include ../module/footer.ejs %>
+
+<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/active/create.js"></script>
+
+</body>
+</html>

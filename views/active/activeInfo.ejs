@@ -1,0 +1,73 @@
+<form  id="create-form">
+    <% if(activeInfo){ %>
+        <input type="hidden" name="aId" value="<%= activeInfo._id %>" />
+        <div>
+            <label for="">活动名称</label>
+            <input type="text" name="aName" value="<%= activeInfo.aName %>" />
+        </div>
+        <div>
+            <label for="">时间</label>
+            <input type="text" name="aTime" value="<%= activeInfo.aTime %>" />
+        </div>
+        <div>
+            <label for="">报名截止时间</label>
+            <input type="text" name="aJoinEndTime" value="<%= activeInfo.aJoinEndTime %>" />
+        </div>
+        <div>
+
+            <label for="">地点</label>
+            <input type="text" name="aAddress" value="<%= activeInfo.aAddress %>" />
+        </div>
+        <div>
+            <label for="">活动状态</label>
+            <select name="aStatus" >
+                <option value="1" <%= activeInfo.aStatus == '1'?'selected':'' %> >开启</option>
+                <option value="0" <%= activeInfo.aStatus == '0'?'selected':'' %> >关闭</option>
+            </select>
+        </div>
+        <div>
+            <label for="">活动内容</label>
+            <textarea name="aContent" id="" cols="30" rows="10"><%= activeInfo.aContent %></textarea>
+        </div>
+        <div>
+            <button id="create-submit" type="submit">
+                更新活动
+            </button>
+        </div>
+    <% } else { %>
+        <div>
+            <label for="">活动名称</label>
+            <input type="text" name="aName"/>
+        </div>
+        <div>
+            <label for="">时间</label>
+            <input type="text" name="aTime"/>
+        </div>
+        <div>
+            <label for="">报名截止时间</label>
+            <input type="text" name="aJoinEndTime" />
+        </div>
+        <div>
+
+            <label for="">地点</label>
+            <input type="text" name="aAddress"/>
+        </div>
+        <div>
+            <label for="">活动状态</label>
+            <select name="aStatus" id="">
+                <option value="1"  >开启</option>
+                <option value="0"  >关闭</option>
+            </select>
+        </div>
+        <div>
+            <label for="">活动内容</label>
+            <textarea name="aContent" id="" cols="30" rows="10"></textarea>
+        </div>
+        <div>
+            <button id="create-submit" type="submit">
+                创建活动
+            </button>
+        </div>
+    <% } %>
+
+</form>

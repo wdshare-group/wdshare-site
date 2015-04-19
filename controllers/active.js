@@ -136,7 +136,7 @@ activeControl.join = function(aid,joinObj){
 };
 
 
-// todo:ÏÔÊ¾ËùÓĞÓÃ»§
+// todo:æ˜¾ç¤ºæ‰€æœ‰ç”¨æˆ·
 activeControl.listAllUsers = function(){
 
     var deferred = Q.defer();

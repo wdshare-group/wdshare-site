@@ -69,15 +69,21 @@ router.post('/updateControl/', function(req, res,next) {
         var params = req.body;
         if(params.aId){
             acCon.update(params.aId,params).then(function(result){
-                res.end(JSON.stringify(result));
+                res.end(JSON.stringify({
+                    status:true,
+                    msg:'创建成功'
+                }));
             },function(err){
-                res.render('502',{status:false,error:err});
+                res.end(JSON.stringify({status:false,error:err}));
             });
         }else{
             acCon.create(params).then(function(result){
-                res.end(JSON.stringify(result));
+                res.end(JSON.stringify({
+                    status:true,
+                    msg:'更新成功'
+                }));
             },function(err){
-                res.end(JSON.stringify(err));
+                res.end(JSON.stringify({status:false,error:err}));
             });
         }
 
@@ -97,6 +103,28 @@ router.get('/join/:aId', function(req, res,next) {
                 res.render('active/join', { title: '参加活动',activeInfo:result[0]});
             }else{
                 res.render('active/join', { title: '没有活动',activeInfo:{}});
+            }
+        },function(err){
+            res.render('502',{status:false,error:err});
+        });
+    }else{
+        res.render('404');
+    }
+
+});
+
+/**
+ * path:  /active/joinOk/{活动id}
+ * 参加活动页面
+ */
+router.get('/joinOk/:aId', function(req, res,next) {
+    if(req.params.aId){
+        var aId = req.params.aId;
+        acCon.find({_id:new ObjectId(aId)}).then(function(result){
+            if(result&&result[0]){
+                res.render('active/joinOk', { title: '报名成功',activeInfo:result[0]});
+            }else{
+                res.render('active/joinOk', { title: '没有发现活动',activeInfo:{}});
             }
         },function(err){
             res.render('502',{status:false,error:err});
@@ -131,9 +159,9 @@ router.post('/joinControl/', function(req, res,next) {
             chi:params['chi']
         }
         acCon.join(aId,joinObj).then(function(result){
-            res.end(JSON.stringify(result));
+            res.end(JSON.stringify({status:true,msg:'报名成功',joinSuccess:'/active/joinOk/'+aId}));
         },function(err){
-            res.end(JSON.stringify(err));
+            res.end(JSON.stringify({status:false,error:err}));
         });
     }
 });
@@ -159,6 +187,5 @@ router.get('/users/:aId', function(req, res,next) {
         res.render('404');
     }
 });
-
 
 module.exports = router;

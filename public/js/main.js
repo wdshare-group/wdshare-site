@@ -30,9 +30,15 @@ $(document).ready(function(){
             $.ajax({
                 method: "POST",
                 url: "/active/joinControl/",
+                dataType:'json',
                 data: formData,
-                success:function( msg ) {
-                    console.log(msg);
+                success:function(result) {
+                    console.log(result);
+                    if(result&&result.status){
+                        window.location=result.joinSuccess
+                    }else{
+                        alert(result.msg)
+                    }
                 }
             })
         }

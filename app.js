@@ -25,15 +25,22 @@ app.use(expressValidator());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+app.use('/', function(req,res,next){
+    //res.redirect('/active/');
+    if (req.url === '/') {
+        req.url = '/active/';
+    }
+    next();
+});
 //app.use('/users', users);
 app.use('/active', active);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+    //var err = new Error('Not Found');
+    //err.status = 404;
+    //next(err);
+    res.render('404.ejs');
 });
 
 // error handlers

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="utf-8"/>
+    <title>WDShare活动报名</title>
+    <meta name="keywords" content="WDShare,西安前端交流会,活动报名"/>
+    <meta name="description" content="WDShare西安前端开发者分享交流会,活动报名"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <link href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<%- include ../module/header %>
+
+<div class="mod">
+    <h4 class="mod-head"><em><%= activeInfo.aName %></em></h4>
+    <div>报名成功，活动开始前，会发送邮件邀请函。</div>
+    <div class="mod-body">
+        <div class="mod-summary">
+            <strong>活动时间：</strong><%= activeInfo.aTime %> 报名截止日期：<%= activeInfo.aJoinEndTime %>
+            <br/>
+            <strong>活动地点：</strong><%= activeInfo.aAddress %> <br/>
+            <strong>活动须知：</strong>
+            本活动纯属公益，不收取任何费用。活动提供学习交流和交朋友的机会。为了您能得到更贴身的技能，请务必如实填写以下信息。
+        </div>
+        <div><strong style="display:block; padding:15px 0 5px; font-weight:bold; font-size:16px;">告诉朋友一起报名：</strong>
+
+            <div class="bdsharebuttonbox">
+                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                <a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a>
+                <a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a>
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                <a ref="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>
+                <a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+                <a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+            </div>
+        </div>
+        <div class="wds-content" id="project-info" style="display:none;">
+            <h3>活动内容</h3>
+            <%= activeInfo.aContent %>
+        </div>
+        <div class="wds-content">
+            <h3 id="project-info-show" style="padding-left:0; text-align:center; cursor:pointer; margin-bottom:0;" onclick="document.getElementById('project-info').style.display='block';document.getElementById('project-info-show').style.display='none';document.getElementById('project-info-hide').style.display='block'"> 查看详情</h3>
+            <h3 id="project-info-hide"
+                style="padding-left:0; display:none; text-align:center; cursor:pointer; margin-bottom:0;"
+                onclick="document.getElementById('project-info').style.display='none';document.getElementById('project-info-show').style.display='block';document.getElementById('project-info-hide').style.display='none'">
+                收起</h3></div>
+    </div>
+</div>
+<script>window._bd_share_config = {
+        "common": {
+            "bdSnsKey": {},
+            "bdText": "我正在报名参加WDShare 西安交流会 第2期，希望你也一起参加。 活动官网【报名地址】：http://www.wdshare.org/",
+            "bdDesc": "WDShare 西安交流会 第2期 活动报名",
+            "bdPic": "http://www.wdshare.org/files/weibo-logo.jpg",
+            "bdMini": "2",
+            "bdMiniList": false,
+            "bdPic": "",
+            "bdStyle": "1",
+            "bdSize": "32"
+        }, "share": {}
+    };
+    with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
+
+<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+<%- include ../module/footer %>
+</body>
+</html>

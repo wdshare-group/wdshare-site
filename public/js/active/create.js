@@ -7,7 +7,7 @@ $(document).ready(function(){
             url: "/active/updateControl/",
             data: formData,
             success:function( msg ) {
-                console.log(msg);
+                alert(msg);
             }
         })
     })

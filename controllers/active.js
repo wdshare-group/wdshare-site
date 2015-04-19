@@ -5,6 +5,12 @@ var ObjectId = mongo.ObjectID;
 var Q = require('q');
 var activeControl = {};
 
+/**
+ * 创建活动接口
+ * @param ao 活动json对象
+ * @returns {*|promise}
+ */
+
 activeControl.create = function(ao){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
@@ -13,21 +19,26 @@ activeControl.create = function(ao){
             return ;
         }
         var collection = db.collection('active');
-        ao.aUsers = [];
-        collection.findOneAndReplace({aName:ao.aName},ao,{w:1, upsert: true}, function(err, result) {
+        collection.findOneAndReplace({aName:ao.aName},{$set:ao},{w:1}, function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);
                 return;
             }
+            deferred.resolve(result);
             db.close();
-            deferred.resolve(err);
         });
 
     });
     return deferred.promise;
 };
 
+/**
+ * 更新活动
+ * @param id
+ * @param ao
+ * @returns {*|promise}
+ */
 activeControl.update = function(id,ao){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
@@ -43,10 +54,9 @@ activeControl.update = function(id,ao){
             "aJoinEndTime":ao["aJoinEndTime"],
             "aAddress" : ao["aAddress"],
             "aStatus" : ao["aStatus"],
-            "aContent" : ao["aContent"],
-            "aUsers":[]
-        }
-        collection.findOneAndUpdate({_id:new ObjectId(id)},obj,{w:1, upsert: true}, function(err, result) {
+            "aContent" : ao["aContent"]
+        };
+        collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);

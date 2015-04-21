@@ -18,8 +18,12 @@ activeControl.create = function(ao){
             deferred.reject(err);
             return ;
         }
+
+        // 添加其余参数
+        ao.aAddDate = new Date().getTime();
+        
         var collection = db.collection('active');
-        collection.findOneAndReplace({aName:ao.aName},{$set:ao},{w:1}, function(err, result) {
+        collection.insert(ao, {safe:true}, function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);
@@ -28,6 +32,17 @@ activeControl.create = function(ao){
             deferred.resolve(result);
             db.close();
         });
+
+        /*
+        collection.findOneAndReplace({aName:ao.aName},{$set:ao},{w:1}, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            deferred.resolve(result);
+            db.close();
+        });*/
 
     });
     return deferred.promise;
@@ -50,11 +65,16 @@ activeControl.update = function(id,ao){
         var collection = db.collection('active');
         var obj = {
             "aName" : ao["aName"],
+            "aClass" : ao["aClass"],
             "aTime" : ao["aTime"],
             "aJoinEndTime":ao["aJoinEndTime"],
             "aAddress" : ao["aAddress"],
             "aStatus" : ao["aStatus"],
-            "aContent" : ao["aContent"]
+            "aSummary" : ao["aSummary"],
+            "aContent" : ao["aContent"],
+            "aComment" : ao["aComment"],
+            "aSort" : ao["aSort"],
+            "aAddDate" : new Date(ao["aAddDate"]).getTime()
         };
         collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
             if(err){

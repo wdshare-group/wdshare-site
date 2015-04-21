@@ -6,6 +6,14 @@
             <input type="text" name="aName" value="<%= activeInfo.aName %>" />
         </div>
         <div>
+            <label for="">活动分类</label>
+            <select name="aClass" >
+                <option value="2" <%= activeInfo.aClass == '2'?'selected':'' %> >娱乐活动</option>
+                <option value="1" <%= activeInfo.aClass == '1'?'selected':'' %> >前端培训</option>
+                <option value="0" <%= activeInfo.aClass == '0'?'selected':'' %> >分享活动</option>
+            </select>
+        </div>
+        <div>
             <label for="">时间</label>
             <input type="text" name="aTime" value="<%= activeInfo.aTime %>" />
         </div>
@@ -21,13 +29,31 @@
         <div>
             <label for="">活动状态</label>
             <select name="aStatus" >
-                <option value="1" <%= activeInfo.aStatus == '1'?'selected':'' %> >开启</option>
-                <option value="0" <%= activeInfo.aStatus == '0'?'selected':'' %> >关闭</option>
+                <option value="0" <%= activeInfo.aStatus == '0'?'selected':'' %>>关闭</option>
+                <option value="1" <%= activeInfo.aStatus == '1'?'selected':'' %>>开启</option>
+                <option value="2" <%= activeInfo.aStatus == '2'?'selected':'' %>>暂停报名</option>
+                <option value="3" <%= activeInfo.aStatus == '3'?'selected':'' %>>未开始报名</option>
             </select>
+        </div>
+        <div>
+            <label for="">活动摘要</label>
+            <textarea name="aSummary" id="" cols="30" rows="3"><%= activeInfo.aSummary %></textarea>
         </div>
         <div>
             <label for="">活动内容</label>
             <textarea name="aContent" id="" cols="30" rows="10"><%= activeInfo.aContent %></textarea>
+        </div>
+        <div>
+            <label for="">排序</label>
+            <input type="text" name="aSort" value="<%= activeInfo.aSort %>" />
+        </div>
+        <div>
+            <label for="">创建时间</label>
+            <input type="text" name="aAddDate" value="<%= new Date(activeInfo.aAddDate).getFullYear() + '-' + (parseInt(new Date(activeInfo.aAddDate).getMonth())+1) + '-' + new Date(activeInfo.aAddDate).getDate() + ' ' + new Date(activeInfo.aAddDate).getHours() + ':' + new Date(activeInfo.aAddDate).getMinutes() + ':' + new Date(activeInfo.aAddDate).getSeconds() %>"/>
+        </div>
+        <div>
+            <label for="">备注</label>
+            <input type="text" name="aComment" value="<%= activeInfo.aComment %>"/>
         </div>
         <div>
             <button id="create-submit" type="submit">
@@ -35,9 +61,18 @@
             </button>
         </div>
     <% } else { %>
+        <input type="hidden" name=""/>
         <div>
             <label for="">活动名称</label>
             <input type="text" name="aName"/>
+        </div>
+        <div>
+            <label for="">活动分类</label>
+            <select name="aClass" >
+                <option value="2">娱乐活动</option>
+                <option value="1">前端培训</option>
+                <option value="0" selected>分享活动</option>
+            </select>
         </div>
         <div>
             <label for="">时间</label>
@@ -48,21 +83,35 @@
             <input type="text" name="aJoinEndTime" />
         </div>
         <div>
-
             <label for="">地点</label>
             <input type="text" name="aAddress"/>
         </div>
         <div>
             <label for="">活动状态</label>
             <select name="aStatus" id="">
-                <option value="1"  >开启</option>
-                <option value="0"  >关闭</option>
+                <option value="0">关闭</option>
+                <option value="1" selected>开启</option>
+                <option value="2">暂停报名</option>
+                <option value="3">未开始报名</option>
             </select>
+        </div>
+        <div>
+            <label for="">活动摘要</label>
+            <textarea name="aSummary" id="" cols="30" rows="3"></textarea>
         </div>
         <div>
             <label for="">活动内容</label>
             <textarea name="aContent" id="" cols="30" rows="10"></textarea>
         </div>
+        <div>
+            <label for="">备注</label>
+            <input type="text" name="aComment"/>
+        </div>
+        <div>
+            <label for="">排序</label>
+            <input type="text" name="aSort" value="0" />
+        </div>
+        
         <div>
             <button id="create-submit" type="submit">
                 创建活动

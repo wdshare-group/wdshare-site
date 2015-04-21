@@ -67,6 +67,7 @@ router.post('/updateControl/', function(req, res,next) {
         res.end(JSON.stringify({status:false,error:errors}));
     }else{
         var params = req.body;
+
         if(params.aId){
             acCon.update(params.aId,params).then(function(result){
                 res.end(JSON.stringify({

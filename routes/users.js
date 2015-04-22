@@ -12,13 +12,13 @@ var express   = require('express'),
 router.route('/user').all(authorize).get(function(req, res) {
   "use strict";
   var id = req.session.user._id;
-  factory.getAll({
+  usersModel.getAll({
     key:"Category"
   },function(err,categories){
     if(err){
       categories = [];
     }
-    factory.getOne({
+    usersModel.getOne({
       key:"User",
       body:{
         _id:id
@@ -37,7 +37,7 @@ router.route('/user').all(authorize).get(function(req, res) {
       sex      = req.body.sex || null,
       id       = req.session.user._id;
 
-  factory.update({_id:id},{
+  usersModel.update({_id:id},{
     key:"User",
     body:{
       //email: email,
@@ -62,7 +62,7 @@ router.route('/user').all(authorize).get(function(req, res) {
 //修改密码
 router.route("/password").all(authorize).get(function(req,res){
   "use strict";
-  factory.getAll({
+  usersModel.getAll({
     key:"Category"
   },function(err,categories){
     if(err) {
@@ -84,7 +84,7 @@ router.route("/password").all(authorize).get(function(req,res){
     return;
   }
 
-  factory.getOne({
+  usersModel.getOne({
     key:"User",
     body:{
       password:passwordHash
@@ -95,7 +95,7 @@ router.route("/password").all(authorize).get(function(req,res){
       return;
     }
     if(data && "email" in data && data.email === user){
-      factory.update({_id:data._id},{key:"User",body:{password:NewPasswordHash}},function(err,data){
+      usersModel.update({_id:data._id},{key:"User",body:{password:NewPasswordHash}},function(err,data){
         if(err){
           res.send({status:200,code:0,message:"更新失败，服务器错误，请重试！"});
           return;
@@ -114,7 +114,7 @@ router.route("/password").all(authorize).get(function(req,res){
 // 找回密码
 router.route('/forgotPassword').get(function(req, res) {
   "use strict";
-  factory.getAll({
+  usersModel.getAll({
     key:"Category"
   },function(err,categories){
     if(err || categories.length<1){
@@ -128,7 +128,7 @@ router.route('/forgotPassword').get(function(req, res) {
       resetCode  = (Math.random()*10000000000).toFixed(0),
       hash       = crypto.createHash("sha1").update(new Buffer(email+resetCode, "binary")).digest('hex');
 
-  factory.getOne({
+  usersModel.getOne({
     key:"User",
     body:{
       email:email
@@ -139,7 +139,7 @@ router.route('/forgotPassword').get(function(req, res) {
       res.send({status:200,code:0,message:"找回密码失败，服务器错误，请重试！"});
     }
     if(data && "email" in data){
-      factory.getOne({
+      usersModel.getOne({
         key:"ResetPW",
         body:{
           email:email
@@ -157,7 +157,7 @@ router.route('/forgotPassword').get(function(req, res) {
           });
           res.send({status:200,code:1,message:"找回密码成功，稍后请收取邮件并重设密码！"});
         }else{
-          factory.update({email:email},{
+          usersModel.update({email:email},{
             key:"ResetPW",
             body:{
               email:email,
@@ -193,7 +193,7 @@ router.route('/forgotPassword/:hash').get(function(req, res) {
   "use strict";
   var hash = req.params.hash;
 
-  factory.getAll({
+  usersModel.getAll({
     key:"Category"
   },function(err,categories){
     if(err || categories.length<1){
@@ -201,7 +201,7 @@ router.route('/forgotPassword/:hash').get(function(req, res) {
     }
 
     if(hash){
-      factory.getOne({
+      usersModel.getOne({
         key:"ResetPW",
         body:{
           hash:hash
@@ -242,7 +242,7 @@ router.post('/resetPassword/:hash',function(req,res){
     return;
   }
 
-  factory.getOne({
+  usersModel.getOne({
     key:"ResetPW",
     body:{
       hash:hash
@@ -254,12 +254,12 @@ router.post('/resetPassword/:hash',function(req,res){
       return;
     }
     if(data && "email" in data && email){
-      factory.update({email:email},{key:"User",body:{password:passwordHash}},function(err,data){
+      usersModel.update({email:email},{key:"User",body:{password:passwordHash}},function(err,data){
         if(err || data.length <1){
           res.send({status:200,code:0,message:"重置密码失败，服务器错误，请重试！"});
           return false;
         }
-        factory.remove({key:"ResetPW",body:{email:email}},function(err,data){
+        usersModel.remove({key:"ResetPW",body:{email:email}},function(err,data){
         });
         res.send({status:200,code:1,message:"重置密码成功,请重新登录！","url":"/"});
       });
@@ -276,12 +276,12 @@ router.get("/activeAccount/:code",function(req,res){
   "use strict";
   var code  = req.params.code,
       email;
-  factory.getOne({key:"User",body:{regCode:code}},function(err,user){
+  usersModel.getOne({key:"User",body:{regCode:code}},function(err,user){
     if(err || !user){
       res.send({status:200,code:0,message:"账户激活失败，服务器错误，请重试！"});
     }else{
       email = user.email;
-      factory.update({regCode:code,email:email},{key:"User",body:{isActive:true,"regCode":""}},function(err,num){
+      usersModel.update({regCode:code,email:email},{key:"User",body:{isActive:true,"regCode":""}},function(err,num){
         if(err || num<1){
           res.send({status:200,code:0,message:"账户激活失败，服务器错误或登录账户和激活链接不匹配，请重试！"});
         }else{
@@ -305,7 +305,7 @@ router.route("/activeAccount").all(authorize).get(function(req,res){
       msTime   = (new Date).getTime(),
       time;
 
-  factory.getOne({key:"User",body:{email:email}},function(err,user){
+  usersModel.getOne({key:"User",body:{email:email}},function(err,user){
     if(err || !user){
       res.send({status:200,code:0,message:"发送激活邮件失败，服务器错误，请重试！"});
     }else{
@@ -321,7 +321,7 @@ router.route("/activeAccount").all(authorize).get(function(req,res){
           subject: '注册成功',
           html: '感谢您注册'+ config.title +'，以下是您的激活链接，\n\r <a href="' + config.url + '/activeAccount/' + user.regCode + '">'+ config.url + '/activeAccount/' + user.regCode +'</a>请点击链接以激活您的账户！'
         });
-        factory.update({email: email}, {key: "User", body: {activeTime:msTime}},function(err,num){});
+        usersModel.update({email: email}, {key: "User", body: {activeTime:msTime}},function(err,num){});
         res.send({status:200,code:1,message:"发送激活邮件成功，请稍后收取邮件并点击激活链接以激活账户！"});
       }else{
         res.send({status:500,code:0,message:"发送激活邮件失败，请不要重复请求激活邮件！"});
@@ -334,7 +334,7 @@ router.route("/activeAccount").all(authorize).get(function(req,res){
 // 输入新的邮箱地址，发送激活邮件
 router.route("/email").all(authorize).get(function(req,res){
   "use strict";
-  factory.getAll({
+  usersModel.getAll({
     key:"Category"
   },function(err,categories){
     if(err){
@@ -353,17 +353,17 @@ router.route("/email").all(authorize).get(function(req,res){
     return false;
   }
 
-  factory.getOne({key:"User",body:{email:newEmail}},function(err,user){
+  usersModel.getOne({key:"User",body:{email:newEmail}},function(err,user){
     if(err || user){
       res.send({status:200,code:0,message:"不要调皮哦，此邮件地址已经被使用！"});
     }else{
-      factory.getOne({key:"User",body:{email:email}},function(err,user) {
+      usersModel.getOne({key:"User",body:{email:email}},function(err,user) {
         if (err || !user) {
           res.send({status: 200, code: 0, message: "更新邮箱失败，服务器错误！"});
         } else if(user.changeTimes >= config.changeTimes){
           res.send({status:200,code:0,message:"更新邮箱失败，已经超过允许更换邮箱的最大次数！"});
         }else{
-          factory.update({email: email}, {key: "User", body: {changeEmail:newEmail,"regCode":regCode,"isActive":false}},function(err,num){
+          usersModel.update({email: email}, {key: "User", body: {changeEmail:newEmail,"regCode":regCode,"isActive":false}},function(err,num){
             if(err || num <1){
               res.send({status: 200, code: 0, message: "更新邮箱失败，服务器错误！"});
             }else{
@@ -390,7 +390,7 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
   var code  = req.params.code;
 
   if(!code){
-    factory.getAll({
+    usersModel.getAll({
       key:"Category"
     },function(err,categories){
       if(err){
@@ -401,12 +401,12 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
     return false;
   }
 
-  factory.getOne({key:"User",body:{regCode:code}},function(err,user){
+  usersModel.getOne({key:"User",body:{regCode:code}},function(err,user){
     if(err || !user){
       res.send({status:200,code:0,message:"服务器错误或激活码链接有错，请重试！"});
     }else{
 
-      factory.update({regCode:code}, {key: "User", body:{email:user.changeEmail,changeTimes:user.changeTimes+1,regCode:"","isActive":true}},function(err,num){
+      usersModel.update({regCode:code}, {key: "User", body:{email:user.changeEmail,changeTimes:user.changeTimes+1,regCode:"","isActive":true}},function(err,num){
         if(err || num <1){
           res.send({status: 200, code: 0, message: "更新邮箱失败，服务器错误！"});
         }else{
@@ -432,7 +432,7 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
 //登录 注册
 router.get('/login', function(req, res) {
   "use strict";
-
+  console.log(JSON.stringify(req.session));
   if(req.session.user){
     res.redirect(goBack(req.headers.referer));
   }
@@ -441,14 +441,15 @@ router.get('/login', function(req, res) {
 
 router.route('/login').post(function(req, res) {
   "use strict";
+  console.log(JSON.stringify(req.session));
   if(req.session.user){
-    res.send({status:403,message:"请不要重复登录！"});
+    res.send({status:403,message:"Do not login again 请不要重复登录！"});
   }
   var email    = req.body.email,
       password = req.body.password,
       hash     = crypto.createHash("sha1").update(new Buffer(password, "binary")).digest('hex');
 
-  factory.getOne({
+  usersModel.getOne({
     key:"User",
     body:{
       email:email,
@@ -457,15 +458,17 @@ router.route('/login').post(function(req, res) {
   },function(err,data){
 
     if(err){
-      res.send({status:200,code:0,message:"登录失败，服务器错误，请重试！"});
+      res.send({status:200,code:0,message:"Error, internal Error 登录失败，服务器错误，请重试！"});
     }
     if(data && "email" in data){
 
       req.session.user = data;
 
-      res.send({status:200,code:1,message:"登录成功！","url":goBack(req.headers.referer)});
+      console.log(JSON.stringify(req.session));
+
+      res.send({status:200,code:1,message:"Success! 登录成功！","url":goBack(req.headers.referer)});
     }else{
-      res.send({status:200,code:0,message:"登录失败，无此用户或密码错误，请重试！"});
+      res.send({status:200,code:0,message:"Error, username or password is wrong. 登录失败，无此用户或密码错误，请重试！"});
     }
   });
 });
@@ -491,27 +494,27 @@ router.post('/register', function(req, res) {
       regCode    = crypto.createHash("sha1").update(new Buffer(email + (Math.random()*10000000000).toFixed(0), "binary")).digest('hex');
 
   if(email.length <5 || !/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(email) || password.length < 8 || password !== repassword){
-    res.send({status:200,message:"用户名和密码不可以不符合要求！"});
+    res.send({status:200,message:"password and username are not strong enough"});
     return;
   }
 
-  factory.getOne({
+  usersModel.getOne({
     key:"User",
     body:{
       email:email
     }
   },function(err,data){
     if(err){
-      res.send({status:200,code:0,message:"服务器错误，请重试！"});
+      res.send({status:200,code:0,message:"internal error！"});
       return;
     }
 
     if(data && data.email){
-      res.send({status:200,code:0,message:"已存在此用户！"});
+      res.send({status:200,code:0,message:"this user was in our database！"});
       return;
     }
 
-    factory.save({
+    usersModel.save({
       key:"User",
       body:{
         email: email,
@@ -541,7 +544,7 @@ router.post('/register', function(req, res) {
         subject: '注册成功',
         html: '感谢您注册'+ config.title +'，以下是您的激活链接，\n\r <a href="' + config.url + '/activeAccount/' + regCode + '">'+ config.url + '/activeAccount/' + regCode +'</a>请点击链接以激活您的账户！'
       });
-      res.send({status:200,code:1,message:"注册成功，稍后请查询您的邮箱以激活账户！","url":goBack(req.headers.referer)});
+      res.send({status:200,code:1,message:"register success! 注册成功，稍后请查询您的邮箱以激活账户！","url":goBack(req.headers.referer)});
     });
 
 

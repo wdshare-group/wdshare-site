@@ -13,6 +13,21 @@ var active = require('./routes/active');
 
 var app = express();
 
+var Users     = require('./model/users.js');
+var usersModel     = new Users();
+var moment    = require('moment');
+
+
+
+
+
+app.locals.moment     = moment;
+app.locals.session    = {};
+global.moment   = app.locals.moment   = moment;
+global.usersModel = usersModel;
+
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -20,15 +35,22 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
 app.use(cookieParser("wdshare"));
-app.use(cookieSession("wdshare"));
+app.use(cookieSession({          //session ¼ÓÃÜ×Ö·û´®
+    key:'wdshare',
+    secret: 'wdshare',
+    name  :'wdshare',
+    cookie: { path: '/', httpOnly: true, maxAge: null }
+}));
+
 app.use('/static/',express.static(path.join(__dirname, 'public')));
 
 app.use(function(req,res,next){
     "use strict";
+    console.log("session : " + JSON.stringify(req.session));
     res.locals.user = req.session.user;
     next();
 });

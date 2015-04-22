@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="UTF-8">
     <title>WDShare 西安前端交流会</title>
     <meta name="keywords" content="WDShare,西安前端交流会"/>
     <meta name="description" content="WDShare，W3C Developer Share 西安前端开发人员分享交流会"/>
@@ -24,7 +24,11 @@
         <li class="mobel-hide"><a href="/about/">关于WDShare</a></li>
     </ul>
     <h1 class="myname right">W3C Developer Share<br/>西安前端开发者分享交流会</h1>
+    <% if(user && user.email){ %>
+    <span class="right account"><a href="/user/user">用户中心</a> | <a href="/user/logout">退出</a> </span>
+    <% }else{ %>
     <span class="right account"><a href="/user/login">登录</a> | <a href="/user/register">注册</a> </span>
+    <% } %>
 </div>
 <!--
 <div class="header">

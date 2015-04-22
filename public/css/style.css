@@ -13,7 +13,7 @@ a { color:#000; text-decoration:none;}
 
 a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,header,footer { -webkit-tap-highlight-color:rgba(0,0,0,0); -moz-tap-highlight-color:rgba(0,0,0,0); -o-tap-highlight-color:rgba(0,0,0,0); -ms-tap-highlight-color:rgba(0,0,0,0); tap-highlight-color:rgba(0,0,0,0);}
 
-body { width:100%; background:#f7f7f7 url("/img/bg-03.png"); font:0.9em "Microsoft YaHei"; overflow-x:hidden;}
+body { width:100%; background:#f7f7f7 url("/static/images/bg-03.png"); font:0.9em "Microsoft YaHei"; overflow-x:hidden;}
 
 .left {
     float:left;
@@ -42,7 +42,7 @@ body { width:100%; background:#f7f7f7 url("/img/bg-03.png"); font:0.9em "Microso
 }
 
 .foot-weibo,
-.foot-weixin { background:url("/img/icon.png") no-repeat;}
+.foot-weixin { background:url("/static/images/icon.png") no-repeat;}
 
 /**/
 body { padding-top:50px;}

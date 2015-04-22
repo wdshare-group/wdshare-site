@@ -5,9 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
+var cookieSession = require('cookie-session');
 
 var routes = require('./routes/index');
-//var users = require('./routes/users');
+var users = require('./routes/users');
 var active = require('./routes/active');
 
 var app = express();
@@ -22,8 +23,15 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(expressValidator());
-app.use(cookieParser());
+app.use(cookieParser("wdshare"));
+app.use(cookieSession("wdshare"));
 app.use('/static/',express.static(path.join(__dirname, 'public')));
+
+app.use(function(req,res,next){
+    "use strict";
+    res.locals.user = req.session.user;
+    next();
+});
 
 app.use('/', function(req,res,next){
     //res.redirect('/active/');
@@ -34,6 +42,11 @@ app.use('/', function(req,res,next){
 });
 //app.use('/users', users);
 app.use('/active', active);
+
+
+// 用户相关
+app.use('/user/', users);
+app.use('/user/', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

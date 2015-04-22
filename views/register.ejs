@@ -1,0 +1,35 @@
+<% include module/header.ejs %>
+
+    <link href="/static/css/login.css" rel="stylesheet"/>
+
+    <div id="cover">
+        <!--<div class="overlay"></div>-->
+        <img src="/static/images/cover/cover_bg_2.jpg">
+        <span data-anim="anim-cloud-small" class="anim cloud-small anim-cloud-small scale" style="-webkit-transform: scale(0.45925925925925926);"></span>
+        <span data-anim="anim-cloud-large" class="anim cloud-large anim-cloud-large scale" style="-webkit-transform: scale(0.4361111111111111);"></span>
+    </div>
+    <div id="box">
+        <div class="info left">
+            <span>
+                <a href="/"></a>
+            </span>
+        </div>
+        <form action="/user/register" method="post" id="register" class="left">
+            <div class="tips">
+                <span>注册</span>
+            </div>
+            <p class="boxui"><label for="email">邮 箱：</label><input type="text" name="email" id="email" class="input inputbox" placeholder="请输入要注册的邮箱地址"></p>
+            <p class="boxui"><label for="password">密 码：</label><input type="password" name="password" id="password" class="input inputbox" placeholder="请输入密码"></p>
+            <p class="boxui"><label for="repassword">确认密码：</label><input type="password" name="repassword" id="repassword" class="input inputbox" placeholder="请重复输入密码"></p>
+            <p><input type="submit" value="注册"  class="input btn blue"></p>
+        </form>
+        <div class="not-a-member">
+            已经有账户？ <a href="/user/login">现在登录</a>
+        </div>
+    </div>
+    <script src="/static/js/module/lovely/jQuery.lovely.js"></script>
+    <script src="/static/js/function/validate.lovely.js"></script>
+    <script src="/static/js/function/register.js"></script>
+
+
+    <% include module/footer.ejs %>

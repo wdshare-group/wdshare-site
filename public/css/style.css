@@ -15,6 +15,22 @@ a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,hea
 
 body { width:100%; background:#f7f7f7 url("/img/bg-03.png"); font:0.9em "Microsoft YaHei"; overflow-x:hidden;}
 
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.account {
+    padding-right:5%;
+    color:#FFF;
+    line-height:50px;
+}
+.account a {
+    color:#FFF;
+}
+
+
 .maxWidth { width:1000px; margin:auto;}
 .maxWidth:after { display:block; clear:both; content:""; visibility:hidden; height:0;}
 

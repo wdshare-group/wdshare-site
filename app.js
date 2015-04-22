@@ -50,7 +50,6 @@ app.use('/static/',express.static(path.join(__dirname, 'public')));
 
 app.use(function(req,res,next){
     "use strict";
-    console.log("session : " + JSON.stringify(req.session));
     res.locals.user = req.session.user;
     next();
 });

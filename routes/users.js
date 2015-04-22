@@ -8,7 +8,7 @@ var express   = require('express'),
     moment    = require("moment"),
     config    = require("../server/config");
 
-//±à¼­ÓÃ»§×ÊÁÏ
+//ç¼–è¾‘ç”¨æˆ·èµ„æ–™
 router.route('/user').all(authorize).get(function(req, res) {
   "use strict";
   var id = req.session.user._id;
@@ -27,7 +27,7 @@ router.route('/user').all(authorize).get(function(req, res) {
       if(err){
         user = {};
       }
-      res.render('admin/user', { title: 'oSpring', description: "ÎªĞÂ¶øÉú", categories: categories,user:user,cur:"user"});
+      res.render('admin/user', { title: 'oSpring', description: "ä¸ºæ–°è€Œç”Ÿ", categories: categories,user:user,cur:"user"});
     });
   });
 }).post(function(req, res) {
@@ -55,11 +55,11 @@ router.route('/user').all(authorize).get(function(req, res) {
         req.session.user[key] = data[key];
       }
     }
-    res.send({id:data._id,status:200,code:1,message:"¸üĞÂ³É¹¦£¡"});
+    res.send({id:data._id,status:200,code:1,message:"æ›´æ–°æˆåŠŸï¼"});
   });
 });
 
-//ĞŞ¸ÄÃÜÂë
+//ä¿®æ”¹å¯†ç 
 router.route("/password").all(authorize).get(function(req,res){
   "use strict";
   usersModel.getAll({
@@ -68,7 +68,7 @@ router.route("/password").all(authorize).get(function(req,res){
     if(err) {
       categories = [];
     }
-    res.render('admin/password', { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories,cur:"password"});
+    res.render('admin/password', { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories,cur:"password"});
   });
 }).post(function(req,res){
   "use strict";
@@ -80,7 +80,7 @@ router.route("/password").all(authorize).get(function(req,res){
       user            = req.session.user.email;
 
   if(newPassword.length < 8 || newPassword !== reNewPassword){
-    res.send({status:200,code:0,message:"ĞÂÃÜÂëÇ¿¶È²»·ûºÏÒªÇó»òÁ½´ÎÃÜÂë²»Ò»ÖÂ£¡"});
+    res.send({status:200,code:0,message:"æ–°å¯†ç å¼ºåº¦ä¸ç¬¦åˆè¦æ±‚æˆ–ä¸¤æ¬¡å¯†ç ä¸ä¸€è‡´ï¼"});
     return;
   }
 
@@ -91,27 +91,27 @@ router.route("/password").all(authorize).get(function(req,res){
     }
   },function(err,data){
     if(err){
-      res.send({status:200,code:0,message:"·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
       return;
     }
     if(data && "email" in data && data.email === user){
       usersModel.update({_id:data._id},{key:"User",body:{password:NewPasswordHash}},function(err,data){
         if(err){
-          res.send({status:200,code:0,message:"¸üĞÂÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+          res.send({status:200,code:0,message:"æ›´æ–°å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
           return;
         }
         req.session.user = null;
-        res.send({status:200,code:1,message:"ÃÜÂëĞŞ¸Ä³É¹¦,ÇëÖØĞÂµÇÂ¼£¡","url":"/"});
+        res.send({status:200,code:1,message:"å¯†ç ä¿®æ”¹æˆåŠŸ,è¯·é‡æ–°ç™»å½•ï¼","url":"/"});
       });
     }else{
-      res.send({status:200,code:0,message:"¸üĞÂÊ§°Ü£¬Ô­Ê¼ÃÜÂë´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æ›´æ–°å¤±è´¥ï¼ŒåŸå§‹å¯†ç é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
       return;
     }
   });
 });
 
 
-// ÕÒ»ØÃÜÂë
+// æ‰¾å›å¯†ç 
 router.route('/forgotPassword').get(function(req, res) {
   "use strict";
   usersModel.getAll({
@@ -120,7 +120,7 @@ router.route('/forgotPassword').get(function(req, res) {
     if(err || categories.length<1){
       categories = [];
     }
-    res.render('forgotPassword', { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories});
+    res.render('forgotPassword', { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories});
   });
 }).post(function(req, res) {
   "use strict";
@@ -136,7 +136,7 @@ router.route('/forgotPassword').get(function(req, res) {
   },function(err,data){
 
     if(err){
-      res.send({status:200,code:0,message:"ÕÒ»ØÃÜÂëÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æ‰¾å›å¯†ç å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     }
     if(data && "email" in data){
       usersModel.getOne({
@@ -146,16 +146,16 @@ router.route('/forgotPassword').get(function(req, res) {
         }
       },function(err,data){
         if(err){
-          res.send({status:200,code:0,message:"ÕÒ»ØÃÜÂëÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+          res.send({status:200,code:0,message:"æ‰¾å›å¯†ç å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
         }
         if(data && "email" in data && data.hash){
           sendMail({
             from: config.mail.sendMail,
             to: email,
-            title: 'ÃÜÂëÖØÖÃÓÊ¼ş',
-            html: 'ÒÔÏÂÊÇÄúµÄÃÜÂëÖØÖÃÁ´½Ó£¬\n\r <a href="' + config.url + '/forgotPassword/'+ data.hash +'">' + config.url + '/forgotPassword/'+ data.hash + '</a>Çë·ÃÎÊÁ´½ÓÒÔÖØÉèÄúµÄÃÜÂë£¡'
+            title: 'å¯†ç é‡ç½®é‚®ä»¶',
+            html: 'ä»¥ä¸‹æ˜¯æ‚¨çš„å¯†ç é‡ç½®é“¾æ¥ï¼Œ\n\r <a href="' + config.url + '/forgotPassword/'+ data.hash +'">' + config.url + '/forgotPassword/'+ data.hash + '</a>è¯·è®¿é—®é“¾æ¥ä»¥é‡è®¾æ‚¨çš„å¯†ç ï¼'
           });
-          res.send({status:200,code:1,message:"ÕÒ»ØÃÜÂë³É¹¦£¬ÉÔºóÇëÊÕÈ¡ÓÊ¼ş²¢ÖØÉèÃÜÂë£¡"});
+          res.send({status:200,code:1,message:"æ‰¾å›å¯†ç æˆåŠŸï¼Œç¨åè¯·æ”¶å–é‚®ä»¶å¹¶é‡è®¾å¯†ç ï¼"});
         }else{
           usersModel.update({email:email},{
             key:"ResetPW",
@@ -167,28 +167,28 @@ router.route('/forgotPassword').get(function(req, res) {
             option:{upsert: true}
           },function(err,data){
             if(err){
-              res.send({status:200,code:0,message:"ÕÒ»ØÃÜÂëÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+              res.send({status:200,code:0,message:"æ‰¾å›å¯†ç å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
             }else{
               sendMail({
                 from: config.mail.sendMail,
                 to: email,
-                subject: 'ÃÜÂëÖØÖÃÓÊ¼ş',
-                html: 'ÒÔÏÂÊÇÄúµÄÃÜÂëÖØÖÃÁ´½Ó£¬\n\r <a href="' + config.url + '/forgotPassword/'+ hash +'">' + config.url + '/forgotPassword/'+ hash + '</a>Çë·ÃÎÊÁ´½ÓÒÔÖØÉèÄúµÄÃÜÂë£¡'
+                subject: 'å¯†ç é‡ç½®é‚®ä»¶',
+                html: 'ä»¥ä¸‹æ˜¯æ‚¨çš„å¯†ç é‡ç½®é“¾æ¥ï¼Œ\n\r <a href="' + config.url + '/forgotPassword/'+ hash +'">' + config.url + '/forgotPassword/'+ hash + '</a>è¯·è®¿é—®é“¾æ¥ä»¥é‡è®¾æ‚¨çš„å¯†ç ï¼'
               });
-              res.send({status:200,code:1,message:"ÕÒ»ØÃÜÂë³É¹¦£¬ÉÔºóÇëÊÕÈ¡ÓÊ¼ş²¢ÖØÉèÃÜÂë£¡"});
+              res.send({status:200,code:1,message:"æ‰¾å›å¯†ç æˆåŠŸï¼Œç¨åè¯·æ”¶å–é‚®ä»¶å¹¶é‡è®¾å¯†ç ï¼"});
             }
           });
         }
       });
 
     }else{
-      res.send({status:200,code:0,message:"ÕÒ»ØÃÜÂëÊ§°Ü£¬ÎŞ´ËÓÃ»§£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æ‰¾å›å¯†ç å¤±è´¥ï¼Œæ— æ­¤ç”¨æˆ·ï¼Œè¯·é‡è¯•ï¼"});
     }
   });
 });
 
 
-// ·ÃÎÊÖØÖÃÃÜÂëÁ´½Ó
+// è®¿é—®é‡ç½®å¯†ç é“¾æ¥
 router.route('/forgotPassword/:hash').get(function(req, res) {
   "use strict";
   var hash = req.params.hash;
@@ -208,23 +208,23 @@ router.route('/forgotPassword/:hash').get(function(req, res) {
         }
       },function(err,data){
         if(err || !data){
-          // ´íÎó£¬Ìøµ½ÊäÈëÓÊ¼şºÍÖØÖÃÂëÒ³Ãæ
-          //res.render('resetPasswordFill', { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories,email:email,resetCode:resetCode});
+          // é”™è¯¯ï¼Œè·³åˆ°è¾“å…¥é‚®ä»¶å’Œé‡ç½®ç é¡µé¢
+          //res.render('resetPasswordFill', { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories,email:email,resetCode:resetCode});
           //res.redirect("/forgotPassword");
-          res.render('forgotPassword', { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories,error:"·şÎñÆ÷´íÎó»òÁ´½ÓÒÑÊ§Ğ§"});
+          res.render('forgotPassword', { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories,error:"æœåŠ¡å™¨é”™è¯¯æˆ–é“¾æ¥å·²å¤±æ•ˆ"});
         }else{
-          // ÊäÈëĞÂÃÜÂë
-          res.render("resetPassword", { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories,hash:hash});
+          // è¾“å…¥æ–°å¯†ç 
+          res.render("resetPassword", { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories,hash:hash});
         }
       });
     }else{
       res.redirect("/forgotPassword");
-      //res.render('resetPasswordFill', { title: 'oSpring',"description":"ÎªĞÂ¶øÉú",categories:categories,email:email,resetCode:resetCode});
+      //res.render('resetPasswordFill', { title: 'oSpring',"description":"ä¸ºæ–°è€Œç”Ÿ",categories:categories,email:email,resetCode:resetCode});
     }
   });
 });
 
-// ¸üĞÂĞÂÃÜÂë  Ä¿Ç°ÊµÏÖÓĞÂ©¶´¸ÅÂÊ·Ç³£·Ç³£·Ç³£Ğ¡
+// æ›´æ–°æ–°å¯†ç   ç›®å‰å®ç°æœ‰æ¼æ´æ¦‚ç‡éå¸¸éå¸¸éå¸¸å°
 router.post('/resetPassword/:hash',function(req,res){
   "use strict";
   var password     = req.body.password,
@@ -234,11 +234,11 @@ router.post('/resetPassword/:hash',function(req,res){
 
 
   if(password.length < 8 || password !== rePassword){
-    res.send({status:200,code:0,message:"ĞÂÃÜÂëÇ¿¶È²»·ûºÏÒªÇó»òÁ½´ÎÃÜÂë²»Ò»ÖÂ£¡"});
+    res.send({status:200,code:0,message:"æ–°å¯†ç å¼ºåº¦ä¸ç¬¦åˆè¦æ±‚æˆ–ä¸¤æ¬¡å¯†ç ä¸ä¸€è‡´ï¼"});
     return;
   }
   if(!hash){
-    res.send({status:200,code:0,message:"Á´½Ó´íÎó£¬ÇëÖØÊÔ£¡"});
+    res.send({status:200,code:0,message:"é“¾æ¥é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     return;
   }
 
@@ -250,54 +250,54 @@ router.post('/resetPassword/:hash',function(req,res){
   },function(err,data){
     var email = data && data.email;
     if(err){
-      res.send({status:200,code:0,message:"·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
       return;
     }
     if(data && "email" in data && email){
       usersModel.update({email:email},{key:"User",body:{password:passwordHash}},function(err,data){
         if(err || data.length <1){
-          res.send({status:200,code:0,message:"ÖØÖÃÃÜÂëÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+          res.send({status:200,code:0,message:"é‡ç½®å¯†ç å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
           return false;
         }
         usersModel.remove({key:"ResetPW",body:{email:email}},function(err,data){
         });
-        res.send({status:200,code:1,message:"ÖØÖÃÃÜÂë³É¹¦,ÇëÖØĞÂµÇÂ¼£¡","url":"/"});
+        res.send({status:200,code:1,message:"é‡ç½®å¯†ç æˆåŠŸ,è¯·é‡æ–°ç™»å½•ï¼","url":"/"});
       });
     }else{
-      res.send({status:200,code:0,message:"ÖØÖÃÃÜÂëÊ§°Ü£¬Á´½Ó´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"é‡ç½®å¯†ç å¤±è´¥ï¼Œé“¾æ¥é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
       return false;
     }
   });
 });
 
-// ¼¤»îÕË»§
-// ¼¤»îÕË»§     /*¿ÉÒÔÍ¨¹ıÏÈµÇÂ¼£¬È»ºóÔÙ¼¤»îµÄ·½°¸À´·ÀÖ¹±»´íÎó¼¤»î¡£*/
+// æ¿€æ´»è´¦æˆ·
+// æ¿€æ´»è´¦æˆ·     /*å¯ä»¥é€šè¿‡å…ˆç™»å½•ï¼Œç„¶åå†æ¿€æ´»çš„æ–¹æ¡ˆæ¥é˜²æ­¢è¢«é”™è¯¯æ¿€æ´»ã€‚*/
 router.get("/activeAccount/:code",function(req,res){
   "use strict";
   var code  = req.params.code,
       email;
   usersModel.getOne({key:"User",body:{regCode:code}},function(err,user){
     if(err || !user){
-      res.send({status:200,code:0,message:"ÕË»§¼¤»îÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"è´¦æˆ·æ¿€æ´»å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     }else{
       email = user.email;
       usersModel.update({regCode:code,email:email},{key:"User",body:{isActive:true,"regCode":""}},function(err,num){
         if(err || num<1){
-          res.send({status:200,code:0,message:"ÕË»§¼¤»îÊ§°Ü£¬·şÎñÆ÷´íÎó»òµÇÂ¼ÕË»§ºÍ¼¤»îÁ´½Ó²»Æ¥Åä£¬ÇëÖØÊÔ£¡"});
+          res.send({status:200,code:0,message:"è´¦æˆ·æ¿€æ´»å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯æˆ–ç™»å½•è´¦æˆ·å’Œæ¿€æ´»é“¾æ¥ä¸åŒ¹é…ï¼Œè¯·é‡è¯•ï¼"});
         }else{
           sendMail({
             from: config.mail.sendMail,
             to: email,
-            subject: '¼¤»î³É¹¦',
-            html: '¸ĞĞ»Äú×¢²á'+ config.title +'£¬ÄúµÄÕË»§ÒÑ³É¹¦¼¤»î£¬¿ÉÒÔÕı³£Ê¹ÓÃ£¬·ÃÎÊ£º' + config.url
+            subject: 'æ¿€æ´»æˆåŠŸ',
+            html: 'æ„Ÿè°¢æ‚¨æ³¨å†Œ'+ config.title +'ï¼Œæ‚¨çš„è´¦æˆ·å·²æˆåŠŸæ¿€æ´»ï¼Œå¯ä»¥æ­£å¸¸ä½¿ç”¨ï¼Œè®¿é—®ï¼š' + config.url
           });
-          res.send({status:200,code:1,message:"ÕË»§ÒÑ³É¹¦¼¤»î£¬¸ĞĞ»ÄúµÄÊ¹ÓÃ£¡"});
+          res.send({status:200,code:1,message:"è´¦æˆ·å·²æˆåŠŸæ¿€æ´»ï¼Œæ„Ÿè°¢æ‚¨çš„ä½¿ç”¨ï¼"});
         }
       });
     }
   });
 });
-// ·¢ËÍ¼¤»îÓÊ¼ş
+// å‘é€æ¿€æ´»é‚®ä»¶
 router.route("/activeAccount").all(authorize).get(function(req,res){
   "use strict";
   var email    = req.session.user.email,
@@ -307,31 +307,31 @@ router.route("/activeAccount").all(authorize).get(function(req,res){
 
   usersModel.getOne({key:"User",body:{email:email}},function(err,user){
     if(err || !user){
-      res.send({status:200,code:0,message:"·¢ËÍ¼¤»îÓÊ¼şÊ§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"å‘é€æ¿€æ´»é‚®ä»¶å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     }else{
       time = user.activeTime;
       if(time !==0 && (msTime - time <= duration)){
-        res.send({status:200,code:0,message:"ÇëÎğÆµ·±»ñÈ¡¼¤»îÓÊ¼ş£¬ÏµÍ³ÉèÖÃÊ±¼ä¼ä¸ôÎª" +  config.activeDuration + "·ÖÖÓ£¬Çë" + ((duration - (msTime - time))/1000).toFixed(0) + "Ãëºó»ñÈ¡£¡"});
+        res.send({status:200,code:0,message:"è¯·å‹¿é¢‘ç¹è·å–æ¿€æ´»é‚®ä»¶ï¼Œç³»ç»Ÿè®¾ç½®æ—¶é—´é—´éš”ä¸º" +  config.activeDuration + "åˆ†é’Ÿï¼Œè¯·" + ((duration - (msTime - time))/1000).toFixed(0) + "ç§’åè·å–ï¼"});
         return false;
       }
       if(user.regCode && !user.isActive){
         sendMail({
           from: config.mail.sendMail,
           to: email,
-          subject: '×¢²á³É¹¦',
-          html: '¸ĞĞ»Äú×¢²á'+ config.title +'£¬ÒÔÏÂÊÇÄúµÄ¼¤»îÁ´½Ó£¬\n\r <a href="' + config.url + '/activeAccount/' + user.regCode + '">'+ config.url + '/activeAccount/' + user.regCode +'</a>Çëµã»÷Á´½ÓÒÔ¼¤»îÄúµÄÕË»§£¡'
+          subject: 'æ³¨å†ŒæˆåŠŸ',
+          html: 'æ„Ÿè°¢æ‚¨æ³¨å†Œ'+ config.title +'ï¼Œä»¥ä¸‹æ˜¯æ‚¨çš„æ¿€æ´»é“¾æ¥ï¼Œ\n\r <a href="' + config.url + '/activeAccount/' + user.regCode + '">'+ config.url + '/activeAccount/' + user.regCode +'</a>è¯·ç‚¹å‡»é“¾æ¥ä»¥æ¿€æ´»æ‚¨çš„è´¦æˆ·ï¼'
         });
         usersModel.update({email: email}, {key: "User", body: {activeTime:msTime}},function(err,num){});
-        res.send({status:200,code:1,message:"·¢ËÍ¼¤»îÓÊ¼ş³É¹¦£¬ÇëÉÔºóÊÕÈ¡ÓÊ¼ş²¢µã»÷¼¤»îÁ´½ÓÒÔ¼¤»îÕË»§£¡"});
+        res.send({status:200,code:1,message:"å‘é€æ¿€æ´»é‚®ä»¶æˆåŠŸï¼Œè¯·ç¨åæ”¶å–é‚®ä»¶å¹¶ç‚¹å‡»æ¿€æ´»é“¾æ¥ä»¥æ¿€æ´»è´¦æˆ·ï¼"});
       }else{
-        res.send({status:500,code:0,message:"·¢ËÍ¼¤»îÓÊ¼şÊ§°Ü£¬Çë²»ÒªÖØ¸´ÇëÇó¼¤»îÓÊ¼ş£¡"});
+        res.send({status:500,code:0,message:"å‘é€æ¿€æ´»é‚®ä»¶å¤±è´¥ï¼Œè¯·ä¸è¦é‡å¤è¯·æ±‚æ¿€æ´»é‚®ä»¶ï¼"});
       }
     }
   });
 });
 
-// ¸üĞÂÓÊ¼şµØÖ·
-// ÊäÈëĞÂµÄÓÊÏäµØÖ·£¬·¢ËÍ¼¤»îÓÊ¼ş
+// æ›´æ–°é‚®ä»¶åœ°å€
+// è¾“å…¥æ–°çš„é‚®ç®±åœ°å€ï¼Œå‘é€æ¿€æ´»é‚®ä»¶
 router.route("/email").all(authorize).get(function(req,res){
   "use strict";
   usersModel.getAll({
@@ -349,31 +349,31 @@ router.route("/email").all(authorize).get(function(req,res){
       regCode  = crypto.createHash("sha1").update(new Buffer(newEmail + (Math.random()*10000000000).toFixed(0), "binary")).digest('hex');
 
   if(email === newEmail){
-    res.send({status:200,code:0,message:"²»Òªµ÷Æ¤Å¶£¬Äã¾ÍÃ»ÓĞĞŞ¸ÄÓÊÏäÂï£¡"});
+    res.send({status:200,code:0,message:"ä¸è¦è°ƒçš®å“¦ï¼Œä½ å°±æ²¡æœ‰ä¿®æ”¹é‚®ç®±å˜›ï¼"});
     return false;
   }
 
   usersModel.getOne({key:"User",body:{email:newEmail}},function(err,user){
     if(err || user){
-      res.send({status:200,code:0,message:"²»Òªµ÷Æ¤Å¶£¬´ËÓÊ¼şµØÖ·ÒÑ¾­±»Ê¹ÓÃ£¡"});
+      res.send({status:200,code:0,message:"ä¸è¦è°ƒçš®å“¦ï¼Œæ­¤é‚®ä»¶åœ°å€å·²ç»è¢«ä½¿ç”¨ï¼"});
     }else{
       usersModel.getOne({key:"User",body:{email:email}},function(err,user) {
         if (err || !user) {
-          res.send({status: 200, code: 0, message: "¸üĞÂÓÊÏäÊ§°Ü£¬·şÎñÆ÷´íÎó£¡"});
+          res.send({status: 200, code: 0, message: "æ›´æ–°é‚®ç®±å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼"});
         } else if(user.changeTimes >= config.changeTimes){
-          res.send({status:200,code:0,message:"¸üĞÂÓÊÏäÊ§°Ü£¬ÒÑ¾­³¬¹ıÔÊĞí¸ü»»ÓÊÏäµÄ×î´ó´ÎÊı£¡"});
+          res.send({status:200,code:0,message:"æ›´æ–°é‚®ç®±å¤±è´¥ï¼Œå·²ç»è¶…è¿‡å…è®¸æ›´æ¢é‚®ç®±çš„æœ€å¤§æ¬¡æ•°ï¼"});
         }else{
           usersModel.update({email: email}, {key: "User", body: {changeEmail:newEmail,"regCode":regCode,"isActive":false}},function(err,num){
             if(err || num <1){
-              res.send({status: 200, code: 0, message: "¸üĞÂÓÊÏäÊ§°Ü£¬·şÎñÆ÷´íÎó£¡"});
+              res.send({status: 200, code: 0, message: "æ›´æ–°é‚®ç®±å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼"});
             }else{
               sendMail({
                 from: config.mail.sendMail,
                 to: newEmail,
-                subject: '¸ü»»ÓÊ¼şÖØĞÂ¼¤»îÕË»§',
-                html: '¸ĞĞ»ÄúÊ¹ÓÃ' + config.title + '£¬ÒÔÏÂÊÇÄúĞÂÓÊÏäµÄ¼¤»îÁ´½Ó£¬\n\r <a href="' + config.url + '/updateEmail/' + regCode + '">' + config.url + '/updateEmail/' + regCode + '</a>Çëµã»÷Á´½ÓÒÔ¼¤»îÄúµÄÕË»§£¡'
+                subject: 'æ›´æ¢é‚®ä»¶é‡æ–°æ¿€æ´»è´¦æˆ·',
+                html: 'æ„Ÿè°¢æ‚¨ä½¿ç”¨' + config.title + 'ï¼Œä»¥ä¸‹æ˜¯æ‚¨æ–°é‚®ç®±çš„æ¿€æ´»é“¾æ¥ï¼Œ\n\r <a href="' + config.url + '/updateEmail/' + regCode + '">' + config.url + '/updateEmail/' + regCode + '</a>è¯·ç‚¹å‡»é“¾æ¥ä»¥æ¿€æ´»æ‚¨çš„è´¦æˆ·ï¼'
               });
-              res.send({status: 200, code: 1, message: "ÒÑÏòĞÂÓÊÏäµØÖ··¢ËÍ¼¤»îÓÊ¼ş³É¹¦£¬ÇëÉÔºóÊÕÈ¡ÓÊ¼ş²¢µã»÷¼¤»îÁ´½ÓÒÔ¼¤»îÕË»§£¡"});
+              res.send({status: 200, code: 1, message: "å·²å‘æ–°é‚®ç®±åœ°å€å‘é€æ¿€æ´»é‚®ä»¶æˆåŠŸï¼Œè¯·ç¨åæ”¶å–é‚®ä»¶å¹¶ç‚¹å‡»æ¿€æ´»é“¾æ¥ä»¥æ¿€æ´»è´¦æˆ·ï¼"});
             }
           });
 
@@ -383,8 +383,8 @@ router.route("/email").all(authorize).get(function(req,res){
   });
 });
 
-// ¸ü»»ÓÊ¼şµØÖ·
-// µã»÷¼¤»îÁ´½Ó ¸ü»»ĞÂÓÊ¼şµØÖ·
+// æ›´æ¢é‚®ä»¶åœ°å€
+// ç‚¹å‡»æ¿€æ´»é“¾æ¥ æ›´æ¢æ–°é‚®ä»¶åœ°å€
 router.route("/updateEmail/:code").all(authorize).get(function(req,res){
   "use strict";
   var code  = req.params.code;
@@ -396,31 +396,31 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
       if(err){
         categories = [];
       }
-      res.render('admin/error', {categories:categories,err:"·şÎñÆ÷´íÎó»ò¼¤»îÂëÁ´½ÓÓĞ´í£¬ÇëÖØÊÔ£¡"});
+      res.render('admin/error', {categories:categories,err:"æœåŠ¡å™¨é”™è¯¯æˆ–æ¿€æ´»ç é“¾æ¥æœ‰é”™ï¼Œè¯·é‡è¯•ï¼"});
     });
     return false;
   }
 
   usersModel.getOne({key:"User",body:{regCode:code}},function(err,user){
     if(err || !user){
-      res.send({status:200,code:0,message:"·şÎñÆ÷´íÎó»ò¼¤»îÂëÁ´½ÓÓĞ´í£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"æœåŠ¡å™¨é”™è¯¯æˆ–æ¿€æ´»ç é“¾æ¥æœ‰é”™ï¼Œè¯·é‡è¯•ï¼"});
     }else{
 
       usersModel.update({regCode:code}, {key: "User", body:{email:user.changeEmail,changeTimes:user.changeTimes+1,regCode:"","isActive":true}},function(err,num){
         if(err || num <1){
-          res.send({status: 200, code: 0, message: "¸üĞÂÓÊÏäÊ§°Ü£¬·şÎñÆ÷´íÎó£¡"});
+          res.send({status: 200, code: 0, message: "æ›´æ–°é‚®ç®±å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼"});
         }else{
           if(user.regCode && !user.isActive){
             sendMail({
               from: config.mail.sendMail,
               to: user.changeEmail,
-              subject: 'ÓÊÏä¸üĞÂ³É¹¦',
-              html: '¸ĞĞ»Äú¶Ô'+ config.title +'µÄºñ°®£¬ÄúµÄÓÊÏäÒÑ³É¹¦¸ü»»£¬¿ÉÒÔÕı³£Ê¹ÓÃ£¬·ÃÎÊ£º' + config.url
+              subject: 'é‚®ç®±æ›´æ–°æˆåŠŸ',
+              html: 'æ„Ÿè°¢æ‚¨å¯¹'+ config.title +'çš„åšçˆ±ï¼Œæ‚¨çš„é‚®ç®±å·²æˆåŠŸæ›´æ¢ï¼Œå¯ä»¥æ­£å¸¸ä½¿ç”¨ï¼Œè®¿é—®ï¼š' + config.url
             });
             req.session.user = null;
-            res.send({status: 200, code: 1, message: "ÄúµÄÓÊÏäÒÑ³É¹¦¸ü»»£¬¿ÉÒÔÕı³£Ê¹ÓÃ£¬ÇëÖØĞÂµÇÂ¼£¡"});
+            res.send({status: 200, code: 1, message: "æ‚¨çš„é‚®ç®±å·²æˆåŠŸæ›´æ¢ï¼Œå¯ä»¥æ­£å¸¸ä½¿ç”¨ï¼Œè¯·é‡æ–°ç™»å½•ï¼"});
           }else{
-            res.send({status: 500, code: 0, message: "´ËÁ´½ÓÒÑÊ§Ğ§£¬Çë²»ÒªÖØ¸´µã»÷´ËÁ´½ÓÅ¶£¡"});
+            res.send({status: 500, code: 0, message: "æ­¤é“¾æ¥å·²å¤±æ•ˆï¼Œè¯·ä¸è¦é‡å¤ç‚¹å‡»æ­¤é“¾æ¥å“¦ï¼"});
           }
         }
       });
@@ -429,10 +429,9 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
 
 });
 
-//µÇÂ¼ ×¢²á
+//ç™»å½• æ³¨å†Œ
 router.get('/login', function(req, res) {
   "use strict";
-  console.log(JSON.stringify(req.session));
   if(req.session.user){
     res.redirect(goBack(req.headers.referer));
   }
@@ -441,9 +440,8 @@ router.get('/login', function(req, res) {
 
 router.route('/login').post(function(req, res) {
   "use strict";
-  console.log(JSON.stringify(req.session));
   if(req.session.user){
-    res.send({status:403,message:"Do not login again Çë²»ÒªÖØ¸´µÇÂ¼£¡"});
+    res.send({status:403,message:"è¯·ä¸è¦é‡å¤ç™»å½•ï¼"});
   }
   var email    = req.body.email,
       password = req.body.password,
@@ -458,17 +456,15 @@ router.route('/login').post(function(req, res) {
   },function(err,data){
 
     if(err){
-      res.send({status:200,code:0,message:"Error, internal Error µÇÂ¼Ê§°Ü£¬·şÎñÆ÷´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"ç™»å½•å¤±è´¥ï¼ŒæœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     }
     if(data && "email" in data){
 
       req.session.user = data;
 
-      console.log(JSON.stringify(req.session));
-
-      res.send({status:200,code:1,message:"Success! µÇÂ¼³É¹¦£¡","url":goBack(req.headers.referer)});
+      res.send({status:200,code:1,message:"ç™»å½•æˆåŠŸï¼","url":goBack(req.headers.referer)});
     }else{
-      res.send({status:200,code:0,message:"Error, username or password is wrong. µÇÂ¼Ê§°Ü£¬ÎŞ´ËÓÃ»§»òÃÜÂë´íÎó£¬ÇëÖØÊÔ£¡"});
+      res.send({status:200,code:0,message:"ç™»å½•å¤±è´¥ï¼Œæ— æ­¤ç”¨æˆ·æˆ–å¯†ç é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
     }
   });
 });
@@ -494,7 +490,7 @@ router.post('/register', function(req, res) {
       regCode    = crypto.createHash("sha1").update(new Buffer(email + (Math.random()*10000000000).toFixed(0), "binary")).digest('hex');
 
   if(email.length <5 || !/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(email) || password.length < 8 || password !== repassword){
-    res.send({status:200,message:"password and username are not strong enough"});
+    res.send({status:200,message:"ç”¨æˆ·åå’Œå¯†ç ä¸å¯ä»¥ä¸ç¬¦åˆè¦æ±‚ï¼"});
     return;
   }
 
@@ -505,12 +501,12 @@ router.post('/register', function(req, res) {
     }
   },function(err,data){
     if(err){
-      res.send({status:200,code:0,message:"internal error£¡"});
+      res.send({status:200,code:0,message:"æœåŠ¡å™¨é”™è¯¯ï¼Œè¯·é‡è¯•ï¼"});
       return;
     }
 
     if(data && data.email){
-      res.send({status:200,code:0,message:"this user was in our database£¡"});
+      res.send({status:200,code:0,message:"å·²å­˜åœ¨æ­¤ç”¨æˆ·ï¼"});
       return;
     }
 
@@ -541,10 +537,10 @@ router.post('/register', function(req, res) {
       sendMail({
         from: config.mail.sendMail,
         to: email,
-        subject: '×¢²á³É¹¦',
-        html: '¸ĞĞ»Äú×¢²á'+ config.title +'£¬ÒÔÏÂÊÇÄúµÄ¼¤»îÁ´½Ó£¬\n\r <a href="' + config.url + '/activeAccount/' + regCode + '">'+ config.url + '/activeAccount/' + regCode +'</a>Çëµã»÷Á´½ÓÒÔ¼¤»îÄúµÄÕË»§£¡'
+        subject: 'æ³¨å†ŒæˆåŠŸ',
+        html: 'æ„Ÿè°¢æ‚¨æ³¨å†Œ'+ config.title +'ï¼Œä»¥ä¸‹æ˜¯æ‚¨çš„æ¿€æ´»é“¾æ¥ï¼Œ\n\r <a href="' + config.url + '/activeAccount/' + regCode + '">'+ config.url + '/activeAccount/' + regCode +'</a>è¯·ç‚¹å‡»é“¾æ¥ä»¥æ¿€æ´»æ‚¨çš„è´¦æˆ·ï¼'
       });
-      res.send({status:200,code:1,message:"register success! ×¢²á³É¹¦£¬ÉÔºóÇë²éÑ¯ÄúµÄÓÊÏäÒÔ¼¤»îÕË»§£¡","url":goBack(req.headers.referer)});
+      res.send({status:200,code:1,message:"æ³¨å†ŒæˆåŠŸï¼Œç¨åè¯·æŸ¥è¯¢æ‚¨çš„é‚®ç®±ä»¥æ¿€æ´»è´¦æˆ·ï¼","url":goBack(req.headers.referer)});
     });
 
 

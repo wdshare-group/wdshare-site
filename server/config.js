@@ -23,7 +23,10 @@ var config = {
         "pass":"4-kx7d3lgtd2"
     },
     "db":"wdshare",
-    "locale":"zh-cn"
+    "locale":"zh-cn",
+
+
+    "static_path": "/static/skin2015"// 可以不带结束/斜杠
 };
 
 module.exports = config;

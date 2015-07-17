@@ -52,9 +52,14 @@
             <input type="text" name="aAddDate" value="<%= new Date(activeInfo.aAddDate).getFullYear() + '-' + (parseInt(new Date(activeInfo.aAddDate).getMonth())+1) + '-' + new Date(activeInfo.aAddDate).getDate() + ' ' + new Date(activeInfo.aAddDate).getHours() + ':' + new Date(activeInfo.aAddDate).getMinutes() + ':' + new Date(activeInfo.aAddDate).getSeconds() %>"/>
         </div>
         <div>
+            <label for="">模板</label>
+            <input type="text" name="aTpl" value="<%= activeInfo.aTpl == undefined ? "index" : activeInfo.aTpl %>" /> 填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】
+        </div>
+        <div>
             <label for="">备注</label>
             <input type="text" name="aComment" value="<%= activeInfo.aComment %>"/>
         </div>
+
         <div>
             <button id="create-submit" type="submit">
                 更新活动
@@ -110,6 +115,10 @@
         <div>
             <label for="">排序</label>
             <input type="text" name="aSort" value="0" />
+        </div>
+        <div>
+            <label for="">模板</label>
+            <input type="text" name="aTpl" value="index" /> 填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】
         </div>
         
         <div>

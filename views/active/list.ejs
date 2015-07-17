@@ -1,49 +1,43 @@
-<% include ../module/header.ejs %>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare线下活动</title>
+<meta name="keywords" content="WDShare线下活动" />
+<meta name="description" content="WDShare线下活动" />
+<% include ../module/htmlhead.ejs %>
+</head>
 
-<!-- <div class="inform"><p><strong class="title">通知：</strong>经组委会协商，分享交流会调整为<strong style="color:#f00;">每两个月一次</strong>，第二个月最后一个星期天。 其他小活动留意官网！</p></div> -->
-<div style="width:0; height:0; overflow:hidden;"><img src="http://www.wdshare.org/files/weibo-logo.jpg"/></div>
-<div class="mod"><h4 class="mod-head"><em>进行中的活动</em></h4>
-    <% oActives.forEach(function(active){ %>
-    <div class="mod-body">
-        <h2><%= active.aName %></h2>
-        <div class="mod-type">
-            时间：
-            <%= active.aTime %>
-            报名截止日期：
-            <%= active.aJoinEndTime %>
-            <br/>
-            <%= active.aAddress %>
+<body>
+<% include ../module/head.ejs %>
+
+<div class="activity activity-list">
+  <div class="maxWidth module">
+    <h2 class="module-title">精彩活动</h2>
+    <div class="activity-con">
+      <% result.forEach(function(active){ %>
+      <a href="/active/<%= active._id %>" class="activity-item">
+        <h3 class="activity-title"><em><%= active.aName %></em></h3>
+        <div class="activity-type">
+          <span class="activity-date">时间：<%= active.aTime %></span>
+          <span class="activity-click">点击：987</span>
+          <span class="activity-comment">评论：15</span>
         </div>
-        <div class="mod-but"><a href="/active/join/<%= active._id %>">我要报名</a></div>
-        <div class="wds-content">
-            <h3>活动内容</h3>
-            <%= active.aContent %>
-        </div>
+        <% if ( active.aStatus == 1 ) { %>
+        <div class="activity-state"><span class="open">报名</span></div>
+        <% } else if ( active.aStatus == 2 ) { %>
+        <div class="activity-state"><span class="stop">暂停</span></div>
+        <% } else if ( active.aStatus == 3 ) { %>
+        <div class="activity-state"><span class="ready">等待</span></div>
+        <% } else { %>
+        <div class="activity-state"><span class="over">详情</span></div>
+        <% } %>
+      </a>
+      <% }) %>
     </div>
-    <% }) %>
-
-</div>
-<div class="mod"><h4 class="mod-head"><em class="dead">已结束的活动</em></h4>
-    <% dActives.forEach(function(active){ %>
-
-    <div class="mod-body">
-        <h2>
-            <%= active.aName %></h2>
-        <div class="mod-type">
-            时间：
-            <%= active.aTime %>
-            报名截止日期：
-            <%= active.aJoinEndTime %>
-            <br/>
-            <%= active.aAddress %>
-        </div>
-        <div class="wds-content">
-            <h3>活动内容</h3>
-            <%= active.aContent %>
-        </div>
-    </div>
-
-    <% }) %>
+  </div>
 </div>
 
-<% include ../module/footer.ejs %>
+<% include ../module/foot.ejs %>
+</body>
+</html>

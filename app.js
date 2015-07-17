@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 var cookieSession = require('cookie-session');
 
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var active = require('./routes/active');
 
@@ -46,7 +46,9 @@ app.use(cookieSession({          //session 加密字符串
     cookie: { path: '/', httpOnly: true, maxAge: null }
 }));
 
+app.use('/files/', express.static(path.join(__dirname, 'files')));
 app.use('/static/',express.static(path.join(__dirname, 'public')));
+
 
 app.use(function(req,res,next){
     "use strict";
@@ -54,20 +56,33 @@ app.use(function(req,res,next){
     next();
 });
 
-app.use('/', function(req,res,next){
-    //res.redirect('/active/');
-    if (req.url === '/') {
-        req.url = '/active/';
-    }
-    next();
-});
-//app.use('/users', users);
+// app.use('/', function(req,res,next){
+//     //res.redirect('/active/');
+//     if (req.url === '/') {
+//         req.url = '/active/';
+//     }
+//     next();
+// });
+app.use('/', index);
 app.use('/active', active);
 
 
+// 管理后台首页
+var manage = require('./manage/routes/index');
+app.use('/manage/', manage);
+// 管理活动相关
+var manage_active = require('./manage/routes/active');
+app.use('/manage/active', manage_active);
+
+
+
 // 用户相关
+// app.use('/user/', users);
 app.use('/user/', users);
-app.use('/user/', users);
+
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

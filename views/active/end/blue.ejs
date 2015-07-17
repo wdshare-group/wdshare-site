@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= activeInfo.aName %>-WDShare</title>
+<meta name="keywords" content="<%= activeInfo.aName %>" />
+<meta name="description" content="<%= activeInfo.aName %>" />
+<% include ../../module/htmlhead.ejs %>
+<style type="text/css">
+.active-head {
+  background: #3a74ad; /* Old browsers */
+  background: -moz-linear-gradient(45deg,  #3a74ad 0%, #3da0b5 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#3a74ad), color-stop(100%,#3da0b5)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* IE10+ */
+  background: linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a74ad', endColorstr='#3da0b5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+</style>
+</head>
+
+<body>
+<% include ../../module/head.ejs %>
+
+<div class="active-head">
+  <div class="active-head-bg">
+    <div class="active-head-con maxWidth">
+      <div class="active-head-text">
+        <h1 class="active-title"><%= activeInfo.aName %> <a href="/active/update/<%= activeInfo._id %>">修改</a></h1>
+        <p class="active-time">时间：<%= activeInfo.aTime %></p>
+        <p class="active-address">地址：<%- activeInfo.aAddress %></p>
+      </div>
+      <div class="active-head-but">
+        <% if ( activeInfo.aStatus == 0 ) { %>
+        <span>圆满结束</span>
+        <% } else if ( activeInfo.aStatus == 1 ) { %>
+        <a href="#join">我要报名</a>
+        <% } else if ( activeInfo.aStatus == 2 ) {  %>
+        <span>暂停报名</span>
+        <% } else if ( activeInfo.aStatus == 3 ) { %>
+        <span>活动筹备中...</span>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="active-content-bg">
+  <div class="active-body">
+    <div class="active-content">
+      <% if ( activeInfo.aSummary ) { %>
+      <div class="active-aummary"><%- activeInfo.aSummary %></div>
+      <% } %>
+      <h3>活动内容</h3>
+      <div class="active-con">
+        <%- activeInfo.aContent %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if ( activeInfo.aStatus == 1 ) { %>
+<div class="active-join-bg" id="js-active-join">
+  <div class="active-body">
+    <div class="active-join">
+      <a name="join"></a>
+      <h3>我要报名</h3>
+      <div class="active-join-con">
+        <p>报名须知：本活动纯属公益。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</p>
+        <div class="active-login">
+          登录后启用快捷报名
+          <a href="#" class="but but-blue but-login">登录</a><a href="#" class="but but-gray but-reg">注册</a>
+        </div>
+        <form name="joinform" id="js-joinform" method="post"> 
+          <input type="hidden" name="aid" value="<%= activeInfo._id %>">
+          <dl>
+            <dt>邮箱：</dt>
+            <dd>
+              <input type="text" name="mail" placeholder="常用邮箱"> <em>请正确填写邮箱</em>
+              <span style="color:#666;">通过邮箱接收邀请函</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>姓名/昵称：</dt>
+            <dd>
+              <input type="text" name="name" placeholder="尊姓大名"> <em>名称至少两个字符</em>
+            </dd>
+          </dl>
+          <dl>
+            <dt>公司：</dt>
+            <dd>
+              <input type="text" name="com" placeholder="就职公司">    
+              <span>选填</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>网站：</dt>
+            <dd>
+              <input type="text" name="web" placeholder="个人或公司网站">    
+              <span>选填</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>分享前端知识：</dt>
+            <dd>
+              <label>
+                <input type="radio" name="w_share" value="1" style="width:auto;">有，下期我可以分享</label>
+              &nbsp;
+              <label>
+                <input type="radio" checked="checked" name="w_share" value="0" style="width:auto;">暂时没有</label>
+              <span>帮助大家学习</span>
+            </dd>
+          </dl>
+          <dl>
+            <input type="hidden" name="content">    
+            <dt>给主办方留言：</dt>
+            <dd>
+              <textarea name="guestbook"></textarea>
+              <span>选填</span>
+              <br>    
+              <em style="color:#f00;display:block; padding-left:0;">工作、学习困惑，感叹、吐槽、给我们提意见，该项填写更容易获取邀请函</em>
+            </dd>
+          </dl>
+          <dl class="radio">
+            <dt>您是否参与AA聚餐：</dt>
+            <dd>
+              <label><input type="radio" name="chi" value="1">是</label>
+              <label><input type="radio" name="chi" value="0" checked="checked">否</label>
+              <span style="color:#666;">聚餐是为了认识更多的朋友</span>
+            </dd>
+          </dl>
+          <dl>
+            <dd class="form-but">
+              <input type="submit" name="button" value="提交报名"></dd>
+          </dl>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<script>
+  /**
+   * 报名表单检测， APIActiveFormCheck 方法存在则以该方法为表单检测
+   * @return {Boolean} 代表是否允许继续提交表单
+   */
+  /*function APIActiveFormCheck() {
+    console.log("api check");
+
+    return true;
+  };*/
+
+
+  /**
+   * 报名表单数据拼接， APIActiveFormParam 方法存在则以该方法为表单检测
+   * @return {Object} 键值对象 {name:value}
+   */
+  /*function APIActiveFormParam() {
+    var formParam = {},
+        _form = document.getElementById("js-joinform"),
+        guestbook = _form.guestbook.value,
+        share = _form.w_share.value,
+        share_text;
+
+    formParam.aid = _form.aid.value;
+    formParam.mail = _form.mail.value;
+    formParam.name = _form.name.value;
+    formParam.com = _form.com.value;
+    formParam.web = _form.web.value;
+    formParam.chi = _form.chi.value;
+
+    if ( share == "1" ) {
+      share_text = "分享师：YES";
+    } else {
+      share_text = "分享师：NO";
+    }
+    formParam.content = share_text + "；留言："+ guestbook;
+
+    return formParam;
+  };*/
+</script>
+
+<% include ../../module/foot.ejs %>
+</body>
+</html>

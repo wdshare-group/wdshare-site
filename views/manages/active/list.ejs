@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">活动管理</h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">活动列表</h3>
+        <div class="manage-tool">
+          <a href="/manage/active/create" class="green">添加活动</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th class="text-align-left">Title</th>
+                <th>State</th>
+                <th>Click</th>
+                <th>Join</th>
+                <th>Date</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(active){ %>
+              <tr>
+                <td><% if ( active.aClass == 0 ) { %>
+                分享活动
+                <% } else if ( active.aClass == 1 ) { %>
+                前端培训
+                <% } else if ( active.aClass == 2 ) { %>
+                娱乐活动
+                <% } %></td>
+                <td class="text-align-left no-a-style"><a href="/manage/active/edit/<%= active._id %>"><%= active.aName %></a></td>
+                <td><% if ( active.aStatus == 1 ) { %>
+                <span class="font-green">开启</span>
+                <% } else if ( active.aStatus == 2 ) { %>
+                <span class="font-red">暂停</span>
+                <% } else if ( active.aStatus == 3 ) { %>
+                <span class="font-black">准备中</span>
+                <% } else { %>
+                <span class="font-gray">结束</span>
+                <% } %></td>
+                <td><% if ( active.aClick ) { %>
+                  <%= active.aClick %><% } else { %>0<% } %></td>
+                <td><a href="#">128</a></td>
+                <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
+                <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/edit/<%= active._id %>">修改</a><a href="#" class="del" data-id="<%= active._id %>">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

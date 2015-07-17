@@ -1,0 +1,18 @@
+/* Dialog */
+.mydialog .D_shade,
+.mydialog .D_content { z-index:999;}
+.mydialog .D_content { border:1px solid #ccc; border-radius:10px; -webkit-border-radius:10px; -moz-border-radius:10px; -o-border-radius:10px; background:#fff; box-shadow:0 0 15px #555; font-family:"Microsoft YaHei"; text-align:left; font-size:14px;}
+.mydialog .D_head { line-height:44px; border-bottom:1px solid #ddd;}
+.mydialog .D_title { white-space:nowrap; padding-left:15px; font-size:15px; font-weight:bold; padding-right:50px; margin:0;}
+.mydialog .D_head .D_close { font-size:20px; position:absolute; top:10px; *top:0; right:15px; line-height:20px;}
+.mydialog .D_head .D_close:hover { color:#c00; text-decoration:none;}
+.mydialog .D_body { padding:20px 35px 25px; min-width:250px;}
+.mydialog .D_alert { text-align:center; padding:10px 0;}
+.mydialog .D_foot { border-top:1px solid #ccc; padding:12px 0; text-align:center; background:#f2f2f2; border-radius:0 0 10px 10px; -webkit-border-radius:0 0 10px 10px; -moz-border-radius:0 0 10px 10px; -o-border-radius:0 0 10px 10px;}
+.mydialog .D_foot input { cursor:pointer; display:inline-block; margin:0 15px; line-height:32px; padding:0 20px; border:0; color:#fff; font-family:"Microsoft YaHei"; font-size:14px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -o-border-radius:5px; -webkit-transition-duration:200ms; -moz-transition-duration:200ms; transition-duration:200ms;}
+.mydialog .D_foot .D_submit { background:#f6921e;}
+.mydialog .D_foot .D_submit:hover { color:#fff; background:#f26b12;}
+.mydialog .D_foot .D_submit:active { background:#eb7e00;}
+.mydialog .D_foot .D_cancel { background:#ddd; color:#333;}
+.mydialog .D_foot .D_cancel:hover { color:#fff; background:#ccc; color:#000;}
+.mydialog .D_foot .D_cancel:active { background:#cfcfcf;}

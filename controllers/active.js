@@ -1,6 +1,8 @@
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
-var url = 'mongodb://localhost:27017/wdshare';
+var config = require("../server/config.js");
+var dataBase = config.db;
+var url = 'mongodb://localhost/'+dataBase;
 var ObjectId = mongo.ObjectID;
 var Q = require('q');
 var activeControl = {};
@@ -74,6 +76,7 @@ activeControl.update = function(id,ao){
             "aContent" : ao["aContent"],
             "aComment" : ao["aComment"],
             "aSort" : ao["aSort"],
+            "aTpl" : ao["aTpl"],
             "aAddDate" : new Date(ao["aAddDate"]).getTime()
         };
         collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
@@ -98,7 +101,7 @@ activeControl.find = function(query){
             return ;
         }
         var collection = db.collection('active');
-        collection.find(query).toArray(function(err, result) {
+        collection.find(query).sort({"aAddDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);
@@ -112,7 +115,72 @@ activeControl.find = function(query){
     return deferred.promise;
 };
 
-activeControl.join = function(aid,joinObj){
+// 报名存储处理
+activeControl.join = function(ao){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            deferred.reject(err);
+            return ;
+        }
+
+        // 添加其余参数
+        ao.addDate = new Date().getTime();
+        
+        var collection = db.collection('active_join');
+
+        // 检测是否已经存在记录
+        collection.findOne({
+            aid:ao.aid,
+            mail: ao.mail
+        },function(err,result){
+            if(!result){
+                // 添加新纪录
+                collection.insert(ao, {safe:true}, function(err, result) {
+                    result.repeat = false;// 记录存在标识
+                    if(err){
+                        db.close();
+                        deferred.reject(err);
+                        return;
+                    }
+                    deferred.resolve(result);
+                    db.close();
+                });
+            }else{
+                // 记录已存在，直接反馈
+                result.repeat = true;// 记录存在标识
+
+                if(err){
+                    db.close();
+                    deferred.reject(err);
+                    return;
+                }
+                deferred.resolve(result);
+                db.close();
+            }
+        });
+
+
+        /*collection.insert(ao, {safe:true}, function(err, result) {
+            // console.log("join:" + err);
+            result.abc = "F7-abc";
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            deferred.resolve(result);
+            db.close();
+        });*/
+
+    });
+    return deferred.promise;
+};
+
+// 记录点击
+activeControl.click = function(id, click) {
+    var count = click || 0;
+    count++;
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
@@ -121,46 +189,18 @@ activeControl.join = function(aid,joinObj){
             return ;
         }
         var collection = db.collection('active');
-        //console.log(joinObj);
-
-        collection.findOne({
-            _id:new ObjectId(aid),
-            aUsers: { $elemMatch: { mail: joinObj.mail }}
-        },function(err,result){
-            if(!result){
-                collection.update({
-                        _id:new ObjectId(aid)
-                    },
-                    {$push:{aUsers:joinObj}},
-                    {w:1},
-                    function(err,result){
-                        if(err){
-                            db.close();
-                            deferred.reject(err);
-                            return;
-                        }
-                        db.close();
-                        deferred.resolve(result);
-                    })
-            }else{
-                collection.update({
-                        _id:new ObjectId(aid),
-                        aUsers: { $elemMatch: { mail: joinObj.mail }}
-                    },
-                    {$set:{"aUsers.$":joinObj}},
-                    {w:1},
-                    function(err,result){
-                        if(err){
-                            db.close();
-                            deferred.reject(err);
-                            return;
-                        }
-                        db.close();
-                        deferred.resolve(result);
-                    });
+        var obj = {
+            "aClick" : count
+        };
+        collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
             }
+            db.close();
+            deferred.resolve(result);
         });
-
     });
     return deferred.promise;
 };

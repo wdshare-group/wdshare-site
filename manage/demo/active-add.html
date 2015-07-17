@@ -1,0 +1,152 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>活动管理--WDShare管理中心</title>
+<meta name="auther" content="F7" />
+<link href="../../public/manage_style/css/style.css" rel="stylesheet" />
+</head>
+
+<body>
+<div class="manage-head">
+  <div class="logo"><img src="../../public/manage_style/img/logo.png" /></div>
+  <div class="text">
+    <span>欢迎您：<strong>F7</strong>， </span><a href="#">退出</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="/" target="_blank">官网首页</a>
+      <a href="/active" target="_blank">线下活动</a>
+      <a href="/job" target="_blank">前端招聘</a>
+      <a href="/job" target="_blank">项目展示</a>
+  </div>
+</div>
+<div class="manage">
+  <div class="manage-left">
+    <div class="manage-module-link">
+      <dl class="manage-left-active current">
+        <dt><em>活动管理</em></dt>
+        <dd>
+          <a href="#">活动列表</a>
+          <a href="#">添加活动</a>
+          <a href="#">添加预览</a>
+        </dd>
+      </dl>
+      <dl class="manage-left-article">
+        <dt><em>文章管理</em></dt>
+        <dd>
+          <a href="#">文章列表</a>
+          <a href="#">添加文章</a>
+          <a href="#">文章预览</a>
+        </dd>
+      </dl>
+      <dl class="manage-left-job">
+        <dt><em>招聘管理</em></dt>
+        <dd>
+          <a href="#">招聘列表</a>
+          <a href="#">企业会员</a>
+          <a href="#">招聘分类</a>
+        </dd>
+      </dl>
+      <dl class="manage-left-project">
+        <dt><em>项目管理</em></dt>
+        <dd>
+          <a href="#">项目列表</a>
+          <a href="#">添加活动</a>
+          <a href="#">项目分类</a>
+        </dd>
+      </dl>
+      <dl class="manage-left-manage">
+        <dt><em>系统管理</em></dt>
+        <dd>
+          <a href="#">系统管理员</a>
+          <a href="#">权限管理</a>
+          <a href="#">系统配置</a>
+        </dd>
+      </dl>
+    </div>
+  </div>
+  <div class="manage-right">
+    <h1 class="manage-title">活动管理</h1>
+    <div class="manage-module">
+      <form id="create-form">
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">添加活动</h3>
+          <div class="manage-tool">
+            <input class="green" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>活动分类：</strong>
+                <select name="aClass">
+                  <option value="2">娱乐活动</option>
+                  <option value="1">前端培训</option>
+                  <option value="0" selected>分享活动</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动名称：</strong><input type="text" name="aName"/><span>活动主题</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动时间：</strong>
+              <input type="text" name="aTime"/><span>案例：2014-7-26 14:00 -- 18:00</span></label>
+            </div>
+            <!-- <div class="manage-addActive-form-item">
+              <label><strong>报名截止时间：</strong><input type="text" name="aJoinEndTime" /><span>暂不启用</span>
+              </label>        
+            </div> -->
+            <div class="manage-addActive-form-item">
+              <label><strong>地点：</strong>
+              <input type="text" name="aAddress"/><span>支持HTML</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动摘要：</strong><input type="text" name="aSummary"/><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动内容：</strong>
+              <textarea name="aContent" id="" cols="30" rows="10"></textarea><span>支持HTML</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动状态：</strong>
+              <select name="aStatus" id="">
+                <option value="0">关闭</option>
+                <option value="1" selected>开启</option>
+                <option value="2">暂停报名</option>
+                <option value="3">未开始报名</option>
+              </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-note"><em>高级配置</em></div>
+            <div class="manage-addActive-form-item">
+              <label><strong>备注：</strong>
+              <input type="text" name="aComment"/><span>前台不显示，仅作为活动备注记录</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong>排序：</strong>
+              <input type="text" name="aSort" value="0" /><span>默认为 0</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>模板：</strong>
+              <input type="text" name="aTpl" value="index" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+<div class="manage-foot">WDShare.org</div>
+
+<!--
+<script src="../../public/manage_style/js/require.min.js" data-main="../../public/manage_style/js/main"></script>-->
+</body>
+</html>

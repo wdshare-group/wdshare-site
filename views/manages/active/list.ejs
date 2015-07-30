@@ -44,7 +44,7 @@
                 <% } else if ( active.aClass == 2 ) { %>
                 娱乐活动
                 <% } %></td>
-                <td class="text-align-left no-a-style"><a href="/manage/active/edit/<%= active._id %>"><%= active.aName %></a></td>
+                <td class="text-align-left no-a-style"><a href="/manage/active/update/<%= active._id %>"><%= active.aName %></a></td>
                 <td><% if ( active.aStatus == 1 ) { %>
                 <span class="font-green">开启</span>
                 <% } else if ( active.aStatus == 2 ) { %>
@@ -56,9 +56,9 @@
                 <% } %></td>
                 <td><% if ( active.aClick ) { %>
                   <%= active.aClick %><% } else { %>0<% } %></td>
-                <td><a href="#">128</a></td>
+                <td><a href="/manage/active/join/<%= active._id %>"><%= joinLength[active._id] %></a></td>
                 <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
-                <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/edit/<%= active._id %>">修改</a><a href="#" class="del" data-id="<%= active._id %>">删除</a></td>
+                <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/update/<%= active._id %>">修改</a><a href="#" data-id="<%= active._id %>" class="js-active-delete" style="display:none;">删除</a></td>
               </tr>
               <% }) %>
             </tbody>

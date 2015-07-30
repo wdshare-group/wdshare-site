@@ -6,12 +6,15 @@ define(["jquery"], function(){
     };
 
 
-    function showError(elem, str) {
+    function showError(elem, str, flag) {
         var _p = elem.parentNode,
             _em = _p.getElementsByTagName("em")[0];
         _em.style.display = "inline";
         _em.innerHTML = str;
-        // elem.select();
+        
+        if ( flag ) {
+            elem.focus();
+        };
     };
 
     function showYes(elem) {
@@ -71,7 +74,7 @@ define(["jquery"], function(){
         var _form = $("#js-joinform"),
             mail = _form.find("input[name='mail']"),
             name = _form.find("input[name='name']");
-        if ( !Active.checkFormMail(mail[0]) ||  !Active.checkFormName(name[0]) ) {
+        if ( !Active.checkFormMail(mail[0], true) ||  !Active.checkFormName(name[0], true) ) {
             return false;
         };
         return true;
@@ -81,9 +84,9 @@ define(["jquery"], function(){
      * 检测表单邮箱
      * @return {[type]} [description]
      */
-    Active.checkFormMail = function(mail) {
+    Active.checkFormMail = function(mail, flag) {
         if ( !chackMail($(mail).val()) ) {
-            showError(mail, "请正确填写邮箱");
+            showError(mail, "请正确填写邮箱", flag);
             return false;
         } else {
             showYes(mail);
@@ -94,12 +97,12 @@ define(["jquery"], function(){
      * 检测表单姓名
      * @return {[type]} [description]
      */
-    Active.checkFormName = function(name) {
+    Active.checkFormName = function(name, flag) {
         if ( !name.value ) {
-            showError(name, "请填写您的姓名");
+            showError(name, "请填写您的姓名", flag);
             return false;
         } else if ( name.value.length < 2 ) {
-            showError(name, "姓名至少两个字");
+            showError(name, "姓名至少两个字", flag);
             return false;
         } else {
             showYes(name);
@@ -110,7 +113,7 @@ define(["jquery"], function(){
 
 
     /**
-     * 报名表单检测【外部页面存在APIActiveFormParam方法时改方法无效】
+     * 拼合表单参数
      * @return {Boolean} 代表是否允许继续提交表单
      */
     Active.activeFormParam = function() {
@@ -141,7 +144,8 @@ define(["jquery"], function(){
      * @return
      */
     Active.joinRequest = function() {
-        var url = "/active/join/";
+        var url = "/active/join/",
+            param;
 
         // 对接外部表单参数
         var formParam = this.activeFormParam;
@@ -149,13 +153,20 @@ define(["jquery"], function(){
         if ( typeof APIActiveFormParam == "function" ) {
             formParam = APIActiveFormParam;
         }
+        
+        param = formParam();
+        
+        // 为链接添加http://头
+        if ( param.web && param.web.indexOf("http://") < 0 ) {
+            param.web = "http://" + param.web;
+        }
 
         // 让表单无法提交
         var _submit = $("#js-joinform input[type='submit']")[0];
         $(_submit).val("数据提交中...");
         _submit.disabled = true;
 
-        $.post(url, formParam(), function(result) {
+        $.post(url, param, function(result) {
             var text;
             if ( !result ) { return false };
             if ( typeof result == "string" ) {
@@ -164,16 +175,23 @@ define(["jquery"], function(){
                 var data = result;
             }
 
-            if ( data.repeat ) {
-                text = "您已报名，无需重复报名！";
-            } else {
-                text = "恭喜您，报名成功！";
-            }
+            if ( data.status ) {// 成功提示
+                if ( data.repeat ) {
+                    text = "您已报名，无需重复报名！";
+                } else {
+                    text = "恭喜您，报名成功！";
+                }
 
-            // 提示成功
-            Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn', onClose:function() {
-                window.location.reload();
-            }});
+                // 提示成功
+                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn', onClose:function() {
+                    window.location.reload();
+                }});
+            } else {// 错误提示
+                // 提示成功
+                Dialog({'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn'});
+            };
+
+            
             // 恢复提交状态
             _submit.disabled = false;
             $(_submit).val("提交报名");

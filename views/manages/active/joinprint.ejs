@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= active.aName%>报名表打印</title>
+<meta name="auther" content="F7" />
+<style type="text/css">
+  body { text-align:center;}
+  table { border-collapse:collapse; width:90%; margin:auto;}
+  td,th { padding:0; border:1px solid #333; line-height:30px; padding:10px 5px;}
+
+  h1 { line-height:200%; font-size:20px;}
+</style>
+</head>
+
+<body>
+<% 
+  var count = 1;// 序号计数器
+  var pagesize = 17;// 每页显示数量
+  var max = Math.ceil(result.length/pagesize);
+  var page = 1;// 当前页面标识
+  var i = 0;
+%>
+
+  <h1> <%= active.aName%> 报名表  (<%= page %>/<%= max %>)</h1>
+  <table>
+    <thead>
+      <tr>
+        <th width="9%">序号</th>
+        <th width="14%">姓名</th>
+        <th>公司</th>
+        <th width="18%">邀请码</th>
+        <th width="13%">AA聚餐</th>
+        <th width="14%">签名</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% result.forEach(function(join){ %>
+      <% 
+        i++;
+      %>
+      <% if ( join.state !== 0 ) { %>
+        <tr>
+          <td><%= count %></td>
+          <td><%= join.name %></td>
+          <td><%= join.com %></td>
+          <td><% if ( join.code ) { %>
+                      <%= active.aCodebefor %><%= join.code %>
+                      <% } else { %>
+                      -
+                      <% } %></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+        <% 
+          count++;
+        %>
+
+      <% } %>
+
+    <% if ( count % pagesize === 0 && i+1 < result.length ) { %>
+      </tbody>
+    </table>
+    <% page++ %>
+
+    <h1> <%= active.aName%> 报名表  (<%= page %>/<%= max %>)</h1>
+    <table>
+      <thead>
+        <tr>
+          <th width="9%">序号</th>
+          <th width="14%">姓名</th>
+          <th>公司</th>
+          <th width="18%">邀请码</th>
+          <th width="13%">AA聚餐</th>
+          <th width="14%">签名</th>
+        </tr>
+      </thead>
+      <tbody>
+    <% } %>
+
+  <% }) %>
+
+  </tbody>
+  </table>
+
+</body>
+</html>

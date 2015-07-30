@@ -20,8 +20,8 @@
         <h3 class="activity-title"><em><%= active.aName %></em></h3>
         <div class="activity-type">
           <span class="activity-date">时间：<%= active.aTime %></span>
-          <span class="activity-click">点击：987</span>
-          <span class="activity-comment">评论：15</span>
+          <span class="activity-click">点击：<%= active.aClick ? active.aClick : 0 %></span>
+          <!-- <span class="activity-comment">评论：15</span> -->
         </div>
         <% if ( active.aStatus == 1 ) { %>
         <div class="activity-state"><span class="open">报名</span></div>

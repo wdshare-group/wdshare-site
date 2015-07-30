@@ -7,90 +7,6 @@ var ObjectId = mongo.ObjectID;
 var Q = require('q');
 var activeControl = {};
 
-/**
- * 创建活动接口
- * @param ao 活动json对象
- * @returns {*|promise}
- */
-
-activeControl.create = function(ao){
-    var deferred = Q.defer();
-    MongoClient.connect(url, function(err, db) {
-        if(err){
-            deferred.reject(err);
-            return ;
-        }
-
-        // 添加其余参数
-        ao.aAddDate = new Date().getTime();
-        
-        var collection = db.collection('active');
-        collection.insert(ao, {safe:true}, function(err, result) {
-            if(err){
-                db.close();
-                deferred.reject(err);
-                return;
-            }
-            deferred.resolve(result);
-            db.close();
-        });
-
-        /*
-        collection.findOneAndReplace({aName:ao.aName},{$set:ao},{w:1}, function(err, result) {
-            if(err){
-                db.close();
-                deferred.reject(err);
-                return;
-            }
-            deferred.resolve(result);
-            db.close();
-        });*/
-
-    });
-    return deferred.promise;
-};
-
-/**
- * 更新活动
- * @param id
- * @param ao
- * @returns {*|promise}
- */
-activeControl.update = function(id,ao){
-    var deferred = Q.defer();
-    MongoClient.connect(url, function(err, db) {
-        if(err){
-            db.close();
-            deferred.reject(err);
-            return ;
-        }
-        var collection = db.collection('active');
-        var obj = {
-            "aName" : ao["aName"],
-            "aClass" : ao["aClass"],
-            "aTime" : ao["aTime"],
-            "aJoinEndTime":ao["aJoinEndTime"],
-            "aAddress" : ao["aAddress"],
-            "aStatus" : ao["aStatus"],
-            "aSummary" : ao["aSummary"],
-            "aContent" : ao["aContent"],
-            "aComment" : ao["aComment"],
-            "aSort" : ao["aSort"],
-            "aTpl" : ao["aTpl"],
-            "aAddDate" : new Date(ao["aAddDate"]).getTime()
-        };
-        collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
-            if(err){
-                db.close();
-                deferred.reject(err);
-                return;
-            }
-            db.close();
-            deferred.resolve(result);
-        });
-    });
-    return deferred.promise;
-};
 
 activeControl.find = function(query){
     var deferred = Q.defer();
@@ -126,6 +42,9 @@ activeControl.join = function(ao){
 
         // 添加其余参数
         ao.addDate = new Date().getTime();
+        ao.invite = 0;// 是否已邀请 0未邀请，1已邀请
+        ao.state = 1;// 报名状态：0屏蔽，1开启，2已发送邀请，3用户确认
+        ao.code = "";// 生成的邀请码
         
         var collection = db.collection('active_join');
 

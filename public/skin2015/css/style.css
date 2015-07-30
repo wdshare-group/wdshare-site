@@ -58,7 +58,7 @@ body { background:#f7f7f7;}
 
 .hd-nav-line { height:3px; width:20%; overflow:hidden;}
 
-.hd-nav-label .count { position:absolute; right:3px; top:9px; background:#f00; color:#fff; width:18px; height:18px; font-size:12px; line-height:18px; border-radius:10px; text-align:center;}
+.hd-nav-label .count { position:absolute; right:3px; top:9px; background:#f00; color:#fff; width:18px; height:18px; font-size:12px; line-height:18px; border-radius:10px; text-align:center; display:none;}
 
 /**/
 .icon-top-arrows { display:inline-block; width:0px; height:0px; margin:0 0 4px 10px; border-bottom:10px solid #999; border-right:9px solid transparent; transform:rotate(-45deg);}

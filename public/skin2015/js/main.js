@@ -41,8 +41,30 @@ function activeJoin() {
 };
 
 
+/**
+ * 开启中的活动【写在Head上的红标】
+ * @return
+ */
+function openActive() {
+    var elem = $("#js-openActive-count");
+    $.get("/active/open", function(data) {
+        if ( !data ) { return false };
+        if ( typeof data == "string" ) {
+            data = $.parseJSON(data);
+        }
+
+        if ( data.status ) {// 成功
+            if ( data.count > 0 ) {
+                elem.html(data.count).show();
+            }
+        };
+    });
+};
+
 
 require(["jquery", "dialog"], function($, Dialog) {
     activeJoin();
+
+    openActive();
 });
 

@@ -33,66 +33,26 @@ router.get('/', function(req, res) {
 });
 
 /**
- * path:  /active/create/
- * 创建一个活动
- * 需要迁移至后台
+ * path:  /active/open
+ * 显示所有开放中的活动个数
+ * AJAX
  */
-router.get('/create/', function(req, res,next) {
-    res.render('active/create', { title: 'Express',activeInfo:false });
-});
-
-router.get('/update/:aId', function(req, res,next) {
-    if(req.params.aId){
-        var aId = req.params.aId;
-        acCon.find({_id:new ObjectId(aId)}).then(function(result){
-            if(result&&result[0]){
-                res.render('active/update', { title: '更新活动',activeInfo:result[0]});
-            }else{
-                res.render('active/update', { title: '没有活动',activeInfo:{}});
+router.get('/open', function(req, res) {
+    acCon.find().then(function(result){
+        // 筛选非关闭状态的活动
+        var openArr = [];
+        result.forEach(function(item){
+            if(item.aStatus != '0'){
+                openArr.push(item);
             }
-        },function(err){
-            res.end(JSON.stringify({status:true}));
         });
-    }else{
-        res.render('404');
-    }
+
+        res.end(JSON.stringify({status:true,count:openArr.length}));
+    },function(err){
+        res.end(JSON.stringify({status:false,msg:err}));
+    })
 });
 
-/**
- * path:  /active/updateControl/
- * 更新活动接口（创建也使用此接口）
- * 需要迁移至后台
- */
-router.post('/updateControl/', function(req, res,next) {
-    req.checkBody('aName', '活动名称不能为空').notEmpty();
-    var errors = req.validationErrors();
-    if (errors) {
-        res.end(JSON.stringify({status:false,error:errors}));
-    }else{
-        var params = req.body;
-
-        if(params.aId){
-            acCon.update(params.aId,params).then(function(result){
-                res.end(JSON.stringify({
-                    status:true,
-                    msg:'创建成功'
-                }));
-            },function(err){
-                res.end(JSON.stringify({status:false,error:err}));
-            });
-        }else{
-            acCon.create(params).then(function(result){
-                res.end(JSON.stringify({
-                    status:true,
-                    msg:'更新成功'
-                }));
-            },function(err){
-                res.end(JSON.stringify({status:false,error:err}));
-            });
-        }
-
-    }
-});
 
 
 /**
@@ -166,15 +126,43 @@ router.post('/join/', function(req, res, next) {
             content:params['content'],
             chi:params['chi']
         };
-        acCon.join(joinObj).then(function(result){
-            if ( result.repeat ) {// 重复报名
-                res.end(JSON.stringify({status:true,msg:'报名成功',activeid:joinObj.aid, repeat:true}));
-            } else {// 首次报名
-                res.end(JSON.stringify({status:true,msg:'报名成功',activeid:joinObj.aid}));
+        // 检测活动状态
+        acCon.find({_id:new ObjectId(joinObj.aid)}).then(function(result) {
+            if (result&&result[0]) {
+                // 错误提示
+                var activeStatus = '该活动状态异常，暂停报名!';
+                if ( result[0].aStatus === "0" ) {
+                    activeStatus = '该活动已关闭';
+                } else if ( result[0].aStatus === "2" ) {
+                    activeStatus = '该活动为暂停状态，请稍后再试';
+                } else if ( result[0].aStatus === "3" ) {
+                    activeStatus = '该活动筹备中，请密切关注';
+                }
+                
+                if ( result[0].aStatus === "1" ) {// 活动开始报名
+                    joinWrite();
+                } else {// 非开启状态
+                    res.end(JSON.stringify({status:false, msg:activeStatus}));
+                }
+            } else {
+                res.end(JSON.stringify({status:false, msg:"活动不存在"}));
             }
         },function(err){
             res.end(JSON.stringify({status:false,msg:err}));
         });
+
+        function joinWrite() {
+            // 写入报名
+            acCon.join(joinObj).then(function(result){
+                if ( result.repeat ) {// 重复报名
+                    res.end(JSON.stringify({status:true,msg:'无需重复报名',activeid:joinObj.aid, repeat:true}));
+                } else {// 首次报名
+                    res.end(JSON.stringify({status:true,msg:'报名成功',activeid:joinObj.aid}));
+                }
+            },function(err){
+                res.end(JSON.stringify({status:false,msg:err}));
+            });
+        };
     }
 });
 

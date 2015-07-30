@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">活动管理</h1>
+    <div class="manage-module">
+      <form id="js-create-form">
+        <input type="hidden" name="aId" value="<%= activeInfo._id %>" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">添加活动</h3>
+          <div class="manage-tool">
+            <input class="green" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>活动分类：</strong>
+                <select name="aClass" >
+                  <option value="2" <%= activeInfo.aClass == '2'?'selected':'' %> >娱乐活动</option>
+                  <option value="1" <%= activeInfo.aClass == '1'?'selected':'' %> >前端培训</option>
+                  <option value="0" <%= activeInfo.aClass == '0'?'selected':'' %> >分享活动</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动名称：</strong><input type="text" name="aName" value="<%= activeInfo.aName %>" /><span>活动主题</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动时间：</strong>
+              <input type="text" name="aTime" value="<%= activeInfo.aTime %>" /><span>案例：2014-7-26 14:00 -- 18:00</span></label>
+            </div>
+            <!-- <div class="manage-addActive-form-item">
+              <label><strong>报名截止时间：</strong><input type="text" name="aJoinEndTime" value="<%= activeInfo.aJoinEndTime %>" /><span>暂不启用</span>
+              </label>        
+            </div> -->
+            <div class="manage-addActive-form-item">
+              <label><strong>地点：</strong>
+              <input type="text" name="aAddress" value="<%= activeInfo.aAddress %>" /><span>支持HTML</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动摘要：</strong><input type="text" name="aSummary" value="<%= activeInfo.aSummary %>" /><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动内容：</strong>
+              <textarea name="aContent" cols="30" rows="10"><%= activeInfo.aContent %></textarea><span>支持HTML</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>活动状态：</strong>
+              <select name="aStatus" >
+                <option value="0" <%= activeInfo.aStatus == '0'?'selected':'' %>>关闭</option>
+                <option value="1" <%= activeInfo.aStatus == '1'?'selected':'' %>>开启</option>
+                <option value="2" <%= activeInfo.aStatus == '2'?'selected':'' %>>暂停报名</option>
+                <option value="3" <%= activeInfo.aStatus == '3'?'selected':'' %>>未开始报名</option>
+              </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-note"><em>高级配置</em></div>
+            <div class="manage-addActive-form-item">
+              <label><strong>邀请码前缀：</strong>
+              <input type="text" name="aCodebefor" value="<%= activeInfo.aCodebefor == undefined ? "" : activeInfo.aCodebefor %>" /><span>跟邀请码拼在一起</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>备注：</strong>
+              <input type="text" name="aComment" value="<%= activeInfo.aComment %>" /><span>前台不显示，仅作为活动备注记录</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong>排序：</strong>
+              <input type="text" name="aSort" value="<%= activeInfo.aSort %>" /><span>默认为 0</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>模板：</strong>
+              <input type="text" name="aTpl" value="<%= activeInfo.aTpl == undefined ? "index" : activeInfo.aTpl %>" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

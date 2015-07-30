@@ -75,9 +75,10 @@ activeControl.update = function(id,ao){
             "aSummary" : ao["aSummary"],
             "aContent" : ao["aContent"],
             "aComment" : ao["aComment"],
+            "aCodebefor" : ao["aCodebefor"],
             "aSort" : ao["aSort"],
-            "aTpl" : ao["aTpl"],
-            "aAddDate" : new Date(ao["aAddDate"]).getTime()
+            "aTpl" : ao["aTpl"]
+            // "aAddDate" : new Date(ao["aAddDate"]).getTime()
         };
         collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
             if(err){
@@ -92,6 +93,39 @@ activeControl.update = function(id,ao){
     return deferred.promise;
 };
 
+/**
+ * 删除活动
+ * @param query
+ * @returns {*|promise}
+ */
+activeControl.del = function(query){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active');
+
+        collection.findOneAndDelete(query, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            db.close();
+            deferred.resolve(result);
+        });
+    });
+    return deferred.promise;
+};
+
+/**
+ * 查询活动
+ * @param query
+ * @returns {*|promise}
+ */
 activeControl.find = function(query){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
@@ -116,75 +150,119 @@ activeControl.find = function(query){
     return deferred.promise;
 };
 
-// 报名存储处理
-activeControl.join = function(ao){
+
+/**
+ * 查询报名
+ * @param query
+ * @returns {*|promise}
+ */
+activeControl.findJoin = function(query){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
+            db.close();
             deferred.reject(err);
             return ;
         }
-
-        // 添加其余参数
-        ao.addDate = new Date().getTime();
-        
         var collection = db.collection('active_join');
-
-        // 检测是否已经存在记录
-        collection.findOne({
-            aid:ao.aid,
-            mail: ao.mail
-        },function(err,result){
-            if(!result){
-                // 添加新纪录
-                collection.insert(ao, {safe:true}, function(err, result) {
-                    result.repeat = false;// 记录存在标识
-                    if(err){
-                        db.close();
-                        deferred.reject(err);
-                        return;
-                    }
-                    deferred.resolve(result);
-                    db.close();
-                });
-            }else{
-                // 记录已存在，直接反馈
-                result.repeat = true;// 记录存在标识
-
-                if(err){
-                    db.close();
-                    deferred.reject(err);
-                    return;
-                }
-                deferred.resolve(result);
-                db.close();
-            }
-        });
-
-
-        /*collection.insert(ao, {safe:true}, function(err, result) {
-            // console.log("join:" + err);
-            result.abc = "F7-abc";
+        collection.find(query).sort({"addDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);
                 return;
             }
-            deferred.resolve(result);
+
             db.close();
-        });*/
+            deferred.resolve(result);
+        });
+
+    });
+    return deferred.promise;
+};
+
+/**
+ * 打印时查询报名
+ * @param query
+ * @returns {*|promise}
+ */
+activeControl.findJoinprint = function(query){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active_join');
+        collection.find(query).sort({"addDate":1}).toArray(function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+
+            db.close();
+            deferred.resolve(result);
+        });
 
     });
     return deferred.promise;
 };
 
 
-// todo:显示所有用户
-activeControl.listAllUsers = function(){
 
+/**
+ * 报名信息变更
+ * @param id 主键 ID
+ * @param o 调整键值对象，键位字段名称
+ * @returns {*|promise}
+ */
+activeControl.joinUpdate = function(id, o){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active_join');
+        collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:o},{w:1, upsert: true}, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            db.close();
+            deferred.resolve(result);
+        });
+    });
+    return deferred.promise;
+};
 
+/**
+ * 删除报名
+ * @param query
+ * @returns {*|promise}
+ */
+activeControl.joindel = function(query){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active_join');
+
+        collection.findOneAndDelete(query, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            db.close();
+            deferred.resolve(result);
+        });
     });
     return deferred.promise;
 };

@@ -15,10 +15,10 @@
     <h1 class="manage-title">管理中心概况</h1>
     <div class="manage-module">
       <div class="manage-module-head">
-        <h3 class="manage-module-title">开启中的活动</h3>
+        <h3 class="manage-module-title">进行中的活动</h3>
         <div class="manage-tool">
-          <a href="#" class="green">所有活动</a>
-          <a href="#" class="green">添加活动</a>
+          <a href="/manage/active" class="green">所有活动</a>
+          <a href="/manage/active/create" class="green">添加活动</a>
         </div>
       </div>
       <div class="manage-module-con">
@@ -36,24 +36,34 @@
               </tr>
             </thead>
             <tbody>
+              <% result.forEach(function(active){ %>
+              <% if ( active.aStatus != 0 ) { %>
               <tr>
-                <td>分享活动</td>
-                <td class="text-align-left no-a-style"><a href="#">WDShare【一周年庆典】 第7期 2015.7</a></td>
-                <td><span class="font-green">开启</span></td>
-                <td>6433</td>
-                <td><a href="#">128</a></td>
-                <td>2015-7-26 14:00:33</td>
-                <td><a href="#">预览</a><a href="#">修改</a><a href="#">删除</a></td>
+                <td><% if ( active.aClass == 0 ) { %>
+                分享活动
+                <% } else if ( active.aClass == 1 ) { %>
+                前端培训
+                <% } else if ( active.aClass == 2 ) { %>
+                娱乐活动
+                <% } %></td>
+                <td class="text-align-left no-a-style"><a href="/manage/active/update/<%= active._id %>"><%= active.aName %></a></td>
+                <td><% if ( active.aStatus == 1 ) { %>
+                <span class="font-green">开启</span>
+                <% } else if ( active.aStatus == 2 ) { %>
+                <span class="font-red">暂停</span>
+                <% } else if ( active.aStatus == 3 ) { %>
+                <span class="font-black">准备中</span>
+                <% } else { %>
+                <span class="font-gray">结束</span>
+                <% } %></td>
+                <td><% if ( active.aClick ) { %>
+                  <%= active.aClick %><% } else { %>0<% } %></td>
+                <td><a href="/manage/active/join/<%= active._id %>">128</a></td>
+                <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
+                <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/update/<%= active._id %>">修改</a><a href="#" data-id="<%= active._id %>" class="js-active-delete" style="display:none;">删除</a></td>
               </tr>
-              <tr>
-                <td>分享活动</td>
-                <td class="text-align-left no-a-style"><a href="#">WDShare【一周年庆典】 第7期 2015.7</a></td>
-                <td><span class="font-black">准备中</span></td>
-                <td>6433</td>
-                <td><a href="#">128</a></td>
-                <td>2015-7-26 14:00:33</td>
-                <td><a href="#">预览</a><a href="#">修改</a><a href="#">删除</a></td>
-              </tr>
+              <% } %>
+              <% }) %>
             </tbody>
           </table>
         </div>

@@ -36,7 +36,7 @@ body { background:#f7f7f7;}
 
 
 .manage:after { display:block; clear:both; content:""; visibility:hidden; height:0;}
-.manage-foot { line-height:200%; text-align:center; padding:10px 0; color:#586469; background:#152e39;}
+.manage-foot { line-height:200%; text-align:center; padding:10px 0; color:#aaa; background:#245062;}
 
 /**/
 .manage { background:#245062; overflow:hidden; padding-top:72px;}
@@ -44,13 +44,13 @@ body { background:#f7f7f7;}
 .manage-right { margin-left:130px; background:url("../img/bg.png"); min-height:600px; border-left:1px solid #ccc; padding:10px 30px 30px;}
 
 /**/
-.manage-module-link dl { width:90px; padding:10px 0 0; margin:20px auto; border-radius:20px; position:relative;}
+.manage-module-link dl { width:80px; padding:8px 0 0; margin:20px auto; border-radius:20px; position:relative;}
 .manage-left-active dt { background:url("../img/icon-active.png") no-repeat center 0; padding:45px 0 0; background-size:50px;}
 .manage-left-article dt { background:url("../img/icon-article.png") no-repeat center 0; padding:45px 0 0; background-size:50px;}
 .manage-left-job dt { background:url("../img/icon-job.png") no-repeat center 0; padding:45px 0 0; background-size:50px;}
 .manage-left-project dt { background:url("../img/icon-project.png") no-repeat center 0; padding:45px 0 0; background-size:50px;}
 .manage-left-manage dt { background:url("../img/icon-manage.png") no-repeat center 0; padding:45px 0 0; background-size:50px;}
-.manage-module-link dt {/* font-weight:bold;*/ font-size:14px; line-height:280%; color:#fff; text-align:center;}
+.manage-module-link dt {/* font-weight:bold;*/ font-size:13px; line-height:270%; color:#fff; text-align:center;}
 .manage-module-link dt em { display:block;}
 .manage-module-link dd { display:none; position:absolute; left:75px; top:0; width:80px; background:rgba(255,255,255,.3); text-align:left; min-height:94px; border-radius:0 20px 20px 20px; padding:10px 20px;}
 .manage-module-link dd a { display:block; font-size:16px; line-height:40px; display:block;}
@@ -84,6 +84,8 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .manage-form-but .green { background:#2ecc71;}
 .manage-tool .gray,
 .manage-form-but .gray { background:#bbb;}
+.manage-tool .red,
+.manage-form-but .red { background:#c00;}
 
 /**/
 .manage-data { margin:20px;}
@@ -93,13 +95,15 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .manage-data td { padding:10px 8px; border:1px solid #ddd; text-align:center;}
 .manage-data tr:nth-child(even) { background:#eff0f4;}
 .manage-data tr:hover { background:#fffdcf;}
-.manage-data td a { display:inline-block; background:#c4c4c4; color:#fff; line-height:20px; padding:3px 8px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -o-border-radius:5px; margin:auto 5px;}
+.manage-data td a { display:inline-block; background:#c4c4c4; color:#fff; line-height:20px; padding:3px 8px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -o-border-radius:5px; margin:auto 2px; font-size:12px;}
 .manage-data td a:hover { background:#999;}
 .manage-data td .green { background:#2ecc71;}
-.manage-data .no-a-style a { background:none; color:#000; padding:0; margin:0;}
+.manage-data td .red { background:#c00;}
+.manage-data .no-a-style a { background:none; color:#000; padding:0; margin:0; font-size:14px;}
 .manage-data .no-a-style a:hover { background:none; color:#c00;}
 .manage-data .join-blog { display:block; width:110px; overflow:hidden;}
 .manage-data-join { font-size:13px;}
+
 
 
 /**/

@@ -57,18 +57,6 @@ router.get('/', function(req, res) {
     }
 
 });
-/*
-router.get('/', function(req, res) {
-    acCon.find({}).then(function(result){
-        res.render('manages/active/list', {
-            title: '管理活动列表页',
-            result:result
-        });
-    },function(err){
-        res.render('active/502', { title: '出错啦',error:err});
-    })
-
-});*/
 
 
 /**

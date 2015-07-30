@@ -58,7 +58,7 @@
                 <% } %></td>
                 <td><% if ( active.aClick ) { %>
                   <%= active.aClick %><% } else { %>0<% } %></td>
-                <td><a href="/manage/active/join/<%= active._id %>">128</a></td>
+                <td><a href="/manage/active/join/<%= active._id %>"><%= joinLength[active._id] %></a></td>
                 <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
                 <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/update/<%= active._id %>">修改</a><a href="#" data-id="<%= active._id %>" class="js-active-delete" style="display:none;">删除</a></td>
               </tr>

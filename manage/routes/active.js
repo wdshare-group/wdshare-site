@@ -2,6 +2,8 @@ var express = require('express');
 var util = require('util');
 var mongo = require('mongodb');
 var acCon = require('../controllers/active.js');
+var sendMail  = require("../../server/sendMail.js");
+var config    = require("../../server/config");
 var router = express.Router();
 var ObjectId = mongo.ObjectID;
 
@@ -85,7 +87,7 @@ router.get('/update/:aId', function(req, res,next) {
             res.end(JSON.stringify({status:true}));
         });
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -106,7 +108,7 @@ router.get('/del/:aId', function(req, res,next) {
             res.end(JSON.stringify({status:false,error:err}));
         });
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -184,7 +186,7 @@ router.get('/join/:aId', function(req, res) {
         };
         
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -223,7 +225,7 @@ router.get('/joinprint/:aId', function(req, res) {
         };
         
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -236,7 +238,7 @@ router.get('/joinprint/:aId', function(req, res) {
 router.get('/join/death/:aId', function(req, res) {
     if(req.params.aId){
         var aId = req.params.aId;
-        acCon.joinUpdate(aId, {"state":0}).then(function(result){
+        acCon.joinUpdate({_id:new ObjectId(aId)}, {"state":0}).then(function(result){
             res.end(JSON.stringify({
                 status:true,
                 msg:'屏蔽成功'
@@ -245,7 +247,7 @@ router.get('/join/death/:aId', function(req, res) {
             res.end(JSON.stringify({status:false,error:err}));
         });
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -257,7 +259,7 @@ router.get('/join/death/:aId', function(req, res) {
 router.get('/join/life/:aId', function(req, res) {
     if(req.params.aId){
         var aId = req.params.aId;
-        acCon.joinUpdate(aId, {"state":1}).then(function(result){
+        acCon.joinUpdate({_id:new ObjectId(aId)}, {"state":1}).then(function(result){
             res.end(JSON.stringify({
                 status:true,
                 msg:'开启成功'
@@ -266,7 +268,7 @@ router.get('/join/life/:aId', function(req, res) {
             res.end(JSON.stringify({status:false,error:err}));
         });
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -287,7 +289,7 @@ router.get('/join/del/:aId', function(req, res) {
             res.end(JSON.stringify({status:false,error:err}));
         });
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 });
 
@@ -308,7 +310,7 @@ router.get('/join/createcode/:aId', function(req, res) {
         })
         
     }else{
-        res.end(JSON.stringify({status:false,error:"404"}));
+        res.end(JSON.stringify({status:false,msg:"404"}));
     }
 
     function setCode(result) {
@@ -316,7 +318,8 @@ router.get('/join/createcode/:aId', function(req, res) {
             no = 0,
             max = result.length;
         for ( var i=0,l=max; i<l; i++ ) {
-            acCon.joinUpdate(result[i]._id, {"code":max-i}).then(function(result) {
+            var aId = result[i]._id;
+            acCon.joinUpdate({_id:new ObjectId(aId)}, {"code":max-i}).then(function(result) {
                 yes++;
                 callback();
             },function(err){
@@ -336,6 +339,190 @@ router.get('/join/createcode/:aId', function(req, res) {
         }
     }
     
+});
+
+/**
+ * path:  /manage/active/join/remailsent/
+ * 重新发送报名成功提醒邮件
+ * POST
+ * Ajax
+ */
+router.post('/join/remailsent/', function(req, res,next) {
+    var params = req.body;
+
+    if(params) {
+        // 报名成功邮件发送
+        sendMail({
+            from: config.mail.sendMail,
+            to: params.mail,
+            subject: 'WDShare 报名成功',
+            html: '亲爱的 '+ params.name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ params.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ params.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ params.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span><br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />'
+        }, function() {// succeed
+            mailSucceed(params.mail, params.aid);
+            console.log("邮件发送成功");
+        }, function() {// error
+            mailError(params.mail, params.aid);
+            console.log("邮件发送失败");
+        });
+    } else {
+        res.end(JSON.stringify({status:false,msg:"参数不完整"}));
+    }
+
+    /**
+     * 报名邮件发送成功更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailSucceed(mail, aId) {
+        var aId = "" + aId;
+        acCon.joinUpdate({aid:aId, mail:mail}, {"joinMailState":true}).then(function(result){
+            res.end(JSON.stringify({status:true,msg:"邮件发送成功"}));
+        },function(err){});
+    };
+
+    /**
+     * 报名邮件发送失败更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailError(mail, aId) {
+        var aId = "" + aId;
+        acCon.joinUpdate({aid:aId, mail:mail}, {"joinMailState":false}).then(function(result){
+            res.end(JSON.stringify({status:false,msg:"邮件发送失败"}));
+        },function(err){});
+    };
+});
+
+
+/**
+ * path:  /manage/active/invite/:id
+ * 发送邀请函
+ * Ajax
+ */
+router.get('/invite/:id', function(req, res) {
+    var join, active;
+    if(req.params.id){
+        var id = req.params.id;
+        // 获取报名信息
+        acCon.findJoin({_id:new ObjectId(id)}).then(function(result){
+            if(result&&result[0]){
+                join = result[0];
+                getActive(join.aid);
+            }else{
+                res.end(JSON.stringify({status:false,msg:"没有报名信息"}));
+            }
+        },function(err){
+            res.end(JSON.stringify({status:false,error:err}));
+        })
+    }else{
+        res.end(JSON.stringify({status:false,error:err}));
+    }
+
+    // 获取活动数据
+    function getActive(id) {
+        if ( !id ) {
+            res.end(JSON.stringify({status:false,msg:"查询活动参数不正确"}));
+            return false;
+        }
+        acCon.find({_id:new ObjectId(id)}).then(function(result){
+            if(result&&result[0]){
+                active = result[0];
+                sendInvite();
+            }else{
+                res.end(JSON.stringify({status:false,msg:"没有活动"}));
+            }
+        },function(err){
+            res.end(JSON.stringify({status:false,error:err}));
+        })
+    };
+
+    // 发送邀请邮件
+    function sendInvite() {
+        var mailTpl;
+        if ( !join || !active ) {
+            res.end(JSON.stringify({status:false,msg:"发送邮件数据不全"}));
+            return false;
+        }
+
+        if ( !active.aEmailTpl ) {
+            res.end(JSON.stringify({status:false,msg:"没有邮件模板，让我怎么发，罢工啦！"}));
+            return false;
+        }
+
+        mailTpl = active.aEmailTpl;
+        mailTpl = mailTpl.replace(/{=title}/g, active.aName);
+        mailTpl = mailTpl.replace(/{=name}/g, join.name);
+        mailTpl = mailTpl.replace(/{=code}/g, active.aCodebefor + join.code);
+        mailTpl = mailTpl.replace(/{=mail}/g, join.mail);
+        mailTpl = mailTpl.replace(/{=id}/g, join._id);
+        mailTpl = mailTpl.replace(/{=time}/g, active.aTime);
+        mailTpl = mailTpl.replace(/{=address}/g, active.aAddress);
+        mailTpl = mailTpl.replace(/{=blank}/g, "&nbsp;");
+
+        // 邀请函邮件发送
+        sendMail({
+            from: config.mail.sendMail,
+            to: join.mail,
+            subject: active.aName + ' 邀请函',
+            html: mailTpl
+        }, function() {// succeed
+            mailSucceed(join.mail, active._id);
+            console.log("邀请函邮件发送成功");
+        }, function() {// error
+            mailError(join.mail, active._id);
+            console.log("邀请函邮件发送失败");
+        });
+    };
+    
+    /**
+     * 邀请函发送成功更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailSucceed(mail, aId) {
+        var aId = "" + aId;
+        acCon.joinUpdate({aid:aId, mail:mail}, {"inviteState":true, "state":2}).then(function(result){
+            res.end(JSON.stringify({status:true,msg:"邀请函发送成功！"}));
+        },function(err){});
+    };
+
+    /**
+     * 邀请函发送失败更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailError(mail, aId) {
+        var aId = "" + aId;
+        acCon.joinUpdate({aid:aId, mail:mail}, {"inviteState":false}).then(function(result){
+            res.end(JSON.stringify({status:false,msg:"发送邀请函失败！"}));
+        },function(err){});
+    };
+});
+
+/**
+ * path:  /manage/active/batchinvite/:id
+ * 群发邀请函
+ * Ajax
+ */
+router.get('/batchinvite/:aId', function(req, res) {
+    if(req.params.aId){
+        var aId = req.params.aId;
+        acCon.findJoin({aid:aId}).then(function(result){
+            res.end(JSON.stringify({
+                status:true,
+                msg:'请求列表成功',
+                data: result
+            }));
+        },function(err){
+            res.end(JSON.stringify({status:false,error:err}));
+        });
+    }else{
+        res.end(JSON.stringify({status:false,msg:"404"}));
+    }
 });
 
 

@@ -12,7 +12,6 @@ var activeControl = {};
  * @param ao 活动json对象
  * @returns {*|promise}
  */
-
 activeControl.create = function(ao){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
@@ -77,7 +76,8 @@ activeControl.update = function(id,ao){
             "aComment" : ao["aComment"],
             "aCodebefor" : ao["aCodebefor"],
             "aSort" : ao["aSort"],
-            "aTpl" : ao["aTpl"]
+            "aTpl" : ao["aTpl"],
+            "aEmailTpl" : ao["aEmailTpl"]
             // "aAddDate" : new Date(ao["aAddDate"]).getTime()
         };
         collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {
@@ -213,11 +213,11 @@ activeControl.findJoinprint = function(query){
 
 /**
  * 报名信息变更
- * @param id 主键 ID
+ * @param query 查询对象
  * @param o 调整键值对象，键位字段名称
  * @returns {*|promise}
  */
-activeControl.joinUpdate = function(id, o){
+activeControl.joinUpdate = function(query, o){
     var deferred = Q.defer();
     MongoClient.connect(url, function(err, db) {
         if(err){
@@ -226,7 +226,7 @@ activeControl.joinUpdate = function(id, o){
             return ;
         }
         var collection = db.collection('active_join');
-        collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:o},{w:1, upsert: true}, function(err, result) {
+        collection.findOneAndUpdate(query,{$set:o},{w:1, upsert: true}, function(err, result) {
             if(err){
                 db.close();
                 deferred.reject(err);

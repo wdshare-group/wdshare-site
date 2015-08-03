@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>邀请函确认 - WDShare</title>
+<% include ../module/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../module/head.ejs %>
+
+<div class="active-body joinconfirm">
+	<%= result.text %><br />
+	<% if ( result.flag ) { %>
+	请准时前去会场，如果有特殊情况请及时通知我们，邮箱：wdshare@163.com<br />
+	<% } %>
+	<a href="/">返回首页</a>
+</div>
+
+<% include ../module/foot.ejs %>
+</body>
+</html>

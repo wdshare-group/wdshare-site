@@ -17,11 +17,17 @@ var config = {
         cookie: { path: '/', httpOnly: true, maxAge: null }
     },
     "mail":{
-        "sendMail":"no-reply@ospring.pw",
-        "service":"Mailgun",
-        "user":"postmaster@koajs.cn",
-        "pass":"4-kx7d3lgtd2"
+        "sendMail":"wdshare_sent@163.com",
+        "service":"163",
+        "user":"wdshare_sent@163.com",
+        "pass":"zfadrfpnyqiuypbx"
     },
+    // "mail":{
+    //     "sendMail":"no-reply@ospring.pw",
+    //     "service":"Mailgun",
+    //     "user":"postmaster@koajs.cn",
+    //     "pass":"4-kx7d3lgtd2"
+    // },
     "db":"wdshare",
     "locale":"zh-cn",
 

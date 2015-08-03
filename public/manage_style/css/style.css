@@ -119,3 +119,5 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 
 .manage-addActive-form-note { height:30px; border-top:2px dashed #ccc; position:relative; margin:40px 0 10px;}
 .manage-addActive-form-note em { position:absolute; left:50%; top:-17px; width:100px; margin-left:-50px; text-align:center; background:#fff; line-height:30px;}
+
+.dialog-jion-alert { width:500px; text-align:center; padding:20px 15px; line-height:180%; font-size:1.3em;}

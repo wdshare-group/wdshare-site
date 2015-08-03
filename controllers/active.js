@@ -96,6 +96,63 @@ activeControl.join = function(ao){
     return deferred.promise;
 };
 
+/**
+ * 报名信息变更
+ * @param query 查询对象
+ * @param o 调整键值对象，键位字段名称
+ * @returns {*|promise}
+ */
+activeControl.joinUpdate = function(query, o){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active_join');
+        collection.findOneAndUpdate(query,{$set:o},{w:1, upsert: true}, function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+            db.close();
+            deferred.resolve(result);
+        });
+    });
+    return deferred.promise;
+};
+
+/**
+ * 查询报名
+ * @param query
+ * @returns {*|promise}
+ */
+activeControl.findJoin = function(query){
+    var deferred = Q.defer();
+    MongoClient.connect(url, function(err, db) {
+        if(err){
+            db.close();
+            deferred.reject(err);
+            return ;
+        }
+        var collection = db.collection('active_join');
+        collection.find(query).sort({"addDate":-1}).toArray(function(err, result) {
+            if(err){
+                db.close();
+                deferred.reject(err);
+                return;
+            }
+
+            db.close();
+            deferred.resolve(result);
+        });
+
+    });
+    return deferred.promise;
+};
+
 // 记录点击
 activeControl.click = function(id, click) {
     var count = click || 0;

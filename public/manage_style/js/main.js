@@ -117,6 +117,9 @@ Join.init = function() {
     this.life();
     this.del();
     this.createcode();
+    this.reMailSent();
+    this.sendInvite();
+    this.batchInvite();
 };
 /**
  * 屏蔽报名
@@ -244,6 +247,190 @@ Join.createcode = function() {
                 return false;
             };
         });
+    };
+};
+
+/**
+ * 重新发送报名成功提醒邮件
+ * @return
+ */
+Join.reMailSent = function() {
+    $(".js-join-reMailSent").click(function() {
+        var params = {
+            aid: $(this).attr("data-aid"),
+            mail: $(this).attr("data-mail"),
+            name: $(this).attr("data-name"),
+            aName: $(this).attr("data-active-name"),
+            aTime: $(this).attr("data-active-time"),
+            aAddress: $(this).attr("data-active-address")
+        }
+        if( confirm("确定要重新发送报名成功提醒邮件？") ) {
+            request(params);
+        };
+        return false;
+    });
+    function request(params) {
+        $.post("/manage/active/join/remailsent/", params, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            }
+            if ( data.status ) {// 成功
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                if ( data.url ) {// 报错情况下需要跳转时进行处理
+                    window.location = data.url;
+                }
+                alert(data.msg);
+                return false;
+            };
+        });
+    };
+};
+
+/**
+ * 发送邀请函
+ * @return
+ */
+Join.sendInvite = function() {
+    $(".js-join-sendInvite").click(function() {
+        var id = $(this).parent().attr("data-id");
+        if( confirm("确定要发送邀请函？") ) {
+            request(id);
+        };
+        return false;
+    });
+    function request(id) {
+        Dialog({'id':'sendInvite-loading', 'msg':'<div class="dialog-jion-alert">邀请函发送中...</div>', 'lock':true, 'lockClose':false, title:"发送过程中请勿刷新页面"});
+        $.get("/manage/active/invite/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            }
+            if ( data.status ) {// 成功
+                Dialog.close("sendInvite-loading");
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                if ( data.url ) {// 报错情况下需要跳转时进行处理
+                    window.location = data.url;
+                }
+                Dialog.close("sendInvite-loading");
+                alert(data.msg);
+                return false;
+            };
+        });
+    };
+};
+
+/**
+ * 群发邀请函
+ * @return
+ */
+Join.batchInvite = function() {
+    var join,
+        batch = [],
+        batchIndex = 0,
+        yes = 0,
+        no = 0;
+    $("#js-join-batchInvite").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("群发期间不可断网、不可刷新页面") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        Dialog({'id':'batchInvite', 'msg':'<div class="dialog-jion-alert" style="max-height:500px; overflow:auto;">开始请求群发列表...</div>', 'lock':true, 'lockClose':false, 'title':'群发操作，耗时较长，请勿刷新页面！', onClose:function(){
+            window.location.reload();
+        }});
+        $.get("/manage/active/batchinvite/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            }
+
+            if ( data.status ) {// 成功
+                join = data.data;
+                batchSendSelect();
+            } else {
+                if ( data.url ) {// 报错情况下需要跳转时进行处理
+                    window.location = data.url;
+                }
+                alert(data.msg);
+                return false;
+            };
+        });
+    };
+
+    // 设置状态提示文字
+    function setStateText(str) {
+        var elem = $("#batchInvite .dialog-jion-alert");
+        elem.html(elem.html() +"<br />"+ str);
+    };
+
+    // 批量发送筛选
+    function batchSendSelect() {
+        for (var i=0,l=join.length; i<l; i++) {
+            if ( join[i].code && join[i].state == 1 ) {
+                batch.push(join[i]);
+            }
+        }
+        setStateText("获取到 "+ batch.length +" 条符合群发数据，开始群发：");
+        batchSend();
+    };
+
+    // 批量发送
+    function batchSend() {
+        if ( batchIndex == batch.length ) {// 发送完成
+            setStateText("完成群发操作，目标："+ batch.length +"条，成功："+ yes +"条，失败：" + no +"条");
+            return false;
+        }
+        
+        // 开始逐条请求发送邀请函
+        $.ajax({
+            "timeout": 20000,// 20秒即超时
+            "url": "/manage/active/invite/"+batch[batchIndex]._id,
+            "success": function(data) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                }
+                if ( data.status ) {// 成功
+                    yes++;
+                } else {
+                    no++;
+                };
+
+                batchIndex++;
+            },
+            "error": function() {
+                no++;
+                batchIndex++;
+            },
+            "complete": function() {
+                setStateText("已处理 "+ batchIndex +" 条，成功 "+ yes +" 条，失败 "+ no +" 条，继续处理中...");
+                batchSend();// 递归式逐条请求
+            }
+        });
+        /*
+        $.get("/manage/active/invite/"+batch[batchIndex]._id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            }
+            if ( data.status ) {// 成功
+                yes++;
+            } else {
+                no++;
+            };
+
+            batchIndex++;
+            setStateText("已处理 "+ batchIndex +" 条，成功 "+ yes +" 条，失败 "+ no +" 条，继续处理中...");
+            batchSend();// 递归式逐条请求
+        });*/
     };
 };
 

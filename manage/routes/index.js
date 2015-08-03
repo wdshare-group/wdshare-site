@@ -1,7 +1,7 @@
 var express = require('express');
 var util = require('util');
 var mongo = require('mongodb');
-var acCon = require('../controllers/active.js');
+var acCon = require('../model/active.js');
 var router = express.Router();
 var ObjectId = mongo.ObjectID;
 

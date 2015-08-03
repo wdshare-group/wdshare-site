@@ -432,7 +432,7 @@ router.route("/updateEmail/:code").all(authorize).get(function(req,res){
 //登录 注册
 router.get('/login', function(req, res) {
   "use strict";
-  if(req.session.user){
+  if(req.session.user){// 如果登录直接返回前一个页面
     res.redirect(goBack(req.headers.referer));
   }
   res.render('login');

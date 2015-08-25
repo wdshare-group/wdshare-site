@@ -5,7 +5,7 @@
 <title><%= activeInfo.aName %>-WDShare</title>
 <meta name="keywords" content="<%= activeInfo.aName %>" />
 <meta name="description" content="<%= activeInfo.aName %>" />
-<% include ../../module/htmlhead.ejs %>
+<% include ../../etc/htmlhead.ejs %>
 <style type="text/css">
 .active-head {
   background: #3a74ad; /* Old browsers */
@@ -16,13 +16,14 @@
   background: -ms-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* IE10+ */
   background: linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a74ad', endColorstr='#3da0b5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-
 }
+/*.active-head-but a { background:#ff6201;}
+.active-head-but a:hover { background:#51a351;}*/
 </style>
 </head>
 
 <body>
-<% include ../../module/head.ejs %>
+<% include ../../etc/head.ejs %>
 
 <div class="active-head">
   <div class="active-head-bg">
@@ -182,6 +183,6 @@
   };*/
 </script>
 
-<% include ../../module/foot.ejs %>
+<% include ../../etc/foot.ejs %>
 </body>
 </html>

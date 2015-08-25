@@ -1,6 +1,6 @@
 var config = {
-    "url":"http://wdshare.com",
-    "socketIO" : "http://wdshare.com",
+    "url":"http://127.0.0.1:3000",
+    "socketIO" : "http://127.0.0.1:3000",
     "title":"wdshare",  //网站名称
     "description":"为新而生 新一代极简论坛系统",  //网站描述
     "changeTimes":3,     // 可以更改邮箱次数

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare用户注册</title>
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="login-main">
+  <div class="login-main-bg">
+    <div class="login-inner">
+      <div class="login-title">
+        <h1>注册帐号</h1>
+        <h3 class="login-subhead reg-subhead">输入信息注册新帐户</h3>
+        <h3 class="login-error reg-error"></h3>
+      </div>
+      <form id="js-regForm" name="regForm" method="post" action="">
+        <p class="login-input login-username"><input type="text" name="email" placeholder="输入常用邮箱" /></p>
+        <p class="login-input login-password"><input type="password" name="password" placeholder="输入您的密码" /></p>
+        <p class="login-input login-password"><input type="password" name="repassword" placeholder="再次输入密码" /></p>
+        <!-- <p class="login-input login-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/static/skin2015/img/vcode.png" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" /></p> -->
+        <div class="login-but">
+          <input type="submit" name="submitbutton" value="注册" />
+        </div>
+        <p class="link"><a href="/user/login">已有账户，现在登录</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

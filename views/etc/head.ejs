@@ -32,7 +32,7 @@
     </ul>
     <div class="hd-login">
       <% if(user && user.email){ %>
-      <a href="/user/user" class="but but-blue but-login">用户中心</a><a href="/user/logout" class="but but-gray but-reg">退出</a>
+      <a href="/user/user" class="but but-blue but-login" title="进入用户中心"><%=user.username%></a><a href="/user/logout" class="but but-gray but-reg">退出</a>
       <% }else{ %>
       <a href="/user/login" class="but but-blue but-login">登录</a><a href="/user/register" class="but but-gray but-reg">注册</a>
       <% } %>

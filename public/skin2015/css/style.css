@@ -12,7 +12,8 @@ a { color:#000; text-decoration:none;}
 a:hover { color:#4183c4; text-decoration:none;}
 
 a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,header,footer { -webkit-tap-highlight-color:rgba(0,0,0,0); -moz-tap-highlight-color:rgba(0,0,0,0); -o-tap-highlight-color:rgba(0,0,0,0); -ms-tap-highlight-color:rgba(0,0,0,0); tap-highlight-color:rgba(0,0,0,0);}
-
+input { outline:none; font-family:"Microsoft YaHei";}
+textarea { outline:none;}
 
 
 /**/
@@ -27,7 +28,8 @@ body { background:#f7f7f7;}
 .icon-top-arrows,
 .hd-nav-child,
 .but,
-.active-head-but a {
+.active-head-but a,
+.login-but input {
   -webkit-transition-duration:250ms;
   -moz-transition-duration:250ms;
   transition-duration:250ms;
@@ -99,6 +101,49 @@ body { background:#f7f7f7;}
 .foot-sns-weixin .foot-sns-note img { width:150px; height:150px; display:block; margin:auto;}
 
 .foot-sns-note .triangle { position:absolute; left:50%; bottom:-6px; width:10px; height:10px; margin-left:-5px; background:#fff; border-left:1px solid #ccc; border-bottom:1px solid #ccc; transform:rotate(-45deg); overflow:hidden;}
+
+
+
+/**/
+.login-title { text-align:center; padding-bottom:5px;}
+.login-title h1 { padding-top:10px; font-weight:normal; color:#fff; font-size:1.8em; line-height:200%;}
+.login-title h3 { font-weight:normal; color:#838383; font-size:1.2em; line-height:150%;}
+.login-main {
+  background: #3a74ad; /* Old browsers */
+  background: -moz-linear-gradient(45deg,  #3a74ad 0%, #3da0b5 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#3a74ad), color-stop(100%,#3da0b5)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* IE10+ */
+  background: linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a74ad', endColorstr='#3da0b5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+.login-main-bg { padding: 40px 0; background:url(../img/active-head-bg.png) repeat center center;}
+.login-inner { background:rgba(255,255,255,.5); border-radius:15px; width:90%; max-width:500px; min-width:290px; margin:100px auto 100px; padding:10px 0 30px 0;}
+.login-inner p { margin:15px auto;}
+.login-inner .link { text-align:center; font-size:18px; padding-top:25px; margin-bottom:0;}
+.login-inner .link a { padding:0 26px;}
+
+/**/
+.login-input { width:205px; margin-left:auto; margin-right:auto; padding-left:50px; background-color:#f5f6f9; background-repeat:no-repeat; background-position:15px center; background-size:22px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
+.login-input input { width:190px; line-height:16px; font-size:.9rem; border:0; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px; padding:11px 0 11px 5px; background-color:#f5f6f9; margin-bottom:1px; font-size:16px;}
+
+.login-username { background-image:url("../img/icon-login-username.png")}
+.login-password { background-image:url("../img/icon-login-password.png")}
+
+.login-code { width:257px; border:0; background:none; padding-left:0;}
+.login-code input { background:#f7f7f7; padding-left:15px; width:90px; border:0;}
+.login-code img { width:130px; vertical-align:middle; margin-left:10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
+.login-remember { display:block; width:240px; text-align:left;  vertical-align:middle; padding:5px 0; margin:0 auto;}
+.login-remember span { padding-left:10px;}
+
+.login-but { text-align:center;}
+.login-but input { cursor:pointer; margin:10px auto 0; display:inline-block; width:255px; color:#fff; line-height:44px; font-size:1.1rem; background:#ff6201 url("../img/icon-login-submit.png") no-repeat 160px center; background-size:8px; border:0; /*border-bottom:4px solid #007448;*/ box-shadow:0 4px 0 #b64600; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px; letter-spacing:0.3em;}
+.login-but input:hover { background-color:#ff3d01;}
+
+.login-subhead { display:block;}
+h3.login-error { display:none; color:#f00;}
 
 
 /**/

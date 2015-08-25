@@ -1,0 +1,8 @@
+active // 活动表
+active_join // 活动报名表
+users // 会员表
+resetpws // 正在密码找回记录表
+
+inventory // 不清楚是什么【本地有：一条数据】 
+	{ "_id" : ObjectId("55360e4abb107131ed6e0bd0"), "type" : "book", "item" : "notebook", "qty" : 40 }
+system.indexes // 不清楚是什么【本地有：有一些数据】

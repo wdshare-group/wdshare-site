@@ -6,6 +6,29 @@
 <meta name="keywords" content="<%= activeInfo.aName %>" />
 <meta name="description" content="<%= activeInfo.aName %>" />
 <% include ../../etc/htmlhead.ejs %>
+<%
+  var name = '',
+      com = '',
+      www = ''
+      email = '';
+  if(user && user.email) {
+    email = user.email;
+  }
+  if(user && user.email != user.username) {
+    name = user.username;
+  }
+  if(userInfo && userInfo.realname) {
+    name = userInfo.realname;
+  }
+
+  if(userInfo && userInfo.com) {
+    com = userInfo.com;
+  }
+
+  if(userInfo && userInfo.www && userInfo.www != "http://") {
+    www = userInfo.www;
+  }
+%>
 <style type="text/css">
 .active-head {
   background: #3a74ad; /* Old browsers */
@@ -69,36 +92,38 @@
       <h3>我要报名</h3>
       <div class="active-join-con">
         <p>报名须知：本活动纯属公益。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</p>
+        <% if(!user){ %>
         <div class="active-login">
           登录后启用快捷报名
-          <a href="#" class="but but-blue but-login">登录</a><a href="#" class="but but-gray but-reg">注册</a>
+          <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
         </div>
+        <% } %>
         <form name="joinform" id="js-joinform" method="post"> 
           <input type="hidden" name="aid" value="<%= activeInfo._id %>">
           <dl>
             <dt>邮箱：</dt>
             <dd>
-              <input type="text" name="mail" placeholder="常用邮箱"> <em>请正确填写邮箱</em>
+              <input type="text" name="mail" placeholder="常用邮箱" value="<%=email%>"> <em>请正确填写邮箱</em>
               <span style="color:#666;">通过邮箱接收邀请函</span>
             </dd>
           </dl>
           <dl>
             <dt>姓名/昵称：</dt>
             <dd>
-              <input type="text" name="name" placeholder="尊姓大名"> <em>名称至少两个字符</em>
+              <input type="text" name="name" placeholder="尊姓大名" value="<%=name%>"> <em>名称至少两个字符</em>
             </dd>
           </dl>
           <dl>
             <dt>公司：</dt>
             <dd>
-              <input type="text" name="com" placeholder="就职公司">    
+              <input type="text" name="com" placeholder="就职公司" value="<%=com%>">    
               <span>选填</span>
             </dd>
           </dl>
           <dl>
             <dt>网站：</dt>
             <dd>
-              <input type="text" name="web" placeholder="个人或公司网站">    
+              <input type="text" name="web" placeholder="个人或公司网站" value="<%=www%>">    
               <span>选填</span>
             </dd>
           </dl>

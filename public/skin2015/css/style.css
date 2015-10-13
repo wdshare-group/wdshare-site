@@ -13,7 +13,7 @@ a:hover { color:#4183c4; text-decoration:none;}
 
 a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,header,footer { -webkit-tap-highlight-color:rgba(0,0,0,0); -moz-tap-highlight-color:rgba(0,0,0,0); -o-tap-highlight-color:rgba(0,0,0,0); -ms-tap-highlight-color:rgba(0,0,0,0); tap-highlight-color:rgba(0,0,0,0);}
 input { outline:none; font-family:"Microsoft YaHei";}
-textarea { outline:none;}
+textarea { outline:none; resize:none;}
 
 
 /**/
@@ -71,6 +71,7 @@ body { background:#f7f7f7;}
 /**/
 .hd-login { float:right;}
 .hd-login a { margin-top:18px;}
+.hd-login a span { color:#ff0;}
 .hd-login .but-login { border-radius:10px 0 0 10px; -webkit-border-radius:10px 0 0 10px; -moz-border-radius:10px 0 0 10px; -o-border-radius:10px 0 0 10px;}
 .hd-login .but-reg { border-radius:0 10px 10px 0; -webkit-border-radius:0 10px 10px 0; -moz-border-radius:0 10px 10px 0; -o-border-radius:0 10px 10px 0;}
 
@@ -124,6 +125,10 @@ body { background:#f7f7f7;}
 .login-inner p { margin:15px auto;}
 .login-inner .link { text-align:center; font-size:18px; padding-top:25px; margin-bottom:0;}
 .login-inner .link a { padding:0 26px;}
+
+.login-main .text-message { font-size:16px; width:80%; margin:auto; padding:15px 0; line-height:180%;}
+.login-main .text-message a { font-weight:bold; color:#00f;}
+.login-main .text-message a:hover { color:#c00;}
 
 /**/
 .login-input { width:205px; margin-left:auto; margin-right:auto; padding-left:50px; background-color:#f5f6f9; background-repeat:no-repeat; background-position:15px center; background-size:22px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
@@ -204,14 +209,16 @@ div { *display:none;}
 .mamber-face img { width:50px; height:50px; display:block; border-radius:50px;}
 .mamber-text { margin-left:65px;}
 
-.mamber-label { float:right; position:relative; margin:0 15px;}
+.mamber-label { float:left; position:relative; margin:0 20px 0 0;}
 .mamber-label a { color:#666;}
 .mamber-label a:hover { border-bottom:0;}
 .mamber-label a em { display:inline-block; width:0px; height:0px; margin:0 0 0 6px; border-bottom:10px solid #999; border-left:9px solid transparent;}
-.mamber-label ul { display:none; width:100px; position:absolute; left:60px; top:0; border:1px solid #e5e5e5; background:#fff; font-size:13px; line-height:30px; padding:5px 0; border-radius: 10px;}
+.mamber-label ul { display:none; width:100px; position:absolute; left:60px; top:0; border:1px solid #e5e5e5; background:#fff; font-size:13px; line-height:30px; padding:5px 0; border-radius:10px; z-index:10;}
 .mamber-label ul li { padding:0 10px;}
 .mamber-label ul li:nth-child(even) { background:#f2f2f2;}
 .mamber-label:hover ul { display:block;}
+
+.mamber-type span { margin-right:15px;}
 
 .mamber-item:nth-child(odd) .mamber-text { padding-right:30px;}
 .mamber-item:nth-child(even) .mamber-face { padding-left:30px;}
@@ -378,3 +385,65 @@ a.article-top-comment-link { color:#ff8400;}
 
 
 
+/* active */
+.myhome-head {
+  background:#3a74ad;
+  background: -moz-linear-gradient(45deg,  #3a74ad 0%, #3da0b5 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#3a74ad), color-stop(100%,#3da0b5)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* IE10+ */
+  background: linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a74ad', endColorstr='#3da0b5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+.myhome-head { color: #fff; text-align:left; text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
+  -webkit-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+     -moz-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+          box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+}
+.myhome-head-bg { padding: 0 0; background:url(../img/active-head-bg.png) repeat center center;}
+.myhome-head-con { line-height:200%; padding:50px 0; font-size:16px; position:relative; min-height:200px;}
+.myhome-head-con a { color:#fff;}
+.myhome-head-con a:hover { color:#ff0;}
+
+.myhome-head-girl {
+  background:#1b674d; color:#eee;
+  background: -moz-linear-gradient(45deg,  #b13938 0%, #c47f3e 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#b13938), color-stop(100%,#c47f3e)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(45deg,  #b13938 0%,#c47f3e 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(45deg,  #b13938 0%,#c47f3e 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(45deg,  #b13938 0%,#c47f3e 100%); /* IE10+ */
+  background: linear-gradient(45deg,  #b13938 0%,#c47f3e 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b13938', endColorstr='#c47f3e',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.myhome-head-user { text-align:center; padding-top:10px;}
+.myhome-head-user img { width:128px; height:128px; border-radius:200px; display:block; margin:auto;}
+.myhome-head-user h1 { font-size:28px; line-height:200%; padding-top:10px;}
+
+
+.myhome-nav { line-height:220%; background:#ccc; color:#000; font-size:18px; text-align:center;}
+.myhome-nav a { display:inline-block; padding:0 15px; margin:10px 0;}
+.myhome-nav a:hover,
+.myhome-nav .current { background:#666; color:#fff;}
+
+
+/**/
+.edit-body { width:60%; margin:auto; padding:50px 0 80px;}
+
+.edit-body dl { width:80%; margin:auto; overflow:hidden; padding:6px 0; line-height:32px;}
+.edit-body dt { float:left; width:100px; text-align:right;}
+.edit-body dd { margin-left:110px;}
+.edit-body .in-text { width:220px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2; font-size:14px;}
+.edit-body dd span { padding-left:20px; font-size:14px; color:#999;}
+.edit-body dd textarea { width:400px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2; font-size:14px; line-height:20px;}
+.edit-body dd select { width:232px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2;}
+.edit-body dd label { padding-right:20px;}
+.edit-body dd .text-content { height:100px;}
+.edit-but { text-align:center; padding-top:20px;}
+.edit-but input { cursor:pointer; margin:10px auto 0; display:inline-block; width:255px; color:#fff; line-height:44px; font-size:1.1rem; background:#ff6201 url("../img/icon-login-submit.png") no-repeat 160px center; background-size:8px; border:0; /*border-bottom:4px solid #007448;*/ box-shadow:0 4px 0 #b64600; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px; letter-spacing:0.3em;}
+.edit-but input:hover { background-color:#ff3d01;}
+
+.edit-body h2 { border-top:1px solid #ccc; text-align:center; height:40px; margin-top:40px;}
+.edit-body h2 strong { background:#f7f7f7; display:inline-block; line-height:30px; font-size:16px; font-weight:bold; padding:0 20px; position:relative; top:-15px;}
+.edit-body h2 em { color:#666; font-size:14px;}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿## wdshare-site
 xi'an wdshare.org website
 
@@ -24,3 +25,10 @@ mongod --bind_ip 127.0.0.1 --logpath "D:\environment\mongodb\log\wd.log" --logap
 
 ###mongodb 入门：
 http://mongodb.github.io/node-mongodb-native/api-articles/nodekoarticle1.html
+=======
+# wdshare-site
+xi'an wdshare.org website
+
+
+思维导图：http://mindmap.4ye.me/eFokkvX5/1
+>>>>>>> origin/master

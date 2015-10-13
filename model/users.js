@@ -4,8 +4,7 @@ var mongoose = require('mongoose'),
     dataBase = require("../server/config.js").db,
     Factory,
     db;
-
-mongoose.connect('mongodb://localhost/'+dataBase);
+    
 db           = mongoose.connection;
 
 // 请不要使用下面的 save 之后的方法，这些方法 mongoosee 有原生的，更好用。
@@ -38,6 +37,8 @@ Users.prototype = {
             role:Number,
             password:String,
             age: Number,
+            lastLoginTime: Number,
+            lastLoginIp: String,
             regTime:Number,
             regIp : String,
             sex:Number,
@@ -46,7 +47,10 @@ Users.prototype = {
             isActive:Boolean,
             activeTime:Number,
             changeEmail:String,
-            changeTimes:Number
+            changeTimes:Number,
+            lock:Boolean,
+            lockTime:Number,
+            lockMessage:String
         });
         this.resetPassword = new this.Schema({
             email: {

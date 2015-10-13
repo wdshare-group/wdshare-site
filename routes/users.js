@@ -1,4 +1,6 @@
 var express = require('express'),
+    fs = require('fs'),
+    path = require('path'),
     sendMail = require("../server/sendMail.js"),
     router = express.Router(),
     init = require("../server/init.js"),
@@ -8,88 +10,295 @@ var express = require('express'),
     moment = require("moment"),
     config = require("../server/config");
 
-//编辑用户资料
-router.route('/user').all(authorize).get(function (req, res) {
+//编辑用户资料  user_infos表操作
+router.route('/editInfo').get(function (req, res) {
     "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
     var id = req.session.user._id;
-    usersModel.getAll({
-        key: "Category"
-    }, function (err, categories) {
-        if (err) {
-            categories = [];
+
+    var userdata = {};
+
+    // 先查users表的用户信息
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
         }
+    }, function (err, data) {
+        if (data) {
+            userdata = data;
+        }
+        // 再查info
+        usersInfosModel.getOne({
+            key: "User_info",
+            body: {
+                userid: id
+            }
+        }, function (err, data) {
+            if (err || !data) {// 会员信息不存在
+                res.render('users/user_info', {
+                    title: "修改信息",
+                    info: {},
+                    userdata: userdata
+                });
+            } else {// 已存在
+                res.render("users/user_info", {
+                    title: '修改信息',
+                    info: data,
+                    userdata: userdata
+                });
+            }
+        });
+    });
+    
+}).post(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "未登录！"
+        });
+        return false;
+    }
+
+    var mood = req.body.mood || "",
+        sex = parseInt(req.body.sex),
+        realname = req.body.realname || "",
+        tag = req.body.tag || "",
+        jobstate = parseInt(req.body.jobstate),
+        com = req.body.com || "",
+        jobs = req.body.jobs || "",
+        school = req.body.school || "",
+        isPartTime = req.body.isPartTime == "2" ? false : true,
+        phone = req.body.phone || "",
+        qq = req.body.qq || "",
+        wechat = req.body.wechat || "",
+        www = req.body.www || "",
+        weibo = req.body.weibo || "",
+        github = req.body.github || "",
+        introduction = req.body.introduction || "";
+        // realname = req.body.realname,
+        // tag = req.body.tag,
+        // jobstate = parseInt(req.body.jobstate),
+        // com = req.body.com,
+        // jobs = req.body.jobs,
+        // school = req.body.school,
+        // isPartTime = req.body.isPartTime == "2" ? false : true,
+        // phone = req.body.phone,
+        // qq = req.body.qq,
+        // wechat = req.body.wechat,
+        // www = req.body.www,
+        // weibo = req.body.weibo,
+        // github = req.body.github,
+        // introduction = req.body.introduction;
+
+        // 限制字符串长度
+        mood = mood.substring(0,200);
+        realname = realname.substring(0,10);
+        tag = tag.substring(0,50);
+        com = com.substring(0,32);
+        jobs = jobs.substring(0,32);
+        school = school.substring(0,32);
+        phone = phone.substring(0,11);
+        qq = qq.substring(0,32);
+        wechat = wechat.substring(0,32);
+        www = www.substring(0,64);
+        weibo = weibo.substring(0,64);
+        github = github.substring(0,64);
+        introduction = introduction.substring(0,1000);
+
+    var user_error_msg,
+        info_error_msg,
+        user_flag,
+        info_flag;
+
+
+    // 检测是否有http://
+    if ( www.indexOf("http://") < 0 ) {
+        www = "http://" + www;
+    }
+    if ( weibo.indexOf("http://") < 0 ) {
+        weibo = "http://" + weibo;
+    }
+    if ( github.indexOf("http://") < 0 ) {
+        github = "http://" + github;
+    }
+
+
+    var id = req.session.user._id;
+
+
+    // 写入users表的用户昵称
+    if ( req.body.nickname ) {
+        var nickname = req.body.nickname;
+        nickname = nickname.substring(0,16);
         usersModel.getOne({
             key: "User",
             body: {
-                _id: id
+                username: nickname
             }
-        }, function (err, user) {
-            if (err) {
-                user = {};
+        }, function (err, data) {
+            if ( err ) {
+                user_flag = false;
+                pageSend();
+                return false;
             }
-            res.render('admin/user', {
-                title: 'oSpring',
-                description: "为新而生",
-                categories: categories,
-                user: user,
-                cur: "user"
-            });
+            
+            if (data == null) {
+                usersModel.update({
+                    _id: id
+                }, {
+                    key: "User",
+                    body: {
+                        username: nickname
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        user_flag = false;
+                        user_error_msg = "昵称保存错误！";
+                        pageSend();
+                    } else {
+                        user_flag = true;
+                        pageSend();
+                    }
+                });
+            } else {
+                user_flag = false;
+                user_error_msg = "昵称已被占用，请换一个试试！";
+                pageSend();
+            }
         });
-    });
-}).post(function (req, res) {
-    "use strict";
-    var username = req.body.username || req.session.user.email,
-        age = req.body.age || 18,
-        sex = req.body.sex || null,
-        id = req.session.user._id;
+    } else {
+        user_flag = true;
+        pageSend();
+    }
+    
 
-    usersModel.update({
-        _id: id
-    }, {
-        key: "User",
+    // 写入user_infos表的用户信息
+    usersInfosModel.getOne({
+        key: "User_info",
         body: {
-            //email: email,
-            username: username,
-            age: age,
-            sex: sex
+            userid: id
         }
-    }, function (err, num, data) {
-        if (err) {
-            res.send({
-                message: err
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            usersInfosModel.save({
+                key: "User_info",
+                body: {
+                    email: req.session.user.email,
+                    userid: id,
+                    mood: mood,
+                    sex: sex,
+                    realname: realname,
+                    tag: tag,
+                    jobstate: jobstate,
+                    com: com,
+                    jobs: jobs,
+                    school: school,
+                    isPartTime: isPartTime,
+                    phone: phone,
+                    qq: qq,
+                    wechat: wechat,
+                    www: www,
+                    weibo: weibo,
+                    github: github,
+                    introduction: introduction,
+                    updataTime: (new Date()).getTime(),
+                    updataIp: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+                }
+            }, function (err, data) {
+                if (err) {
+                    info_flag = false;
+                    info_error_msg = "添加失败aaa，请稍后重试！";
+                    pageSend();
+                } else {
+                    info_flag = true;
+                    pageSend();
+                }
             });
-            return;
+        } else {// 已存在
+            usersInfosModel.update({
+                userid: id
+            }, {
+                key: "User_info",
+                body: {
+                    userid: id,
+                    mood: mood,
+                    sex: sex,
+                    realname: realname,
+                    tag: tag,
+                    jobstate: jobstate,
+                    com: com,
+                    jobs: jobs,
+                    school: school,
+                    isPartTime: isPartTime,
+                    phone: phone,
+                    qq: qq,
+                    wechat: wechat,
+                    www: www,
+                    weibo: weibo,
+                    github: github,
+                    introduction: introduction,
+                    updataTime: (new Date()).getTime(),
+                    updataIp: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
+                }
+            }, function (err, data) {
+                if (err) {
+                    info_flag = false;
+                    info_error_msg = "修改失败，请稍后重试！";
+                    pageSend();
+                } else {
+                    info_flag = true;
+                    pageSend();
+                }
+            });
         }
-        for (var key in data) {
-            if (!data.hasOwnProperty[key]) {
-                req.session.user[key] = data[key];
-            }
-        }
-        res.send({
-            id: data._id,
-            status: 200,
-            code: 1,
-            message: "更新成功！"
-        });
     });
+
+
+    function pageSend() {
+        if ( user_flag === undefined || info_flag === undefined ) {
+            return false;
+        }
+        var msg = '';
+        if ( user_error_msg ) {
+            msg += user_error_msg;
+        }
+        if ( info_error_msg ) {
+            msg += "<br />"+ info_error_msg;
+        }
+
+        if ( user_flag && info_flag ) {
+            res.send({
+                status: 200,
+                code: 1,
+                message: "信息提交成功！"
+            });
+        } else {
+            res.send({
+                status: 200,
+                code: 0,
+                message: msg
+            });
+        }
+    };
+    
 });
 
-//修改密码
-router.route("/password").all(authorize).get(function (req, res) {
+
+// 修改密码
+router.route("/editPassword").get(function (req, res) {
     "use strict";
-    usersModel.getAll({
-        key: "Category"
-    }, function (err, categories) {
-        if (err) {
-            categories = [];
-        }
-        res.render('admin/password', {
-            title: 'oSpring',
-            "description": "为新而生",
-            categories: categories,
-            cur: "password"
-        });
-    });
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    res.render('users/editPassword');
 }).post(function (req, res) {
     "use strict";
     var password = req.body.password,
@@ -99,11 +308,27 @@ router.route("/password").all(authorize).get(function (req, res) {
         NewPasswordHash = crypto.createHash("sha1").update(new Buffer(newPassword, "binary")).digest('hex'),
         user = req.session.user.email;
 
-    if (newPassword.length < 8 || newPassword !== reNewPassword) {
+    if (newPassword.length < 6) {
         res.send({
             status: 200,
             code: 0,
-            message: "新密码强度不符合要求或两次密码不一致！"
+            message: "新密码太短了，至少大于6位！"
+        });
+        return;
+    }
+    if (newPassword === password) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "新密码与旧密码不能一样！"
+        });
+        return;
+    }
+    if (newPassword !== reNewPassword) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "两次密码不一致！"
         });
         return;
     }
@@ -151,7 +376,7 @@ router.route("/password").all(authorize).get(function (req, res) {
             res.send({
                 status: 200,
                 code: 0,
-                message: "更新失败，原始密码错误，请重试！"
+                message: "更新失败，旧密码错误，请重试！"
             });
             return;
         }
@@ -159,10 +384,264 @@ router.route("/password").all(authorize).get(function (req, res) {
 });
 
 
+/*
+// 更新邮件地址
+// 输入新的邮箱地址，发送激活邮件
+router.route("/email").all(authorize).get(function (req, res) {
+    "use strict";
+    usersModel.getAll({
+        key: "Category"
+    }, function (err, categories) {
+        if (err) {
+            categories = [];
+        }
+        res.render('admin/email', {
+            categories: categories,
+            cur: "email"
+        });
+    });
+}).post(function (req, res) {
+    "use strict";
+    var email = req.session.user.email,
+        newEmail = req.body.email,
+        regCode = crypto.createHash("sha1").update(new Buffer(newEmail + (Math.random() * 10000000000).toFixed(0), "binary")).digest('hex');
+
+    if (email === newEmail) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "不要调皮哦，你就没有修改邮箱嘛！"
+        });
+        return false;
+    }
+
+    usersModel.getOne({
+        key: "User",
+        body: {
+            email: newEmail
+        }
+    }, function (err, user) {
+        if (err || user) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "不要调皮哦，此邮件地址已经被使用！"
+            });
+        } else {
+            usersModel.getOne({
+                key: "User",
+                body: {
+                    email: email
+                }
+            }, function (err, user) {
+                if (err || !user) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "更新邮箱失败，服务器错误！"
+                    });
+                } else if (user.changeTimes >= config.changeTimes) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "更新邮箱失败，已经超过允许更换邮箱的最大次数！"
+                    });
+                } else {
+                    usersModel.update({
+                        email: email
+                    }, {
+                        key: "User",
+                        body: {
+                            changeEmail: newEmail,
+                            "regCode": regCode,
+                            "isActive": false
+                        }
+                    }, function (err, num) {
+                        if (err || num < 1) {
+                            res.send({
+                                status: 200,
+                                code: 0,
+                                message: "更新邮箱失败，服务器错误！"
+                            });
+                        } else {
+                            sendMail({
+                                from: config.mail.sendMail,
+                                to: newEmail,
+                                subject: '更换邮件重新激活账户',
+                                html: '感谢您使用' + config.title + '，以下是您新邮箱的激活链接，\n\r <a href="' + config.url + '/updateEmail/' + regCode + '">' + config.url + '/updateEmail/' + regCode + '</a>请点击链接以激活您的账户！'
+                            });
+                            res.send({
+                                status: 200,
+                                code: 1,
+                                message: "已向新邮箱地址发送激活邮件成功，请稍后收取邮件并点击激活链接以激活账户！"
+                            });
+                        }
+                    });
+
+                }
+            });
+        }
+    });
+});
+
+// 更换邮件地址
+// 点击激活链接 更换新邮件地址
+router.route("/updateEmail/:code").all(authorize).get(function (req, res) {
+    "use strict";
+    var code = req.params.code;
+
+    if (!code) {
+        usersModel.getAll({
+            key: "Category"
+        }, function (err, categories) {
+            if (err) {
+                categories = [];
+            }
+            res.render('admin/error', {
+                categories: categories,
+                err: "服务器错误或激活码链接有错，请重试！"
+            });
+        });
+        return false;
+    }
+
+    usersModel.getOne({
+        key: "User",
+        body: {
+            regCode: code
+        }
+    }, function (err, user) {
+        if (err || !user) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "服务器错误或激活码链接有错，请重试！"
+            });
+        } else {
+
+            usersModel.update({
+                regCode: code
+            }, {
+                key: "User",
+                body: {
+                    email: user.changeEmail,
+                    changeTimes: user.changeTimes + 1,
+                    regCode: "",
+                    "isActive": true
+                }
+            }, function (err, num) {
+                if (err || num < 1) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "更新邮箱失败，服务器错误！"
+                    });
+                } else {
+                    if (user.regCode && !user.isActive) {
+                        sendMail({
+                            from: config.mail.sendMail,
+                            to: user.changeEmail,
+                            subject: '邮箱更新成功',
+                            html: '感谢您对' + config.title + '的厚爱，您的邮箱已成功更换，可以正常使用，访问：' + config.url
+                        });
+                        req.session.user = null;
+                        res.send({
+                            status: 200,
+                            code: 1,
+                            message: "您的邮箱已成功更换，可以正常使用，请重新登录！"
+                        });
+                    } else {
+                        res.send({
+                            status: 500,
+                            code: 0,
+                            message: "此链接已失效，请不要重复点击此链接哦！"
+                        });
+                    }
+                }
+            });
+        }
+    });
+});
+ */
+
+
+//编辑用户资料
+router.route('/').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至用户中心页面
+    res.redirect("/user/"+req.session.user._id);
+});
+
+
+// 读取并返回文件列表
+function geFileList(path) {
+    var filesList = [];
+    readFile(path, filesList);
+    return filesList;
+}
+
+//遍历读取文件
+function readFile(path, filesList) {
+    files = fs.readdirSync(path); //需要用到同步读取
+    files.forEach(walk);
+
+    function walk(file) {
+        states = fs.statSync(path + '/' + file);
+        if (states.isDirectory()) {
+            readFile(path + '/' + file, filesList);
+        } else {
+            //创建一个对象保存信息
+            var obj = new Object();
+            obj.size = states.size; //文件大小，以字节为单位
+            obj.name = file; //文件名
+            obj.path = path + '/' + file; //文件绝对路径
+            filesList.push(obj);
+        }
+    }
+}
+
+// 获取用户头像
+router.route('/face/:id').get(function (req, res) {
+    // 待完善，过去用户头像，头像路径不存数据库，上传头像的直接创建ID命名的图片，没上传的显示默认头像
+    var id = req.params.id,
+        userPath = path.join(__dirname, '../public/users/'+id+'/face'),
+        defaultPath = path.join(__dirname, '../public/users/default-face.png'),
+        faceFileName;
+
+    if ( !fs.existsSync(userPath) ) {// 会员头像文件夹不存在时
+        // console.log("no");
+        _send(defaultPath, "png");
+    } else if ( geFileList(userPath).length < 1 ) {// 文件夹存在，但没有文件
+        // console.log("yes");
+        _send(defaultPath, "png");
+    } else {// 有文件时的处理【我们的face目录下默认值会显示一张图片】
+        faceFileName = geFileList(userPath)[0].name;
+        // console.log("ok");
+        _send(userPath +'/'+ faceFileName, faceFileName.substring(faceFileName.indexOf(".")+1));
+    }
+    
+    /**
+     * 返回图片信息
+     * @param  {String} _path 需要返回图片的路径
+     * @param  {String} _type 图片后缀
+     * @return
+     */
+    function _send(_path, _type) {
+        fs.readFile(_path, function (err, img) {
+            res.writeHead('200', {'Content-Type': 'image/'+_type});    //写http头部信息
+            res.end(img, 'binary');
+        });
+    };
+});
+
 // 找回密码
 router.route('/forgotPassword').get(function (req, res) {
     "use strict";
-    console.log("get");
     if (req.session.user) { // 如果登录直接返回前一个页面
         res.redirect(goBack(req.headers.referer));
     }
@@ -376,10 +855,79 @@ router.post('/resetPassword/:hash', function (req, res) {
     });
 });
 
-// 激活账户
-// 激活账户     /*可以通过先登录，然后再激活的方案来防止被错误激活。*/
+// 激活账户页面-提示
+router.get("/activeAccount/", function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+    }
+
+    var email = req.session.user.email;
+
+    usersModel.getOne({
+        key: "User",
+        body: {
+            email: email
+        }
+    }, function (err, user) {
+        if (err || !user) {
+            res.render('users/empty', {title:'账户激活', content:'服务器错误，请稍后尝试刷新！'});
+        } else {
+            if ( !user.regCode && user.isActive ) {
+                res.redirect("/user/");
+                return false;
+            }
+            res.render('users/empty', {title:'账户激活', content:'1. 请从邮箱中点击激活链接进行账户激活，否则无法正常使用会员功能。<br />2. 如果没有收到激活邮件请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
+        }
+    });
+});
+// 激活账户页面-激活
 router.get("/activeAccount/:code", function (req, res) {
     "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+    var code = req.params.code;
+    var email = req.session.user.email;
+
+    usersModel.getOne({
+        key: "User",
+        body: {
+            email: email
+        }
+    }, function (err, user) {
+        if (err || !user) {
+            res.render('users/empty', {title:'账户激活', content:'服务器错误，请稍后尝试刷新！'});
+        } else {
+            if ( !user.regCode && user.isActive ) {
+                res.redirect("/user/");
+                return false;
+            }
+            if ( user.regCode !== code ) {
+                res.render('users/empty', {title:'账户激活', content:'你的激活链接好像不正确，请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
+                return false;
+            }
+            if (user.regCode && !user.isActive) {
+                res.render('users/empty', {title:'账户激活', regCode:user.regCode, content:'正在激活账户，请不要关闭浏览器...'});
+            } else {
+                res.render('users/empty', {title:'账户激活', content:'不要重复激活啦，<a href="/">返回首页</a>'});
+            }
+        }
+    });
+});
+// 激活账户    /*可以通过先登录，然后再激活的方案来防止被错误激活。*/
+// AJAX
+router.get("/activeAccountAjax/:code", function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.send({
+            status: 500,
+            code: 0,
+            message: "请先登录后再进行账户激活！"
+        });
+        return false;
+    }
     var code = req.params.code,
         email;
     usersModel.getOne({
@@ -417,21 +965,51 @@ router.get("/activeAccount/:code", function (req, res) {
                         from: config.mail.sendMail,
                         to: email,
                         subject: '激活成功',
-                        html: '感谢您注册' + config.title + '，您的账户已成功激活，可以正常使用，访问：' + config.url
+                        html: '感谢您注册' + config.title + '，您的账户已成功激活，可以正常使用，请访问：' + config.url
                     });
-                    res.send({
-                        status: 200,
-                        code: 1,
-                        message: "账户已成功激活，感谢您的使用！"
+
+                    // 再次请求数据以便更新session
+                    usersModel.getOne({
+                        key: "User",
+                        body: {
+                            email: email
+                        }
+                    }, function(err, user) {
+                        if (err || !user) {
+                            res.send({
+                                status: 200,
+                                code: 0,
+                                message: "账户激活失败，服务器错误，请重试！"
+                            });
+                        } else {
+                            req.session.user = user;
+                            res.send({
+                                status: 200,
+                                code: 1,
+                                message: "账户已成功激活，感谢您的使用！",
+                                url: "/user/"
+                            });
+                        }
                     });
+                    
                 }
             });
         }
     });
 });
 // 发送激活邮件
-router.route("/activeAccount").all(authorize).get(function (req, res) {
+// AJAX
+router.route("/activeAccountAjax").get(function (req, res) {
     "use strict";
+    if (!req.session.user) {
+        res.send({
+            status: 500,
+            code: 0,
+            message: "请先登录后再进行账户激活！"
+        });
+        return false;
+    }
+
     var email = req.session.user.email,
         duration = config.activeDuration * 60 * 1000,
         msTime = (new Date).getTime(),
@@ -464,7 +1042,7 @@ router.route("/activeAccount").all(authorize).get(function (req, res) {
                     from: config.mail.sendMail,
                     to: email,
                     subject: '注册成功',
-                    html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/activeAccount/' + user.regCode + '">' + config.url + '/activeAccount/' + user.regCode + '</a>请点击链接以激活您的账户！'
+                    html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + user.regCode + '">' + config.url + '/user/activeAccount/' + user.regCode + '</a>请点击链接以激活您的账户！'
                 });
                 usersModel.update({
                     email: email
@@ -483,190 +1061,11 @@ router.route("/activeAccount").all(authorize).get(function (req, res) {
                 res.send({
                     status: 500,
                     code: 0,
-                    message: "发送激活邮件失败，请不要重复请求激活邮件！"
+                    message: "请不要重复请求激活邮件！"
                 });
             }
         }
     });
-});
-
-// 更新邮件地址
-// 输入新的邮箱地址，发送激活邮件
-router.route("/email").all(authorize).get(function (req, res) {
-    "use strict";
-    usersModel.getAll({
-        key: "Category"
-    }, function (err, categories) {
-        if (err) {
-            categories = [];
-        }
-        res.render('admin/email', {
-            categories: categories,
-            cur: "email"
-        });
-    });
-}).post(function (req, res) {
-    "use strict";
-    var email = req.session.user.email,
-        newEmail = req.body.email,
-        regCode = crypto.createHash("sha1").update(new Buffer(newEmail + (Math.random() * 10000000000).toFixed(0), "binary")).digest('hex');
-
-    if (email === newEmail) {
-        res.send({
-            status: 200,
-            code: 0,
-            message: "不要调皮哦，你就没有修改邮箱嘛！"
-        });
-        return false;
-    }
-
-    usersModel.getOne({
-        key: "User",
-        body: {
-            email: newEmail
-        }
-    }, function (err, user) {
-        if (err || user) {
-            res.send({
-                status: 200,
-                code: 0,
-                message: "不要调皮哦，此邮件地址已经被使用！"
-            });
-        } else {
-            usersModel.getOne({
-                key: "User",
-                body: {
-                    email: email
-                }
-            }, function (err, user) {
-                if (err || !user) {
-                    res.send({
-                        status: 200,
-                        code: 0,
-                        message: "更新邮箱失败，服务器错误！"
-                    });
-                } else if (user.changeTimes >= config.changeTimes) {
-                    res.send({
-                        status: 200,
-                        code: 0,
-                        message: "更新邮箱失败，已经超过允许更换邮箱的最大次数！"
-                    });
-                } else {
-                    usersModel.update({
-                        email: email
-                    }, {
-                        key: "User",
-                        body: {
-                            changeEmail: newEmail,
-                            "regCode": regCode,
-                            "isActive": false
-                        }
-                    }, function (err, num) {
-                        if (err || num < 1) {
-                            res.send({
-                                status: 200,
-                                code: 0,
-                                message: "更新邮箱失败，服务器错误！"
-                            });
-                        } else {
-                            sendMail({
-                                from: config.mail.sendMail,
-                                to: newEmail,
-                                subject: '更换邮件重新激活账户',
-                                html: '感谢您使用' + config.title + '，以下是您新邮箱的激活链接，\n\r <a href="' + config.url + '/updateEmail/' + regCode + '">' + config.url + '/updateEmail/' + regCode + '</a>请点击链接以激活您的账户！'
-                            });
-                            res.send({
-                                status: 200,
-                                code: 1,
-                                message: "已向新邮箱地址发送激活邮件成功，请稍后收取邮件并点击激活链接以激活账户！"
-                            });
-                        }
-                    });
-
-                }
-            });
-        }
-    });
-});
-
-// 更换邮件地址
-// 点击激活链接 更换新邮件地址
-router.route("/updateEmail/:code").all(authorize).get(function (req, res) {
-    "use strict";
-    var code = req.params.code;
-
-    if (!code) {
-        usersModel.getAll({
-            key: "Category"
-        }, function (err, categories) {
-            if (err) {
-                categories = [];
-            }
-            res.render('admin/error', {
-                categories: categories,
-                err: "服务器错误或激活码链接有错，请重试！"
-            });
-        });
-        return false;
-    }
-
-    usersModel.getOne({
-        key: "User",
-        body: {
-            regCode: code
-        }
-    }, function (err, user) {
-        if (err || !user) {
-            res.send({
-                status: 200,
-                code: 0,
-                message: "服务器错误或激活码链接有错，请重试！"
-            });
-        } else {
-
-            usersModel.update({
-                regCode: code
-            }, {
-                key: "User",
-                body: {
-                    email: user.changeEmail,
-                    changeTimes: user.changeTimes + 1,
-                    regCode: "",
-                    "isActive": true
-                }
-            }, function (err, num) {
-                if (err || num < 1) {
-                    res.send({
-                        status: 200,
-                        code: 0,
-                        message: "更新邮箱失败，服务器错误！"
-                    });
-                } else {
-                    if (user.regCode && !user.isActive) {
-                        sendMail({
-                            from: config.mail.sendMail,
-                            to: user.changeEmail,
-                            subject: '邮箱更新成功',
-                            html: '感谢您对' + config.title + '的厚爱，您的邮箱已成功更换，可以正常使用，访问：' + config.url
-                        });
-                        req.session.user = null;
-                        res.send({
-                            status: 200,
-                            code: 1,
-                            message: "您的邮箱已成功更换，可以正常使用，请重新登录！"
-                        });
-                    } else {
-                        res.send({
-                            status: 500,
-                            code: 0,
-                            message: "此链接已失效，请不要重复点击此链接哦！"
-                        });
-                    }
-                }
-            });
-        }
-    });
-
 });
 
 //登录
@@ -710,6 +1109,23 @@ router.route('/login').post(function (req, res) {
 
             req.session.user = data;
 
+            // 更新最后登录日期和IP
+            // console.log(req.session.user.email);
+            usersModel.update({
+                email: req.session.user.email
+            }, {
+                key: "User",
+                body: {
+                    lastLoginIp: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+                    lastLoginTime: (new Date()).getTime()
+                }
+            }, function (err, num, data) {
+                // console.log("err"+err);
+                // console.log(num);
+                // console.log("data"+data);
+            });
+
+            // 向页面输出信息
             res.send({
                 status: 200,
                 code: 1,
@@ -781,17 +1197,23 @@ router.post('/register', function (req, res) {
                 email: email,
                 username: email,
                 password: hash,
-                age: 18,
+                // age: 18, // 注释掉的将迁移至会员信息表中
+                lastLoginTime: 0,
+                lastLoginIp: "",
                 regTime: (new Date()).getTime(),
                 regIp: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-                sex: null,
-                role: 5,
-                score: 0,
+                // sex: null,
+                // role: 5,
+                // score: 0,
                 regCode: regCode,
                 isActive: 0,
                 activeTime: 0,
                 changeEmail: email,
-                changeTimes: 0
+                changeTimes: 0,
+                lock: false,
+                lockTime: 0,
+                lockMessage: ""
+
             }
         }, function (err, data) {
 
@@ -807,7 +1229,7 @@ router.post('/register', function (req, res) {
                 from: config.mail.sendMail,
                 to: email,
                 subject: '注册成功',
-                html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/activeAccount/' + regCode + '">' + config.url + '/activeAccount/' + regCode + '</a>请点击链接以激活您的账户！'
+                html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + regCode + '">' + config.url + '/user/activeAccount/' + regCode + '</a>请点击链接以激活您的账户！'
             });
             res.send({
                 status: 200,
@@ -825,6 +1247,52 @@ router.get('/logout', function (req, res) {
         req.session.user = null;
     }
     res.redirect(goBack(req.headers.referer));
+});
+
+
+// 个人主页
+router.route('/:id').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    var id = req.params.id;
+    if (id) {
+        usersModel.getOne({
+            key: "User",
+            body: {
+                _id: id
+            }
+        }, function (err, data) {
+            if (err) {
+                res.render('404');
+                return false;
+            }
+            // 账户被锁定
+            if (data.lock) {
+                res.render('users/empty', {title:'账户被锁定', content:data.lockMessage + "<br/>请联系管理员开通帐号，邮箱：wdshare@163.com"});
+                return false;
+            }
+
+            // 查询info表是否有内容，没有直接跳转至信息填写
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {
+                    res.redirect("/user/edit");
+                } else {
+                    res.render("users/user_home", {title:"个人主页", info:data});
+                }
+            });
+            
+        });
+    }
+
 });
 
 module.exports = router;

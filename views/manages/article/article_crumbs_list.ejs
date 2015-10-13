@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-单页面管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">单页面管理</h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">单页面列表</h3>
+        <div class="manage-tool">
+          <a href="/manage/articleCrumbs/create" class="green">添加单页面</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>URL标识</th>
+                <th>Click</th>
+                <th>Tpl</th>
+                <th>Date</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(article){ %>
+              <tr>
+                <td><%= article.title %></td>
+                <td><%= article.url %></td>
+                <td><%= article.click %></td>
+                <td><%= article.template ? article.template : '默认'%></td>
+                <td><%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %></td>
+                <td><a href="/<%= article.url %>" target="_blank">预览</a><a href="/manage/articleCrumbs/edit/<%= article._id %>">修改</a><a href="#" data-id="<%= article._id %>" class="js-articleCrumbs-delete" style="display:none;">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

@@ -434,13 +434,319 @@ Join.batchInvite = function() {
     };
 };
 
+
+
+
+/**
+ * 单页面管理
+ * @return
+ */
+var ArticleCrumbs = {};
+ArticleCrumbs.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建单页面
+ * @return
+ */
+ArticleCrumbs.create = function() {
+    if ( !document.getElementById("js-articleCrumbs-create-form") ) { return false };
+    
+    $('#js-articleCrumbs-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.title.value ) {
+            alert("页面标题必须填写！");
+            _form.title.focus();
+            return false;
+        }
+        
+        if ( _form.aid == undefined && !_form.url.value ) {
+            alert("URL标识必须填写！");
+            _form.url.focus();
+            return false;
+        }
+        if ( !_form.content.value ) {
+            alert("内容必须填写！");
+            _form.content.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/articleCrumbs/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/articleCrumbs";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除单页面
+ * @return
+ */
+ArticleCrumbs.del = function() {
+    $(".js-articleCrumbs-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个单页面？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/articleCrumbs/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+
+
+
+/**
+ * 管理员
+ * @return
+ */
+var ManageUser = {};
+ManageUser.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建管理员
+ * @return
+ */
+ManageUser.create = function() {
+    if ( !document.getElementById("js-manageuser-create-form") ) { return false };
+    
+    $('#js-manageuser-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.username.value ) {
+            alert("用户名必须填写！");
+            _form.username.focus();
+            return false;
+        }
+        
+        if ( _form.mid == undefined && !_form.password.value ) {
+            alert("密码必须填写！");
+            _form.password.focus();
+            return false;
+        }
+
+        if ( _form.lock.value === "1" && !_form.lockMessage.value ) {
+            alert("锁定原因必须填写！");
+            _form.lockMessage.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/addManage",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/manageUsers";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除管理员
+ * @return
+ */
+ManageUser.del = function() {
+    $(".js-manageUsers-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个管理员？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/delManage/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+/**
+ * 管理员登录
+ * @return
+ */
+function manageLogin() {
+    if ( !document.getElementById("js-manageLoginForm") ) { return false };
+    
+    $('#js-manageLoginForm').submit(function() {
+        var _form = this;
+        if ( !_form.username.value ) {
+            alert("用户名必须填写！");
+            _form.username.focus();
+            return false;
+        }
+        
+        if ( !_form.password.value ) {
+            alert("密码必须填写！");
+            _form.password.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/login",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("登录").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    window.location = "/manage";
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+
+
+
+// 管理导航当前状态初始化
+function manageMenuInit() {
+    if ( $(".manage-module-link").length < 1 ) { return false };
+    var url_menus = ["/manage/active", "/manage/article"],
+        page_menus = ["活动管理", "文章管理"],
+        _lis = $(".manage-module-link dt"),
+        url = window.location.href,
+        current;
+
+    for ( var i=0, l=url_menus.length; i<l; i++ ) {
+        if ( url.indexOf( url_menus[i] ) >= 0 ) {
+            current = i;
+            break;
+        };
+    };
+
+    for ( var i=0, l=_lis.length; i<l; i++ ) {
+        if ( $(_lis[i]).find("em").html() == page_menus[current] ) {
+            $(_lis[i]).parent().addClass("current");
+        };
+    };
+};
+
 /**
  * 启动
  * @return
  */
 function domready() {
+    manageMenuInit();
     Active.init();
     Join.init();
+
+    ArticleCrumbs.init();
+    ManageUser.init();
+    manageLogin();
 };
 
 

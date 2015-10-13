@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-管理员</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">管理员</h1>
+    <div class="manage-module">
+      <form id="js-manageuser-create-form">
+        <!-- <input type="hidden" name="id" value="" /> -->
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">添加管理员</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong>用户名：</strong><input type="text" name="username" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>密码：</strong><input type="text" name="password"/></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>管理权限：</strong>
+                <select name="rank">
+                  <option value="0" selected>超级管理员</option>
+                  <option value="1">普通管理员</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>是否锁定：</strong><label><input type="radio" name="lock" value="1" /> 是</label> &nbsp;&nbsp;&nbsp;&nbsp; <label><input type="radio" name="lock" value="0" checked="checked" /> 否</label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>锁定原因：</strong>
+              <textarea name="lockMessage" cols="30" rows="10"></textarea><span>锁定时请在这里备注原因</span></label>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

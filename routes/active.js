@@ -56,55 +56,6 @@ router.get('/open', function(req, res) {
 });
 
 
-
-/**
- * path:  /active/{活动id}
- * 参加活动页面
- */
-router.get('/:aId', function(req, res,next) {
-    if(req.params.aId){
-        var aId = req.params.aId;
-        acCon.find({_id:new ObjectId(aId)}).then(function(result){
-            if(result&&result[0]){
-                var tpl = result[0].aTpl || "index";
-                res.render('active/end/' + tpl, { title: '活动详情',activeInfo:result[0]});
-                // 记录活动点击
-                acCon.click(result[0]._id, result[0].aClick);
-            }else{
-                res.render('active/end/404', { title: '没有活动',activeInfo:{}});
-            }
-        },function(err){
-            res.render('502',{status:false,error:err});
-        });
-    }else{
-        res.render('404');
-    }
-
-});
-
-/**
- * path:  /active/joinOk/{活动id}
- * 参加活动页面
- * 暂时没用
- */
-router.get('/joinOk/:aId', function(req, res,next) {
-    if(req.params.aId){
-        var aId = req.params.aId;
-        acCon.find({_id:new ObjectId(aId)}).then(function(result){
-            if(result&&result[0]){
-                res.render('active/joinOk', { title: '报名成功',activeInfo:result[0]});
-            }else{
-                res.render('active/joinOk', { title: '没有发现活动',activeInfo:{}});
-            }
-        },function(err){
-            res.render('502',{status:false,error:err});
-        });
-    }else{
-        res.render('404');
-    }
-
-});
-
 /**
  * path:  /active/join/
  * AJAX 请求
@@ -217,15 +168,14 @@ router.post('/join/', function(req, res, next) {
 
 /**
  * path:  /active/joinconfirm/{报名id}
- * 参加活动页面
+ * 参加活动确认页面
  */
 router.get('/joinconfirm/:id', function(req, res,next) {
-    var id,
+    var id  = req.params.id,
         flag = false,
         text = '',
         aid;
-    if(req.params.id) {
-        id = req.params.id;
+    if( id && id.length == 24 ) {
         // 先查到活动ID
         acCon.findJoin({_id:new ObjectId(id)}).then(function(result){
             if ( result && result[0] ) {
@@ -294,19 +244,32 @@ router.get('/joinconfirm/:id', function(req, res,next) {
 
 
 /**
- * path:  /active/users/{活动id}
+ * path:  /active/{活动id}
  * 参加活动页面
- * 暂时不清楚怎么使用
  */
-
-router.get('/users/:aId', function(req, res,next) {
-    if(req.params.aId){
-        var aId = req.params.aId;
+router.get('/:aId', function(req, res,next) {
+    var aId = req.params.aId;
+    if( aId && aId.length == 24 ) {
         acCon.find({_id:new ObjectId(aId)}).then(function(result){
             if(result&&result[0]){
-                res.render('active/users', { title: '活动用户列表',activeInfo:result[0]});
+                var tpl = result[0].aTpl || "index";
+                if ( req.session.user ) {// 查询登录会员信息
+                    usersInfosModel.getOne({
+                        key: "User_info",
+                        body: {
+                            userid: req.session.user._id
+                        }
+                    }, function (err, data) {
+                        res.render('active/end/' + tpl, { title: '活动详情',activeInfo:result[0], userInfo:data});
+                    });
+                } else {
+                    res.render('active/end/' + tpl, { title: '活动详情',activeInfo:result[0], userInfo:{}});
+                }
+                
+                // 记录活动点击
+                acCon.click(result[0]._id, result[0].aClick);
             }else{
-                res.render('active/users', { title: '无活动',activeInfo:null});
+                res.render('active/end/404', { title: '没有活动',activeInfo:{}});
             }
         },function(err){
             res.render('502',{status:false,error:err});
@@ -314,6 +277,7 @@ router.get('/users/:aId', function(req, res,next) {
     }else{
         res.render('404');
     }
+
 });
 
 module.exports = router;

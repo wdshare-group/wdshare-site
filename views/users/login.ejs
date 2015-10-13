@@ -9,6 +9,7 @@
 <body>
 <% include ../etc/head.ejs %>
 
+<div id="js-passport" style="display:none;"></div>
 <div class="login-main">
   <div class="login-main-bg">
     <div class="login-inner">
@@ -24,7 +25,7 @@
         <div class="login-but">
           <input type="submit" name="submitbutton" value="登录" />
         </div>
-        <p class="link"><a href="/user/forgotPassword">忘记密码？</a> <a href="/user/register">注册新帐号</a></p>
+        <p class="link"><a href="/user/forgotPassword">忘记密码？</a> <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册新帐号</a></p>
       </form>
     </div>
   </div>

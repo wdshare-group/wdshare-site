@@ -11,17 +11,20 @@
 <body>
 <% include ./etc/head.ejs %>
 
+<% if ( affiche && affiche != "error" && affiche.title.indexOf("关闭") < 0 ) { %>
 <div class="inform">
   <div class="maxWidth">
-    <div class="inform-con"><strong class="red">重要通知：</strong>官网正在改版，一系列规划实施中，以前的所有数据保存完整，过几天访问哈，给你一个惊喜......</div>
+    <div class="inform-con"><%-affiche.content%></div>
   </div>
 </div>
+<% } %>
 
+<% if ( active && active != "error" ) { %>
 <div class="activity ">
   <div class="maxWidth module">
     <h2 class="module-title">精彩活动</h2>
     <div class="activity-con">
-      <% result.forEach(function(active){ %>      
+      <% active.forEach(function(active){ %>
       <a href="/active/<%= active._id %>" class="activity-item">
         <h3 class="activity-title"><em><%= active.aName %></em></h3>
         <div class="activity-type">
@@ -44,16 +47,29 @@
     <div class="mudule-more"><a href="/active/" class="but but-blue">查看更多活动</a></div>
   </div>
 </div>
+<% } %>
 
+<% if ( users && users != "error" ) { %>
 <div class="mamber">
   <div class="maxWidth module">
     <h2 class="module-title">WDShare成员</h2>
     <div class="mamber-con">
+      <% users.forEach(function(user){ %>
       <div class="mamber-item">
         <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
         <div class="mamber-text">
           <h3 class="mamber-title">
             <a href="#">上海-杰克</a>
+          </h3>
+          <div class="mamber-type">
+            <div class="mamber-label">
+              <a href="#">标签<em></em></a>
+              <ul>
+                <li>HTML5</li>
+                <li>CSS3</li>
+                <li>NodeJS</li>
+              </ul>
+            </div>
             <div class="mamber-label">
               <a href="#">勋章<em></em></a>
               <ul>
@@ -63,16 +79,6 @@
                 <li>WDShare技术文章贡献者</li>
               </ul>
             </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
             <span class="mamber-atricle">文章：3</span>
             <span class="mamber-project">项目：5</span>
             <span class="mamber-good">赞：4323</span>
@@ -80,165 +86,12 @@
           </div>
         </div>
       </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
+      <% }) %>
     </div>
     <div class="mudule-more"><a href="#" class="but but-blue">查看所有成员</a></div>
   </div>
 </div>
+<% } %>
 
 <% include ./etc/foot.ejs %>
 </body>

@@ -1,13 +1,13 @@
 var config = {
     "url":"http://127.0.0.1:3000",
     "socketIO" : "http://127.0.0.1:3000",
-    "title":"wdshare",  //网站名称
-    "description":"为新而生 新一代极简论坛系统",  //网站描述
-    "changeTimes":3,     // 可以更改邮箱次数
+    "title":"WDShare",  //网站名称
+    "description":"WDShare 为西安前端行业发展提供动力",  //网站描述
+    //"changeTimes":3,     // 可以更改邮箱次数
     "activeDuration":5,  // 获取激活邮件的间隔时间，分钟
     "favicon":"o.ico",   //网站小图标
-    "logo":"/images/logo.png",   //网站Logo
-    "theme":"default",
+    "logo":"/static/skin2015/img/logo.png",   //网站Logo
+    //"theme":"default",
     "itemsPerPage":10,   //每页显示多少条
     "cookieParser":"wdshare",  //cookie 加密字符串
     "cookieSession":{          //session 加密字符串

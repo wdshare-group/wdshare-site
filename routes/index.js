@@ -10,26 +10,58 @@ var ObjectId = mongo.ObjectID;
  * 显示所有活动
  */
 router.get('/', function(req, res) {
-    // acCon.find({"aStatus":"1"}).then(function(result){// 获取开启状态的活动
+    var affiche = false,
+        active = false,
+        users = false;
+    // 读取活动
     acCon.find({}).then(function(result) {
-        /*
-        // 区分开始状态与其他状态
-        var openArr = [],disArr = [];
-        result.forEach(function(item){
-            if(item.aStatus == '1'){
-                openArr.push(item);
-            }else{
-                disArr.push(item);
-            }
-        });*/
-
-        res.render('index', {
-            title: '官网首页',
-            result: result
-        });
+        active = result;
+        foo();
     },function(err){
-        res.render('502', { title: '出错啦',error:err});
-    })
+        active = "error";
+        foo();
+    });
+
+    // 读取users
+    usersModel.getAll({
+        key: "User"
+    }, function (err, data) {
+        if (err) {
+            users = "error";
+            foo();
+        } else {
+            users = data;
+            foo();
+        }
+    });
+
+    // 读取公告
+    archiveModel.getOne({
+        key: "Article_crumb",
+        body: {
+            url: "affiche"
+        }
+    }, function (err, data) {
+        if (data && data.url) {
+            affiche = data;
+            foo();
+        } else {
+            affiche = "error";
+            foo();
+        }
+    });
+
+    function foo() {
+        if ( active && affiche && users ) {
+            res.render('index', {
+                title: '官网首页',
+                active: active,
+                affiche: affiche,
+                users: users
+            });
+        }
+        
+    }
 
 });
 

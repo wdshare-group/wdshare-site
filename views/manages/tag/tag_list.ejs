@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-标签管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">标签</h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">标签列表</h3>
+        <div class="manage-tool">
+          <a href="/manage/tag/create" class="green">添加标签</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>权重</th>
+                <th>来源</th>
+                <th>Date</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(tag){ %>
+              <tr>
+                <td><%= tag.name %></td>
+                <td><%= tag.level %></td>
+                <td><%= tag.type === 0 ? '后台' : '前台'%></td>
+                <td><%= moment(tag.editDate).format('YYYY-MM-DD HH:mm:ss') %></td>
+                <td><a href="/manage/tag/edit/<%= tag._id %>">修改</a><a href="#" data-id="<%= tag._id %>" class="js-tag-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

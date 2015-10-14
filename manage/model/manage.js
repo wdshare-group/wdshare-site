@@ -38,11 +38,19 @@ Manage.prototype = {
             lockTime:Number,
             lockMessage:String
         });
+        this.tags = new this.Schema({
+            name:String,
+            level:Number,
+            type:Number,
+            addDate:Number,
+            editDate:Number
+        });
 
     },
     createModel : function(){
         "use strict";
         this.Manage_user = this.mongoose.model('Manage_user',this.manageUsers);
+        this.Tag = this.mongoose.model('Tag',this.tags);
     },
     /*
      * obj {}
@@ -55,7 +63,7 @@ Manage.prototype = {
         "use strict";
         // console.log("save");
         var content = new this[obj.key](obj.body);
-        console.log(content);
+        
         content.save(function(err,doc){
             success && success(err,doc);
         });

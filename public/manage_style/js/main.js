@@ -657,6 +657,119 @@ ArticleChannels.del = function() {
 
 
 
+
+/**
+ * 标签管理
+ * @return
+ */
+var Tags = {};
+Tags.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建标签
+ * @return
+ */
+Tags.create = function() {
+    if ( !document.getElementById("js-tags-create-form") ) { return false };
+    
+    $('#js-tags-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.name.value ) {
+            alert("标签名称必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        
+        if ( !_form.level.value ) {
+            alert("标签权重必须填写！");
+            _form.level.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/tag/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/tags";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除标签
+ * @return
+ */
+Tags.del = function() {
+    $(".js-tag-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个标签？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/tag/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+
+
+
+
+
+
+
 /**
  * 管理员
  * @return
@@ -853,6 +966,7 @@ function domready() {
 
     ArticleCrumbs.init();
     ArticleChannels.init();
+    Tags.init();
     ManageUser.init();
     manageLogin();
 };

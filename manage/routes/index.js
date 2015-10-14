@@ -379,4 +379,206 @@ router.get('/logout', function (req, res) {
 });
 
 
+
+
+
+/**
+ * path:  /manage/tags
+ * 获取标签
+ */
+router.get('/tags', function(req, res) {
+    manageModel.getAll({
+        key: "Tag"
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/tag/tag_list', {
+                title: "标签",
+                result: data
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
+});
+
+
+/**
+ * path:  /manage/tag/create
+ * 添加标签
+ */
+router.get('/tag/create', function(req, res) {
+    res.render('manages/tag/tag_create', {
+        title: "添加标签"
+    });
+});
+// 修改和添加共用
+router.post('/tag/create', function(req, res) {
+    var name = req.body.name,
+        level = req.body.level,
+        type = 0,
+        id = req.body.aid;
+
+    if ( id ) {// 修改
+        manageModel.update({
+                _id: id
+            }, {
+            key: "Tag",
+            body: {
+                name: name,
+                level: level,
+                editDate: (new Date()).getTime()
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: err
+                });
+            }
+            
+            res.send({
+                status: 200,
+                code: 1,
+                message: "修改成功！"
+            });
+        });
+    } else {// 添加
+        manageModel.getOne({
+            key: "Tag",
+            body: {
+                name: name
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "服务器错误，请重试！"
+                });
+                return;
+            }
+
+            if (data && data.name) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "标签已存在！"
+                });
+                return;
+            }
+
+            manageModel.save({
+                key: "Tag",
+                body: {
+                    name: name,
+                    level: level,
+                    type: type,
+                    addDate: (new Date()).getTime(),
+                    editDate: (new Date()).getTime()
+                }
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: err
+                    });
+                }
+                
+                res.send({
+                    status: 200,
+                    code: 1,
+                    message: "添加成功！"
+                });
+            });
+        });
+    }
+});
+
+/**
+ * path:  /manage/tag/edit/:id
+ * 修改标签
+ */
+router.get('/tag/edit/:id', function(req, res) {
+    var id = req.params.id;
+    manageModel.getOne({
+        key: "Tag",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/tag/tag_edit', {
+                title: "修改标签",
+                result: data
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+    });
+});
+
+/**
+ * path:  /manage/tag/del/:id
+ * 删除标签
+ */
+router.get('/tag/del/:id', function(req, res) {
+    var id = req.params.id;
+    manageModel.remove({
+        key: "Tag",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "服务器错误，请重试！"
+            });
+            return;
+        }
+
+        if (data) {
+            res.send({
+                status: 200,
+                code: 1,
+                message: "删除成功！"
+            });
+            return;
+        }
+
+        res.send({
+            status: 200,
+            code: 0,
+            message: "未知错误，请重试！"
+        });
+
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;

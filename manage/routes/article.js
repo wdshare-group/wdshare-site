@@ -182,7 +182,7 @@ router.post('/channel/create', function(req, res) {
 
 /**
  * path:  /manage/article/channel/edit/:id
- * 修改单页面
+ * 修改文章分类
  */
 router.get('/channel/edit/:id', function(req, res) {
     var id = req.params.id;
@@ -199,7 +199,7 @@ router.get('/channel/edit/:id', function(req, res) {
 
         if (data) {
             res.render('manages/article/article_channel_edit', {
-                title: "修改单页面",
+                title: "修改文章分类",
                 result: data
             });
             return;
@@ -211,8 +211,8 @@ router.get('/channel/edit/:id', function(req, res) {
 });
 
 /**
- * path:  /manage/articleCrumbs/del/:id
- * 删除单页面
+ * path:  /manage/article/channel/del/:id
+ * 删除文章分类
  */
 router.get('/channel/del/:id', function(req, res) {
     var id = req.params.id;

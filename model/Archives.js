@@ -60,6 +60,16 @@ Archives.prototype = {
             updataIp:String
             
         });
+        this.articleChannel = new this.Schema({
+            name:String,
+            url:String,
+            parent:String,
+            end_tpl:String,
+            keywords:String,
+            description:String,
+            addDate:Number,
+            editDate:Number
+        });
         this.articleCrumbs = new this.Schema({
             title:String,
             content:String,
@@ -74,6 +84,7 @@ Archives.prototype = {
     createModel : function(){
         "use strict";
         this.Archives     = this.mongoose.model('Archives',this.Archivechema);
+        this.Article_channel  = this.mongoose.model('Article_channel',this.articleChannel);
         this.Article_crumb  = this.mongoose.model('Article_Crumb',this.articleCrumbs);
     },
     /*

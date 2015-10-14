@@ -4,9 +4,9 @@ users // 会员表
 user_infos // 会员基本信息
 resetpws // 正在密码找回记录表
 
-article_channels // 文章分类
-tags // 标签
-archives // 档案内容，包含所有模型的内容【文章、项目、招聘等等】
+article_channels // 文章分类**
+tags // 标签**
+archives // 档案内容，包含所有模型的内容【文章、项目、招聘等等】**
 article_crumbs // 文章单页面内容
 
 manage_users // 管理员

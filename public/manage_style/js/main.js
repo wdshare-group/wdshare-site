@@ -549,6 +549,113 @@ ArticleCrumbs.del = function() {
 
 
 
+/**
+ * 文章分类管理
+ * @return
+ */
+var ArticleChannels = {};
+ArticleChannels.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建文章分类
+ * @return
+ */
+ArticleChannels.create = function() {
+    if ( !document.getElementById("js-articleChannels-create-form") ) { return false };
+    
+    $('#js-articleChannels-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.name.value ) {
+            alert("分类名称必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        
+        if ( _form.aid == undefined && !_form.url.value ) {
+            alert("URL标识必须填写！");
+            _form.url.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/article/channel/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/article/channel";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除文章分类
+ * @return
+ */
+ArticleChannels.del = function() {
+    $(".js-articleChannels-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个分类？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/article/channel/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+
+
 
 /**
  * 管理员
@@ -745,6 +852,7 @@ function domready() {
     Join.init();
 
     ArticleCrumbs.init();
+    ArticleChannels.init();
     ManageUser.init();
     manageLogin();
 };

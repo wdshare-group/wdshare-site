@@ -103,13 +103,15 @@ app.use(function (req, res, next) {
 
 var manage = require('./manage/routes/index');
 var manage_active = require('./manage/routes/active');
+var manage_article = require('./manage/routes/article');
 var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 
 // 后台首页
 app.use('/manage/', manage);
 // 活动管理
 app.use('/manage/active', manage_active);
-
+// 文章管理
+app.use('/manage/article', manage_article);
 // 单页面管理
 app.use('/manage/articleCrumbs', manage_articleCrumbs);
 

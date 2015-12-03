@@ -102,6 +102,28 @@ if ( document.getElementById("js-myhome") ) {
 
 
 
+/**
+ * 文章终极页
+ * @return
+ */
+if ( document.getElementById("article-detail") ) {
+    require(["article"], function(article){
+        article.init();
+    });    
+}
+
+
+/**
+ * 添加文章
+ * @return
+ */
+if ( document.getElementById("js-article-create-form") ) {
+    require(["addArticle"], function(addArticle){
+        addArticle.init();
+    });
+}
+
+
 
 // 公共方法初始化
 require(["jquery", "dialog"], function($, Dialog) {

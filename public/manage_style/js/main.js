@@ -19,7 +19,10 @@ requirejs.config({
 /**
  * =============  公共方法  =============
  */
-
+function chackMail(str) {
+    var re = /^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]*)*@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+    return (re.test(str));
+};
 
 
 
@@ -39,6 +42,11 @@ Active.create = function() {
     if ( !document.getElementById("js-create-form") ) { return false };
     
     $('#js-create-form').submit(function() {
+        if ( !this.aClass.value ) {
+            alert("请选择活动分类");
+            this.aClass.focus();
+            return false;
+        }
         if ( !this.aName.value ) {
             alert("活动名称必须填写");
             this.aName.focus();
@@ -655,6 +663,111 @@ ArticleChannels.del = function() {
 };
 
 
+/**
+ * 活动分类管理
+ * @return
+ */
+var ActiveChannels = {};
+ActiveChannels.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建活动分类
+ * @return
+ */
+ActiveChannels.create = function() {
+    if ( !document.getElementById("js-activeChannels-create-form") ) { return false };
+    
+    $('#js-activeChannels-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.name.value ) {
+            alert("分类名称必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        
+        if ( _form.aid == undefined && !_form.url.value ) {
+            alert("URL标识必须填写！");
+            _form.url.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/active/channel/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/active/channel";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除活动分类
+ * @return
+ */
+ActiveChannels.del = function() {
+    $(".js-activeChannels-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个分类？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/active/channel/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
 
 
 
@@ -955,6 +1068,381 @@ function manageMenuInit() {
     };
 };
 
+
+
+
+
+
+/**
+ * 文章管理相关
+ * @type {Object}
+ */
+var Article = {};
+Article.init = function() {
+    var that = this;
+    $("#js-linkType").change(function() {
+        that.setLinkUrl();
+    });
+    this.setLinkUrl();
+
+    this.create();
+    this.del();
+    this.audit();
+    this.noaudit();
+};
+/**
+ * 设置跳转链接显示状态
+ */
+Article.setLinkUrl = function() {
+    if ( !document.getElementById("js-linkType") ) { return false };
+    var elem = $("#js-linkType")[0];
+    if ( elem.checked ) {
+        $("#js-linkUrl-box").show();
+    } else {
+        $("#js-linkUrl-box").hide();
+    }
+};
+/**
+ * 创建文章
+ * @return
+ */
+Article.create = function() {
+    if ( !document.getElementById("js-article-create-form") ) { return false };
+    
+    $('#js-article-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.title.value ) {
+            alert("页面标题必须填写！");
+            _form.title.focus();
+            return false;
+        }
+        
+        if ( !_form.channelId.value ) {
+            alert("归属栏目必须选择");
+            _form.channelId.focus();
+            return false;
+        }
+        if ( !_form.linkUrl.value && !_form.content.value ) {
+            alert("内容必须填写！");
+            _form.content.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/article/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/article";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除文章
+ * @return
+ */
+Article.del = function() {
+    $(".js-article-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这篇文章？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/article/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+/**
+ * 审核文章
+ * @return
+ */
+Article.audit = function() {
+    $(".js-article-audit").click(function() {
+        var id = $(this).attr("data-id"),
+            title = $(this).attr("data-title"),
+            name = $(this).attr("data-name"),
+            mail = $(this).attr("data-mail");
+
+        if( confirm("确定要通过审核？") ) {
+            request(id, name, mail, title);
+        };
+        return false;
+    });
+
+    function request(id, name, mail, title) {
+        var params = {
+            id: id,
+            mail: mail,
+            title: title,
+            name: name
+        };
+        $.post("/manage/article/audit", params, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+/**
+ * 驳回审核
+ * @return
+ */
+Article.noaudit = function() {
+    $(".js-article-noaudit").click(function() {
+        var id = $(this).attr("data-id"),
+            title = $(this).attr("data-title"),
+            name = $(this).attr("data-name"),
+            mail = $(this).attr("data-mail");
+        Dialog({
+            "id":"js-article-noaudit-msg",
+            "msg":'驳回《'+ title +'》的审核：<br /><br /><textarea name="noaudit-msg" style="width:300px; height:100px; border:1px solid #ccc; line-height:24px; padding:5px; background:#f2f2f2;"></textarea>',
+            "lock":true,
+            "lockClose":false,
+            "title":"请输入驳回理由",
+            "showButtons":true,
+            "cancelButton":false,
+            "onReady": function() {
+                var _text = $("#js-article-noaudit-msg textarea");
+                _text[0].focus();
+            },
+            "onSubmit": function() {
+                var _text = $("#js-article-noaudit-msg textarea");
+                if ( !_text.val() ) {
+                    alert("输入驳回理由后再提交！");
+                    _text[0].focus();
+                    return false;
+                }
+                request(id, name, mail, title, _text.val());
+            }
+        });
+        return false;
+    });
+
+    function request(id, name, mail, title, msg) {
+        var params = {
+            id: id,
+            mail: mail,
+            title: title,
+            msg: msg,
+            name: name
+        };
+        $.post("/manage/article/noaudit", params, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+
+
+/**
+ * 会员管理
+ * @return
+ */
+var ManageMember = {};
+ManageMember.init = function() {
+    this.edit();
+    this.editinfo();
+};
+
+/**
+ * 修改会员帐号
+ * @return
+ */
+ManageMember.edit = function() {
+    if ( !document.getElementById("js-manageMember-edit-form") ) { return false };
+    
+    $('#js-manageMember-edit-form').submit(function() {
+        var _form = this;
+        if ( !_form.email.value ) {
+            alert("邮箱必须填写！");
+            _form.email.focus();
+            return false;
+        }
+        if ( !chackMail(_form.email.value) ) {
+            alert("请填写正确的邮箱！");
+            _form.email.select();
+            return false;
+        }
+
+        if ( !_form.username.value ) {
+            alert("昵称必须填写！");
+            _form.username.focus();
+            return false;
+        }
+        if ( _form.lock.value === "1" && !_form.lockMessage.value ) {
+            alert("锁定原因必须填写！");
+            _form.lockMessage.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/member/edit",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location.reload();
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+/**
+ * 修改会员信息
+ * @return
+ */
+ManageMember.editinfo = function() {
+    if ( !document.getElementById("js-manageMember-editinfo-form") ) { return false };
+    
+    $('#js-manageMember-editinfo-form').submit(function() {
+        var _form = this;
+        
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/member/editinfo",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location.reload();
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+
+
+
+
 /**
  * 启动
  * @return
@@ -966,9 +1454,14 @@ function domready() {
 
     ArticleCrumbs.init();
     ArticleChannels.init();
+    ActiveChannels.init();
     Tags.init();
     ManageUser.init();
     manageLogin();
+    ManageMember.init();
+
+
+    Article.init();
 };
 
 

@@ -5,13 +5,21 @@
 <title>修改个人信息 - WDShare</title>
 <% include ../etc/htmlhead.ejs %>
 <script>
-	var oldNickname = "<%=userdata.username%>";
+	var oldNickname = "<%=member.username%>";
 </script>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
 </head>
 <%
 	var name = "";
-	if ( userdata.email != userdata.username ) {
-		name = userdata.username;
+	var who = "我";
+	if ( member.email != member.username ) {
+		name = member.username;
 	}
 %>
 <script type="text/javascript">
@@ -34,23 +42,23 @@
 
 	<dl>
 		<dt>我的签名：</dt>
-		<dd><textarea name="mood" placeholder="请输入签名"><%=info.mood%></textarea></dd>
+		<dd><textarea name="mood" placeholder="请输入签名"><%= !info.mood ? "" : info.mood %></textarea></dd>
 	</dl>
 	<dl>
 		<dt>性别：</dt>
 		<dd>
-			<label><input type="radio" name="sex" value="1" <% if (info.sex === 1) { %>checked="checked"<% } %> /> 男</label>
+			<label><input type="radio" name="sex" value="1" <% if (info.sex === 1) { %>checked="checked"<% } %><% if (!info.sex) { %>checked="checked"<% } %> /> 男</label>
 			<label><input type="radio" name="sex" value="2" <% if (info.sex === 2) { %>checked="checked"<% } %> /> 女</label>
 			<label><input type="radio" name="sex" value="3" <% if (info.sex === 3) { %>checked="checked"<% } %> /> 保密</label>
 		</dd>
 	</dl>
 	<dl>
 		<dt>真实姓名：</dt>
-		<dd><input type="text" name="realname" placeholder="请输入真实姓名" class="in-text" value="<%=info.realname%>" /><span>可用活动报名，不会外泄</span></dd>
+		<dd><input type="text" name="realname" placeholder="请输入真实姓名" class="in-text" value="<%= !info.realname? "" : info.realname %>" /><span>可用活动报名，不会外泄</span></dd>
 	</dl>
 	<dl>
 		<dt>技能标签：</dt>
-		<dd><input type="text" name="tag" placeholder="请输入技能标签" class="in-text" value="<%=info.tag%>" /><span>请填写您的技能标签，用英文“,”逗号隔开</span></dd>
+		<dd><input type="text" name="tag" placeholder="请输入技能标签" class="in-text" value="<%= !info.tag ? "" : info.tag %>" /><span>请填写您的技能标签，用英文“,”逗号隔开</span></dd>
 	</dl>
 	<dl>
 		<dt>求职状态：</dt>
@@ -66,17 +74,17 @@
 	<div id="com-input">
 		<dl>
 			<dt>公司名称：</dt>
-			<dd><input type="text" name="com" placeholder="请输入公司名称" class="in-text" value="<%=info.com%>" /></dd>
+			<dd><input type="text" name="com" placeholder="请输入公司名称" class="in-text" value="<%= !info.com ? "" : info.com %>" /></dd>
 		</dl>
 		<dl>
 			<dt>职位名称：</dt>
-			<dd><input type="text" name="jobs" placeholder="请输入职位名称" class="in-text" value="<%=info.jobs%>" /></dd>
+			<dd><input type="text" name="jobs" placeholder="请输入职位名称" class="in-text" value="<%= !info.jobs ? "" : info.jobs %>" /></dd>
 		</dl>
 	</div>
 	<div id="students-input">
 	<dl>
 		<dt>学校名称：</dt>
-		<dd><input type="text" name="school" placeholder="请输入学校名称" class="in-text" value="<%=info.school%>" /></dd>
+		<dd><input type="text" name="school" placeholder="请输入学校名称" class="in-text" value="<%= !info.school ? "" : info.school %>" /></dd>
 	</dl>
 	</div>
 
@@ -92,15 +100,15 @@
 	<h2><strong>联系方式 <em>至少填写一样</em></strong></h2>
 	<dl>
 		<dt>手机：</dt>
-		<dd><input type="text" name="phone" placeholder="请输入手机" class="in-text" value="<%=info.phone%>" /></dd>
+		<dd><input type="text" name="phone" placeholder="请输入手机" class="in-text" value="<%= !info.phone ? "" : info.phone %>" /></dd>
 	</dl>
 	<dl>
 		<dt>QQ号：</dt>
-		<dd><input type="text" name="qq" placeholder="请输入QQ号" class="in-text" value="<%=info.qq%>" /></dd>
+		<dd><input type="text" name="qq" placeholder="请输入QQ号" class="in-text" value="<%= !info.qq ? "" : info.qq %>" /></dd>
 	</dl>
 	<dl>
 		<dt>微信号：</dt>
-		<dd><input type="text" name="wechat" placeholder="请输入微信号" class="in-text" value="<%=info.wechat%>" /></dd>
+		<dd><input type="text" name="wechat" placeholder="请输入微信号" class="in-text" value="<%= !info.wechat ? "" : info.wechat %>" /></dd>
 	</dl>
 
 	<h2><strong>提升个人魅力</strong></h2>
@@ -118,7 +126,7 @@
 	</dl>
 	<dl>
 		<dt>个人介绍：</dt>
-		<dd><textarea name="introduction" class="text-content"><%=info.introduction%></textarea></dd>
+		<dd><textarea name="introduction" class="text-content"><%= !info.introduction ? "" : info.introduction %></textarea></dd>
 	</dl>
 	<div class="edit-but"><input type="submit" name="submitbutton" value="保存" /></div>
 	</form>

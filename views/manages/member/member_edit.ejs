@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-修改会员帐号</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">
+      <a href="/manage/member">所有会员</a>
+      <a href="/manage/member/notactive">未激活会员</a>
+      <a href="/manage/member/lock">被锁定会员</a>
+      <a href="/manage/member/active">活跃会员</a>
+    </h1>
+    <div class="manage-module">
+      <form id="js-manageMember-edit-form">
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="manage-module-head">
+          <div class="manage-module-tab">
+            <a href="/manage/member/edit/<%=result._id%>" class="current">修改帐号</a>
+            <% if ( userInfo.userid ) { %>
+            <a href="/manage/member/editinfo/<%=result._id%>">修改资料</a>
+            <% } %>
+          </div>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong>邮箱：</strong><input type="text" name="email" value="<%=result.email%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>昵称：</strong><input type="text" name="username" value="<%=result.username%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>密码：</strong><input type="text" name="password"  /><span>留空代表不修改</span></label>
+            </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>锁定：</strong>
+              <label><input type="radio" name="lock" value="1" <%if (result.lock) {%>checked="checked"<%}%> /> 锁</label>
+              <label><input type="radio" name="lock" value="0" <%if (!result.lock) {%>checked="checked"<%}%> /> 否</label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>锁定原因：</strong><textarea style="height:50px;" name="lockMessage"><%=result.lockMessage%></textarea></label>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

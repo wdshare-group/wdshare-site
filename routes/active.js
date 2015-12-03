@@ -6,33 +6,162 @@ var sendMail  = require("../server/sendMail.js");
 var config    = require("../server/config");
 var router = express.Router();
 var ObjectId = mongo.ObjectID;
+var URL = require('url');
 
 /**
  * path:  /active
  * 显示所有活动
  */
 router.get('/', function(req, res) {
-    acCon.find({}).then(function(result){
-        /*
-        // 区分开始状态与其他状态
-        var openArr = [],disArr = [];
-        result.forEach(function(item){
-            if(item.aStatus == '1'){
-                openArr.push(item);
-            }else{
-                disArr.push(item);
-            }
-        });*/
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
 
+    getActiveList(req, res, {}, {page:page, pagesize:pagesize, pathname:pathname}, 'active/list');
+    /*
+    acCon.find({}).then(function(result){
         res.render('active/list', {
             title: '活动列表',
             result:result
         });
     },function(err){
         res.render('active/502', { title: '出错啦',error:err});
-    })
+    })*/
 
 });
+
+/**
+ * 获取列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {String} channelName 分类名称
+ * @return
+ */
+function getActiveList(req, res, o, pages, mod, channelName) {
+    activeModel.getSort({
+        key: "Active",
+        body:o,// 筛选内容
+        pages: pages,// 分页信息
+        occupation: "aAddDate"// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            joinCount = 0,
+            allCount,
+            channelItem;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    activeModel.getOne({
+                        key: "Active_channel",
+                        body: {
+                            _id: data[i].aClass
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            data[i].channel = channelData.name;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取报名信息
+                    activeModel.getAll({
+                        key: "Active_join",
+                        body: {
+                            aid: data[i]._id
+                        }
+                    }, function (err, joins) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (joins) {
+                            data[i].joins = joins.length;
+                            joinCount++
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            activeModel.getAll({// 查询分类，为添加文章做准备
+                key: "Active",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            // 获取分类信息，列表页显示分类
+            activeModel.getAll({
+                key: "Active_channel"
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    channelItem = data;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( channelCount == data.length && joinCount == data.length && allCount >= 0 && channelItem ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: channelName || "精彩活动",
+                    result: data,
+                    channel: channelItem,
+                    pages: _page
+                });
+           }
+        };
+    });
+};
+
+
+
 
 /**
  * path:  /active/open
@@ -40,20 +169,19 @@ router.get('/', function(req, res) {
  * AJAX
  */
 router.get('/open', function(req, res) {
-    acCon.find().then(function(result){
-        // 筛选非关闭状态的活动
-        var openArr = [];
-        result.forEach(function(item){
-            if(item.aStatus != '0'){
-                openArr.push(item);
-            }
-        });
+    activeModel.getAll({
+        key: "Active",
+        body: {aStatus:{'$ne':'0'}}
+    }, function (err, data) {
+        if (data) {
+            res.send({status:true,count:data.length});
+            return;
+        }
 
-        res.end(JSON.stringify({status:true,count:openArr.length}));
-    },function(err){
-        res.end(JSON.stringify({status:false,msg:err}));
-    })
+        req.send({status:false,msg:"获取进行中的活动数量失败"});
+    });
 });
+
 
 
 /**
@@ -247,37 +375,88 @@ router.get('/joinconfirm/:id', function(req, res,next) {
  * path:  /active/{活动id}
  * 参加活动页面
  */
-router.get('/:aId', function(req, res,next) {
-    var aId = req.params.aId;
-    if( aId && aId.length == 24 ) {
-        acCon.find({_id:new ObjectId(aId)}).then(function(result){
-            if(result&&result[0]){
-                var tpl = result[0].aTpl || "index";
-                if ( req.session.user ) {// 查询登录会员信息
-                    usersInfosModel.getOne({
-                        key: "User_info",
-                        body: {
-                            userid: req.session.user._id
-                        }
-                    }, function (err, data) {
-                        res.render('active/end/' + tpl, { title: '活动详情',activeInfo:result[0], userInfo:data});
-                    });
-                } else {
-                    res.render('active/end/' + tpl, { title: '活动详情',activeInfo:result[0], userInfo:{}});
-                }
-                
-                // 记录活动点击
-                acCon.click(result[0]._id, result[0].aClick);
-            }else{
-                res.render('active/end/404', { title: '没有活动',activeInfo:{}});
+router.get('/:id', function(req, res,next) {
+    var id = req.params.id;
+    activeModel.getOne({
+        key: "Active",
+        body: {
+            _id: id
+        }
+    }, function (err, active) {
+        if (err || !active) {
+            // 传递ID查不到活动时可能是栏目列表
+            getChannelList(id);
+            // res.send("参数错误，请重试！");
+            return;
+        }
+        if ( active ) {
+            var tpl = active.aTpl || "index";
+            // 登录的时候查询用户信息
+            if ( req.session.user ) {
+                usersInfosModel.getOne({
+                    key: "User_info",
+                    body: {
+                        userid: req.session.user._id
+                    }
+                }, function (err, userInfo) {
+                    gosend(userInfo);
+                });
+            } else {
+                gosend();
             }
-        },function(err){
-            res.render('502',{status:false,error:err});
-        });
-    }else{
-        res.render('404');
-    }
+            
 
+            function gosend(info) {
+                var click = active.aClick || 0;
+                // 记录点击
+                activeModel.update({
+                        _id: id
+                    }, {
+                    key: "Active",
+                    body: {
+                        aClick: click + 1
+                    }
+                }, function (err, data) {
+                    res.render('active/end/' + tpl, {
+                        activeInfo: active,
+                        userInfo: info
+                    });
+                });
+            }
+            return;
+        }
+        res.send("获取活动信息错误，请重试！");
+    });
+
+    // 列表信息
+    /**
+     * 获取分类列表
+     * @return
+     */
+    function getChannelList() {
+        var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+        activeModel.getOne({
+            key: "Active_channel",
+            body: {
+                url: id
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send("请求发生意外！");
+            }
+            // console.log(data);
+            if (data) {
+                getActiveList(req, res, {aClass:data._id}, {page:page, pagesize:pagesize, pathname:pathname}, 'active/list', data.name);
+                return false;
+            }
+
+            res.render('404');
+        });
+    };
 });
 
 module.exports = router;

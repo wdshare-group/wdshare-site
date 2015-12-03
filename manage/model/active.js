@@ -23,7 +23,7 @@ activeControl.create = function(ao){
         // 添加其余参数
         ao.aAddDate = new Date().getTime();
         
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
         collection.insert(ao, {safe:true}, function(err, result) {
             if(err){
                 db.close();
@@ -63,7 +63,7 @@ activeControl.update = function(id,ao){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
         var obj = {
             "aName" : ao["aName"],
             "aClass" : ao["aClass"],
@@ -106,7 +106,7 @@ activeControl.del = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
 
         collection.findOneAndDelete(query, function(err, result) {
             if(err){
@@ -134,7 +134,7 @@ activeControl.find = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
         collection.find(query).sort({"aAddDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
@@ -164,7 +164,7 @@ activeControl.findJoin = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
         collection.find(query).sort({"addDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
@@ -193,7 +193,7 @@ activeControl.findJoinprint = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
         collection.find(query).sort({"addDate":1}).toArray(function(err, result) {
             if(err){
                 db.close();
@@ -225,7 +225,7 @@ activeControl.joinUpdate = function(query, o){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
         collection.findOneAndUpdate(query,{$set:o},{w:1, upsert: true}, function(err, result) {
             if(err){
                 db.close();
@@ -252,7 +252,7 @@ activeControl.joindel = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
 
         collection.findOneAndDelete(query, function(err, result) {
             if(err){

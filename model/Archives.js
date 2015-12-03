@@ -24,40 +24,33 @@ Archives.prototype = {
     },
     createSchemas : function(){
         "use strict";
-        this.Archivechema = new this.Schema({
-            email: {
-                type:String,
-                unique:true,
-                index: true
-            },
-            username:{
-                type:String,
-                index: true
-            },
-            userid:String,
-            mood:String,
-            sex:Number,
-            realname: String,
+        this.archiveSchema = new this.Schema({
+            type:Number,
+            channelId:String,
+            title:String,
+            //linkType:Boolean,
+            linkUrl:String,
+            diyType:String,
+            color:String,
+            cover:String,
+            content:String,
+            keywords:String,
+            description:String,
+            tpl:String,
             tag:String,
-            jobstate : Number,
-            com: String,
-            jobs:String,
-            school:String,
-            isPartTime:Boolean,
-            phone:String,
-            qq:String,
-            wechat:String,
-            www:String,
-            weibo:String,
-            github:String,
-            introduction:String,
-
-            // birthday: Number,
-
-            zan:Number,
-            offer:Number,
-            updataTime:Number,
-            updataIp:String
+            source:String,
+            sourceUrl:String,
+            rank:Number,
+            sortup:Boolean,
+            addDate:Number,
+            editDate:Number,
+            click:Number,
+            userId:String,
+            zan:String,
+            notComment:Boolean,
+            audit:Boolean,
+            rejected:String,
+            rejectedData:Number
             
         });
         this.articleChannel = new this.Schema({
@@ -83,7 +76,7 @@ Archives.prototype = {
     },
     createModel : function(){
         "use strict";
-        this.Archives     = this.mongoose.model('Archives',this.Archivechema);
+        this.Archive     = this.mongoose.model('Archive',this.archiveSchema);
         this.Article_channel  = this.mongoose.model('Article_channel',this.articleChannel);
         this.Article_crumb  = this.mongoose.model('Article_Crumb',this.articleCrumbs);
     },
@@ -113,6 +106,26 @@ Archives.prototype = {
         "use strict";
         var condition = obj.body || {};
         this[obj.key].find(condition).exec(function(err,doc){
+            callback && callback(err,doc);
+        });
+    },
+
+    /**
+     * Person
+      .find({ occupation: /host/ })
+      .where('name.last').equals('Ghost')
+      .where('age').gt(17).lt(66)
+      .where('likes').in(['vaporizing', 'talking'])
+      .limit(10)
+      .sort('-occupation')
+      .select('name occupation')
+      .exec(callback);
+     */
+    getSort : function(obj,callback){
+        "use strict";
+        var condition = obj.body || {},
+            start = (obj.pages.page - 1) * obj.pages.pagesize || 0;
+        this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
             callback && callback(err,doc);
         });
     },

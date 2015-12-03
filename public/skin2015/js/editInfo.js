@@ -32,7 +32,10 @@ define(['jquery', 'dialog'], function($) {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
-                    "time": 3000
+                    "time": 3000,
+                    "onComplete": function() {
+                        window.location = "/user/";
+                    }
                 });
                 if ( data.url ) {
                     window.location = data.url;

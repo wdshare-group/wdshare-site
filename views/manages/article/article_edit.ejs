@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-修改文章</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">文章</h1>
+    <div class="manage-module">
+      <form id="js-article-create-form">
+        <%
+            var tou = false,
+                hot = false,
+                _strong = false,
+                types = [];
+            if ( result.diyType ) {
+              types = result.diyType.split(",");
+            }
+            for ( var i=0; i<types.length; i++ ) {
+              if ( parseInt(types[i]) === 1 ) {
+                tou = true;
+              }
+              if ( parseInt(types[i]) === 2 ) {
+                hot = true;
+              }
+              if ( parseInt(types[i]) === 3 ) {
+                _strong = true;
+              }
+            }
+          %>
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">修改文章</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>文章标题：</strong><input type="text" name="title" style="width:500px;" value="<%=result.title%>" /></label>
+              <label style="display:inline-block; margin-left:40px;">跳转：<input type="checkbox" name="linkType" id="js-linkType" style="width:auto; height:auto;" <%if (result.linkUrl) {%>checked="checked"<%}%> /></label>
+            </div>
+            <div class="manage-addActive-form-item" id="js-linkUrl-box" style="<%if (!result.linkUrl) {%>display:none;<%}%>">
+              <label><strong>跳转URL：</strong><input type="text" name="linkUrl" style="width:500px;" value="<%= result.linkUrl ? result.linkUrl : 'http://'%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item" style="height:0; padding:0; overflow:hidden;">
+              <label><strong>缩略图：</strong><input type="text" name="cover" value="<%=result.cover%>"  style="width:400px;" /></label>
+              <%if (result.cover) {%>
+              <div class="look-cover"><img src="<%=result.cover%>" /></div>
+              <%}%>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
+                <select name="channelId">
+                  <% channels.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>" <%if (channel._id == result.channelId) {%>selected<%}%>><%= channel.name%></option>
+                  <% }) %>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>TAG：</strong><input type="text" name="tag" value="<%=result.tag%>" /><span>多个tag请使用英文逗号“,”隔开</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" value="<%=result.source%>" /></label>
+              <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="<%= result.sourceUrl ? result.sourceUrl : 'http://'%>" /></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong>发布者邮箱：</strong><input type="text" name="email" value="<%=mamber.email?mamber.email:''%>" /><span>必须是本站会员的邮箱</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong></label>
+            </div>
+            <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%=result.content%></textarea></div>
+
+            <div class="manage-addActive-form-note" onclick="document.getElementById('js-article-gaoji').style.display='block'"><em>高级配置</em></div>
+
+            <div id="js-article-gaoji" style="display:none;">
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>自定义属性：</strong>
+                <label><input type="checkbox" name="diyType" value="1" <%if (tou) {%>checked="checked"<%}%> /> 头条</label>
+                <label><input type="checkbox" name="diyType" value="2" <%if (hot) {%>checked="checked"<%}%> /> 推荐</label>
+                <label><input type="checkbox" name="diyType" value="3" <%if (_strong) {%>checked="checked"<%}%> /> 加粗</label>
+              </div>
+              <!-- <div class="manage-addActive-form-item">
+                <label><strong>关键字：</strong><input type="text" name="keywords" value="<%=result.keywords%>" /><span>显示在meta标签的keywords</span></label>
+              </div> -->
+              <div class="manage-addActive-form-item">
+                <label><strong>描述：</strong>
+                <textarea name="description" cols="30" rows="10"><%=result.description%></textarea><span>显示在meta标签的description</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>标题颜色：</strong><input type="text" name="color" value="<%=result.color%>" /><span>支持CSS语法，例如：#ff0000</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>使用模板：</strong><input type="text" name="tpl" value="<%=result.tpl%>" /><span>内容模板，权重高于分类指定的模板</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>排序：</strong><input type="text" name="rank" value="<%=result.rank%>" /></label>
+              </div>
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>置顶：</strong>
+                <label><input type="radio" name="sortup" value="1" <%if (result.sortup) {%>checked="checked"<%}%> /> 是</label>
+                <label><input type="radio" name="sortup" value="0" <%if (!result.sortup) {%>checked="checked"<%}%> /> 否</label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>点击次数：</strong><input type="text" name="click" value="<%=result.click%>" /></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>点赞数：</strong><input type="text" name="zan" value="<%=result.zan%>" /></label>
+              </div>
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>是否允许评论：</strong>
+                <label><input type="radio" name="notComment" value="1" <%if (result.notComment) {%>checked="checked"<%}%> /> 是</label>
+                <label><input type="radio" name="notComment" value="0" <%if (!result.notComment) {%>checked="checked"<%}%> /> 否</label>
+              </div>
+
+              <%if (result.rejected) {%>
+              <input type="hidden" name="audit" value="<%if (result.audit) {%>1<%}else{%>0<%}%>" />
+              <div class="manage-addActive-form-item">
+                <label><strong>驳回理由：</strong>
+                <textarea name="rejected" cols="30" rows="10"><%=result.rejected%></textarea><span>该字段存在时证明这篇文章处于被驳回阶段</span><br /></label>
+                <label><strong>驳回时间：</strong><%= moment(result.rejectedData).format('YYYY-MM-DD HH:mm:ss') %></label>
+              </div>
+              <%} else {%>
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>是否审核：</strong>
+                <%if (!result.audit) {%>
+                <span>未审核 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 请在列表页进行审核</span>
+                <%} else {%>
+                <label><input type="radio" name="audit" value="1" <%if (result.audit) {%>checked="checked"<%}%> /> 是</label>
+                <label><input type="radio" name="audit" value="0" <%if (!result.audit) {%>checked="checked"<%}%> /> 否 <span>未审核内容将不在前端显示</span></label>
+                <%}%>
+              </div>
+              <%}%>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

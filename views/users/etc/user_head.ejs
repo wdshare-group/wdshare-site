@@ -1,82 +1,29 @@
-<%
-	if ( !info.mood ) {
-		info.mood = "";
-	}
-	if ( !info.sex ) {
-		info.sex = 1;
-	}
-	if ( !info.realname ) {
-		info.realname = "";
-	}
-	if ( !info.tag ) {
-		info.tag = "";
-	}
-	if ( !info.jobstate ) {
-		info.jobstate = 0;
-	}
-	if ( !info.com ) {
-		info.com = "";
-	}
-	if ( !info.tag ) {
-		info.tag = "";
-	}
-	if ( !info.jobs ) {
-		info.jobs = "";
-	}
-	if ( !info.school ) {
-		info.school = "";
-	}
-	if ( !info.isPartTime ) {
-		info.isPartTime = false;
-	}
-	if ( !info.phone ) {
-		info.phone = "";
-	}
-	if ( !info.qq ) {
-		info.qq = "";
-	}
-	if ( !info.wechat ) {
-		info.wechat = "";
-	}
-	if ( !info.www ) {
-		info.www = "";
-	}
-	if ( !info.weibo ) {
-		info.weibo = "";
-	}
-	if ( !info.github ) {
-		info.github = "";
-	}
-	if ( !info.introduction ) {
-		info.introduction = "";
-	}
-%>
-<script>
-	var userTag = '<%=info.tag%>';
-</script>
-<% if ( info.sex === 2 ) { %>
-<div class="myhome-head myhome-head-girl">
-<% } else { %>
+
 <div class="myhome-head">
-<% } %>
   <div class="myhome-head-bg">
     <div class="myhome-head-con maxWidth">
       <div class="myhome-head-user">
-      	<img src="/user/face/<%=user._id%>" />
-      	<h1><%=user.username%></h1>
+      	<% if (who  == "我") { %>
+      	<a href="/user/editFace"><img src="/user/face/<%=member._id%>" /></a>
+      	<% } else { %>
+      	<img src="/user/face/<%=member._id%>" />
+      	<% } %>
+      	<h1><%=member.username%></h1>
       </div>
     </div>
   </div>
 </div>
 <div class="myhome-nav">
 	<div class="myhome-nav-con maxWidth">
-		<!-- <a href="#">我参与的活动</a>
-		<a href="#">我的文章</a>
-		<a href="#">我的项目</a>
-		<a href="#">我的评论</a>
-		<a href="#">留言</a> -->
-		<a href="/user/editInfo">修改资料</a>
+		<a href="/user/myactive/<%=member._id%>"><%=who%>参与的活动</a>
+		<a href="/user/myarticle/<%=member._id%>"><%=who%>的文章</a>
+		<!-- <a href="#"><%=who%>的项目</a>
+		<a href="#"><%=who%>的评论</a>
+		<a href="#"><%=who%>的留言</a> -->
+		<% if (user && user._id == member._id) { %>
+		<a href="/user/editFace">修改头像</a><a href="/user/editInfo">修改资料</a>
 		<a href="/user/editPassword">修改密码</a>
+		<% } %>
 		<!-- <a href="#">邀请他面试</a> -->
 	</div>
 </div>

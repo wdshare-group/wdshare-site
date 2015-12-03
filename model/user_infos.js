@@ -30,10 +30,6 @@ User_infos.prototype = {
                 unique:true,
                 index: true
             },
-            username:{
-                type:String,
-                index: true
-            },
             userid:String,
             mood:String,
             sex:Number,
@@ -60,20 +56,11 @@ User_infos.prototype = {
             updataIp:String
             
         });
-        // this.resetPassword = new this.Schema({
-        //     email: {
-        //         type:String,
-        //         unique:true
-        //     },
-        //     resetCode:String,
-        //     hash:String
-        // });
 
     },
     createModel : function(){
         "use strict";
         this.User_info     = this.mongoose.model('User_info',this.User_infoschema);
-        // this.ResetPW  = this.mongoose.model('ResetPW',this.resetPassword);
     },
     /*
      * obj {}

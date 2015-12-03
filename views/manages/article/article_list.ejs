@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-文章管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">
+      <a href="/manage/article">所有文章</a>
+      <a href="/manage/article/notaudit">未审核文章</a>
+      <% channel.forEach(function(item){ %>
+      <a href="/manage/article/channellist/<%= item.url %>"><%= item.name %></a>
+      <% }) %>
+    </h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%= title %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共有 <%= item_sum %> 条</h3>
+        <div class="manage-tool">
+          <a href="/manage/article/create" class="green">添加文章</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th width="80">Date</th>
+                <th width="80">栏目</th>
+                <th width="60">Click</th>
+                <th width="50">点赞</th>
+                <th width="100">作者</th>
+                <th width="200">Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(article){ %>
+              <%
+                var tou = false,
+                    hot = false,
+                    _strong = false,
+                    types = [];
+                if ( article.diyType ) {
+                  types = article.diyType.split(",");
+                }
+                for ( var i=0; i<types.length; i++ ) {
+                  if ( parseInt(types[i]) === 1 ) {
+                    tou = true;
+                  }
+                  if ( parseInt(types[i]) === 2 ) {
+                    hot = true;
+                  }
+                  if ( parseInt(types[i]) === 3 ) {
+                    _strong = true;
+                  }
+                }
+              %>
+              <tr>
+                <td style="text-align:left;">
+                  <span style="<% if ( article.color ) { %>color:<%= article.color %>;<% } %> font-weight:<%= _strong ? "bold" : "normal" %>;"><%= article.title %></span>
+                  
+                  <% if ( article.cover ) { %><span title="缩略图">[图]</span><% } %>
+                  <% if ( article.linkUrl ) { %><span title="跳转链接">[跳]</span><% } %>
+
+                  <% if ( tou ) { %><span title="头条">[头]</span><% } %>
+                  <% if ( hot ) { %><span title="推荐">[推]</span><% } %>
+                  
+                  <% if ( article.sortup ) { %><span title="置顶">[顶]</span><% } %>
+                </td>
+                <td><%= moment(article.editDate).format('YYYY-MM-DD') %></td>
+                <td><%= article.channel %></td>
+                <td><%= article.click %></td>
+                <td><%= article.zan %></td>
+                <td>
+                  <% if ( !article.user ) { %>
+                  该用户被删除
+                  <% } else { %>
+                  <%= article.user %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if ( !article.audit && !article.rejected ) { %><a href="#" data-id="<%= article._id %>" data-mail="<%= article.usermail %>" data-name="<%= article.user %>" data-title="<%= article.title %>" class="js-article-audit" title="审核通过"><span style="color:#360;">[审核]</span></a><a href="#" data-id="<%= article._id %>" data-title="<%= article.title %>" data-mail="<%= article.usermail %>" data-name="<%= article.user %>" class="js-article-noaudit" title="驳回审核"><span style="color:#f00;">[驳回]</span></a> <br /><% } %>
+                  <% if ( !article.audit && article.rejected ) { %><%= moment(article.rejectedData).format('YYYY-MM-DD HH:mm:ss') %> 审核被驳回<br /><% } %>
+                  <a href="/article/<%= article._id %>" target="_blank">预览</a><a href="/manage/article/edit/<%= article._id %>">修改</a><a href="#" data-id="<%= article._id %>" class="js-article-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

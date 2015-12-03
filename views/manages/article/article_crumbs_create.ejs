@@ -5,6 +5,9 @@
 <title>WDShare管理中心-添加单页面</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 
 <body>
@@ -35,9 +38,9 @@
               <label><strong>使用模板：</strong><input type="text" name="template" /><span>留空代表使用默认模板</span></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>内容：</strong>
-              <textarea name="content" cols="30" rows="10"></textarea></label>
+              <label><strong>内容：</strong></label>
             </div>
+            <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"></textarea></div>
             
             <div class="manage-addActive-form-item manage-form-but">
               <input class="green" name="submitbutton" type="submit" value="提交"/>
@@ -52,5 +55,8 @@
 </div>
 
 <% include ../etc/foot.ejs %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
 </body>
 </html>

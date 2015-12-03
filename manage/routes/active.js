@@ -6,6 +6,7 @@ var sendMail  = require("../../server/sendMail.js");
 var config    = require("../../server/config");
 var router = express.Router();
 var ObjectId = mongo.ObjectID;
+var URL = require('url');
 
 
 var active = require('./active.js');
@@ -16,49 +17,195 @@ var active = require('./active.js');
  * 显示所有活动
  */
 router.get('/', function(req, res) {
-    
-    acCon.find({}).then(function(result){
-        getJoin(result);
-    },function(err){
-        res.render('active/502', { title: '出错啦',error:err});
-    })
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+    var pages = {page:page, pagesize:pagesize, pathname:pathname};
+    getActiveList (req, res, {}, pages, 'manages/active/list');
+});
+/**
+ * path:  /manage/active/ongoing
+ * 显示进行中的活动
+ */
+router.get('/ongoing', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+    var pages = {page:page, pagesize:pagesize, pathname:pathname};
+    getActiveList (req, res, {aStatus:{'$ne':'0'}}, pages, 'manages/active/list');
+});
+/**
+ * path:  /manage/active/over
+ * 显示已结束的活动
+ */
+router.get('/over', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+    var pages = {page:page, pagesize:pagesize, pathname:pathname};
+    getActiveList (req, res, {aStatus:"0"}, pages, 'manages/active/list');
+});
+/**
+ * path:  /manage/active/channellist/:url
+ * 获取单个分类文章
+ */
+router.get('/channellist/:url', function(req, res) {
+    var url = req.params.url;
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
 
-    function getJoin(result) {
-        var yes = 0,
-            no = 0,
-            max = result.length,
-            joinLength = {};
-        for (var i=0; i<max; i++) {
-            (function() {
-                var active = result[i],
-                    aId = ""+active._id;
-                // 获取报名信息
-                acCon.findJoin({aid:aId}).then(function(data) {
-                    joinLength[aId] = data.length;
-                    yes++;
-                    joinCallback();
-                }, function(err) {
-                    joinLength[aId] = "undefied";
-                    no++;
-                    joinCallback();
-                })
-            })(i);
-            
+    activeModel.getOne({
+        key: "Active_channel",
+        body: {
+            url: url
+        }
+    }, function (err, data) {
+        if (err) {
+            res.send("请求发生意外！");
+        }
+        
+        if (data) {
+            getActiveList(req, res, {aClass:data._id}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/active/list', data.name);
+            return false;
         }
 
-        function joinCallback() {
-            if ( yes + no == max ) {
-                res.render('manages/active/list', {
-                    title: '管理活动列表页',
-                    result:result,
-                    joinLength:joinLength
-                });
-            }
-        };
-        
-    }
-
+        res.render('404');
+    });
 });
+
+/**
+ * 获取列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {String} channelName 分类名称
+ * @return
+ */
+function getActiveList(req, res, o, pages, mod, channelName) {
+    activeModel.getSort({
+        key: "Active",
+        body:o,// 筛选内容
+        pages: pages,// 分页信息
+        occupation: "aAddDate"// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            joinCount = 0,
+            allCount,
+            channelItem;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    activeModel.getOne({
+                        key: "Active_channel",
+                        body: {
+                            _id: data[i].aClass
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            data[i].channel = channelData.name;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取报名信息
+                    activeModel.getAll({
+                        key: "Active_join",
+                        body: {
+                            aid: data[i]._id
+                        }
+                    }, function (err, joins) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (joins) {
+                            data[i].joins = joins.length;
+                            joinCount++
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            activeModel.getAll({// 查询分类，为添加文章做准备
+                key: "Active",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            // 获取分类信息，列表页显示分类
+            activeModel.getAll({
+                key: "Active_channel"
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    channelItem = data;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( channelCount == data.length && joinCount == data.length && allCount >= 0 && channelItem ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: channelName || "所有活动",
+                    result: data,
+                    channel: channelItem,
+                    pages: _page
+                });
+           }
+        };
+    });
+};
 
 
 /**
@@ -66,7 +213,24 @@ router.get('/', function(req, res) {
  * 创建一个活动
  */
 router.get('/create/', function(req, res,next) {
-    res.render('manages/active/create', { title: '创建活动' });
+    activeModel.getAll({// 查询分类，为添加活动做准备
+        key: "Active_channel"
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/active/create', {
+                title: "创建活动",
+                result: data// 返回分类信息
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
 });
 
 /**
@@ -74,21 +238,45 @@ router.get('/create/', function(req, res,next) {
  * 更新一个活动
  * Ajax
  */
-router.get('/update/:aId', function(req, res,next) {
-    if(req.params.aId){
-        var aId = req.params.aId;
-        acCon.find({_id:new ObjectId(aId)}).then(function(result){
-            if(result&&result[0]){
-                res.render('manages/active/update', { title: '更新活动',activeInfo:result[0]});
-            }else{
-                res.render('manages/active/create', { title: '没有活动'});
-            }
-        },function(err){
-            res.end(JSON.stringify({status:true}));
-        });
-    }else{
-        res.end(JSON.stringify({status:false,msg:"404"}));
-    }
+router.get('/update/:id', function(req, res,next) {
+    var id = req.params.id;
+    activeModel.getAll({// 查询分类，为修改活动做准备
+        key: "Active_channel"
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            activeModel.getOne({// 读取活动信息
+                key: "Active",
+                body: {
+                    _id: id
+                }
+            }, function (err, active) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (active) {
+                    res.render('manages/active/update', {
+                        title: "更新活动",
+                        result: active,
+                        channels: data
+                    });
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
 });
 
 /**
@@ -148,6 +336,220 @@ router.post('/updateControl/', function(req, res,next) {
 
     }
 });
+
+
+
+/**
+ * path:  /manage/active/channel
+ * 获取活动分类
+ */
+router.get('/channel', function(req, res) {
+    activeModel.getAll({
+        key: "Active_channel"
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/active/active_channel_list', {
+                title: "活动分类",
+                result: data
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
+});
+
+/**
+ * path:  /manage/active/channel/create
+ * 添加活动分类
+ */
+router.get('/channel/create', function(req, res) {
+    activeModel.getAll({
+        key: "Active_channel"
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/active/Active_channel_create', {
+                title: "添加活动分类",
+                result: data
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
+});
+// 修改和添加共用
+router.post('/channel/create', function(req, res) {
+    var name = req.body.name,
+        url = req.body.url,
+        parent = req.body.parent,
+        keywords = req.body.keywords,
+        description = req.body.description,
+        id = req.body.aid;
+
+    if ( id ) {// 修改
+        activeModel.update({
+                _id: id
+            }, {
+            key: "Active_channel",
+            body: {
+                name: name,
+                parent: parent,
+                keywords: keywords,
+                description: description,
+                editDate: (new Date()).getTime()
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: err
+                });
+            }
+            
+            res.send({
+                status: 200,
+                code: 1,
+                message: "修改成功！"
+            });
+        });
+    } else {// 添加
+        activeModel.getOne({
+            key: "Active_channel",
+            body: {
+                url: url
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "服务器错误，请重试！"
+                });
+                return;
+            }
+
+            if (data && data.url) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "URL标识已存在！"
+                });
+                return;
+            }
+
+            activeModel.save({
+                key: "Active_channel",
+                body: {
+                    name: name,
+                    url: url,
+                    parent: parent,
+                    keywords: keywords,
+                    description: description,
+                    addDate: (new Date()).getTime(),
+                    editDate: (new Date()).getTime()
+                }
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: err
+                    });
+                }
+                
+                res.send({
+                    status: 200,
+                    code: 1,
+                    message: "添加成功！"
+                });
+            });
+            
+        });
+    }
+});
+
+/**
+ * path:  /manage/active/channel/edit/:id
+ * 修改活动分类
+ */
+router.get('/channel/edit/:id', function(req, res) {
+    var id = req.params.id;
+    activeModel.getOne({
+        key: "Active_channel",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            res.render('manages/active/Active_channel_edit', {
+                title: "修改活动分类",
+                result: data
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+    });
+});
+
+/**
+ * path:  /manage/active/channel/del/:id
+ * 删除活动分类
+ */
+router.get('/channel/del/:id', function(req, res) {
+    var id = req.params.id;
+    activeModel.remove({
+        key: "Active_channel",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "服务器错误，请重试！"
+            });
+            return;
+        }
+
+        if (data) {
+            res.send({
+                status: 200,
+                code: 1,
+                message: "删除成功！"
+            });
+            return;
+        }
+
+        res.send({
+            status: 200,
+            code: 0,
+            message: "未知错误，请重试！"
+        });
+
+    });
+});
+
+
 
 
 

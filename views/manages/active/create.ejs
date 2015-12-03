@@ -5,6 +5,9 @@
 <title>WDShare管理中心-添加活动</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 
 <body>
@@ -29,9 +32,10 @@
               <label>
                 <strong>活动分类：</strong>
                 <select name="aClass">
-                  <option value="2">娱乐活动</option>
-                  <option value="1">前端培训</option>
-                  <option value="0" selected>分享活动</option>
+                  <option value="" selected>请选择活动分类</option>
+                  <% result.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                  <% }) %>
                 </select>
               </label>
             </div>
@@ -54,9 +58,9 @@
               <label><strong>活动摘要：</strong><input type="text" name="aSummary"/><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>活动内容：</strong>
-              <textarea name="aContent" cols="30" rows="10"></textarea><span>支持HTML</span></label>
+              <label><strong>活动内容：</strong></label>
             </div>
+            <div class="editor-box"><textarea name="aContent" id="editor" style="height:400px;"></textarea></div>
             <div class="manage-addActive-form-item">
               <label><strong>活动状态：</strong>
               <select name="aStatus">
@@ -104,5 +108,9 @@
 </div>
 
 <% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
 </body>
 </html>

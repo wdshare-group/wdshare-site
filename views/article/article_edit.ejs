@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>修改文章 -- WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="article crumbs-article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-left">
+        <h1 class="article-title">修改文章</h1>
+      </div>
+    </div>
+    <div class="add-article">
+      <% if ( typeof error == "string" ) { %>
+      <p style="min-height:400px; text-align:center; font-size:16px; padding-top:50px;"><%= error %></p>
+      <% } else { %>
+      <form id="js-article-create-form">
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>文章标题：</strong><input type="text" name="title" style="width:500px;"  value="<%=result.title%>" /></label>
+          <label style="display:inline-block; margin-left:40px;">跳转：<input type="checkbox" name="linkType" id="js-linkType" style="width:auto; height:auto;" <%if (result.linkUrl) {%>checked="checked"<%}%> /></label>
+        </div>
+        <div class="addActive-form-item" id="js-linkUrl-box" style="display:<%if (!result.linkUrl) {%>display:none;<%}%>;">
+          <label><strong>跳转URL：</strong><input type="text" name="linkUrl" style="width:500px;" value="<%= result.linkUrl ? result.linkUrl : 'http://'%>" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label>
+            <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
+            <select name="channelId">
+              <% channels.forEach(function(channel){ %>
+              <option value="<%= channel._id%>" <%if (channel._id == result.channelId) {%>selected<%}%>><%= channel.name%></option>
+              <% }) %>
+            </select>
+          </label>
+        </div>
+        
+        <div class="addActive-form-item">
+          <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" value="<%=result.source%>" /></label>
+          <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="<%= result.sourceUrl ? result.sourceUrl : 'http://'%>" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong>
+        </div>
+        <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%=result.content%></textarea></div>
+
+        <div class="addActive-form-item">
+          <label><strong>TAG：</strong><input type="text" name="tag" value="<%=result.tag%>" /><span>多个tag请使用英文逗号“,”隔开</span></label>
+        </div>
+
+        <!-- <div class="addActive-form-item">
+          <label><strong>关键字：</strong><input type="text" name="keywords" value="<%=result.keywords%>" /><span>显示在meta标签的keywords</span></label>
+        </div> -->
+        <div class="addActive-form-item">
+          <label><strong>摘要描述：</strong>
+          <textarea name="description" cols="30" rows="5"><%=result.description%></textarea><span>显示在meta标签的description</span></label>
+        </div>
+
+        <div class="addActive-form-but">
+          <input class="green" name="submitbutton" type="submit" value="提交"/>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

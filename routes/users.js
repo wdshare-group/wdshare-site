@@ -1,5 +1,6 @@
 var express = require('express'),
     fs = require('fs'),
+    os = require('os'),
     path = require('path'),
     sendMail = require("../server/sendMail.js"),
     router = express.Router(),
@@ -8,9 +9,32 @@ var express = require('express'),
     goBack = init.goBack,
     crypto = require('crypto'),
     moment = require("moment"),
-    config = require("../server/config");
+    config = require("../server/config"),
+    URL = require('url'),
+    Busboy = require('busboy'),
+    fse = require('fs-extra'),
+    gm = require('gm'),
+    imageMagick = gm.subClass({ imageMagick : true });
 
-//编辑用户资料  user_infos表操作
+
+/**
+ * 用户中心相关
+ */
+
+// 用户中心首页
+router.route('/').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至用户中心页面
+    res.redirect("/user/"+req.session.user._id);
+});
+
+
+// 编辑用户资料  user_infos表操作
 router.route('/editInfo').get(function (req, res) {
     "use strict";
     if (!req.session.user) {
@@ -42,13 +66,13 @@ router.route('/editInfo').get(function (req, res) {
                 res.render('users/user_info', {
                     title: "修改信息",
                     info: {},
-                    userdata: userdata
+                    member: userdata
                 });
             } else {// 已存在
                 res.render("users/user_info", {
                     title: '修改信息',
                     info: data,
-                    userdata: userdata
+                    member: userdata
                 });
             }
         });
@@ -206,6 +230,8 @@ router.route('/editInfo').get(function (req, res) {
                     www: www,
                     weibo: weibo,
                     github: github,
+                    zan: 0,
+                    offer: 0,
                     introduction: introduction,
                     updataTime: (new Date()).getTime(),
                     updataIp: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress
@@ -213,7 +239,7 @@ router.route('/editInfo').get(function (req, res) {
             }, function (err, data) {
                 if (err) {
                     info_flag = false;
-                    info_error_msg = "添加失败aaa，请稍后重试！";
+                    info_error_msg = "添加失败，请稍后重试！";
                     pageSend();
                 } else {
                     info_flag = true;
@@ -269,7 +295,7 @@ router.route('/editInfo').get(function (req, res) {
             msg += user_error_msg;
         }
         if ( info_error_msg ) {
-            msg += "<br />"+ info_error_msg;
+            msg += info_error_msg;
         }
 
         if ( user_flag && info_flag ) {
@@ -298,7 +324,31 @@ router.route("/editPassword").get(function (req, res) {
         return false;
     }
 
-    res.render('users/editPassword');
+    var id = req.session.user._id;
+
+    // 先查users表的用户信息
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, user) {
+        // 再查info
+        usersInfosModel.getOne({
+            key: "User_info",
+            body: {
+                userid: id
+            }
+        }, function (err, info) {
+            if (err || !info) {
+                res.render('users/empty', {title:'修改密码提示', content:'先完善信息后才有权限修改密码。<br /><a href="/user/editInfo">点击完善信息</a>'});
+            }
+            res.render('users/editPassword', {
+                member: user,
+                info: info
+            });
+        });
+    });
 }).post(function (req, res) {
     "use strict";
     var password = req.body.password,
@@ -336,6 +386,7 @@ router.route("/editPassword").get(function (req, res) {
     usersModel.getOne({
         key: "User",
         body: {
+            email: user,
             password: passwordHash
         }
     }, function (err, data) {
@@ -347,7 +398,8 @@ router.route("/editPassword").get(function (req, res) {
             });
             return;
         }
-        if (data && "email" in data && data.email === user) {
+        
+        if (data && "email" in data) {
             usersModel.update({
                 _id: data._id
             }, {
@@ -382,6 +434,428 @@ router.route("/editPassword").get(function (req, res) {
         }
     });
 });
+
+// 修改头像
+router.route("/editFace").get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    var id = req.session.user._id;
+
+    // 先查users表的用户信息
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, user) {
+        // 再查info
+        usersInfosModel.getOne({
+            key: "User_info",
+            body: {
+                userid: req.session.user._id
+            }
+        }, function (err, info) {
+            if (err || !info) {
+                res.render('users/empty', {title:'修改头像', content:'先完善信息后才有权限修改头像。<br /><a href="/user/editInfo">点击完善信息</a>'});
+            }
+            res.render('users/user_face', {
+                member: user,
+                info: info
+            });
+        });
+    });
+}).post(function (req, res) {
+    "use strict";
+    var busboy = new Busboy({ headers: req.headers });
+    var staticPath = path.join(siteDir, 'public');
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        var isReturn = false;
+        save(file, filename, req, function (err, url) {
+            //防止多次res.end()
+            if (isReturn) return;
+            isReturn = true;
+            //console.log(req.body);
+            var r = {
+                'url': '/static' + url,
+                //'title': req.body.pictitle,
+                'original': filename,
+            }
+            if (err) {
+                r.state = 'ERROR';
+            } else r.state = 'SUCCESS';
+            res.json(r);
+        });
+    });
+    req.pipe(busboy);
+
+
+    var save = function (file, filename, req, callback) {
+        var realName = "face" + path.extname(filename);
+        var dPath = "/users/" + req.session.user._id + "/face";
+        var saveTo = path.join(os.tmpDir(), realName);
+
+        file.pipe(fs.createWriteStream(saveTo));
+        file.on('end', function() {
+            var readPath = path.join(staticPath, dPath, realName);
+            fse.remove(path.join(staticPath, dPath), function(error) {// 先移动原有头像文件夹
+                console.log(saveTo);
+                console.log(readPath);
+                
+                fse.move(saveTo, readPath, function(err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        // 缩放图片【限制最大宽高】
+                        imageMagick(readPath).resize(128, 128).noProfile().write(readPath, function() {
+                            console.log("face upload ok!");
+                        });
+                        callback(null, dPath + '/' + realName);
+                    }
+                });
+            });
+        });
+    }
+
+
+    // res.send({url:"/static/upload/560262144bb4b810197a28d9/2015_11_12_16_56_44_689_1000.jpg",original:"1.jpg",state:"SUCCESS"});
+});
+
+
+// 访问我的文章【出现这个链接默认为会员访问自己发布的文章】
+router.route('/myarticle').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至用户中心页面
+    res.redirect("/user/myarticle/"+req.session.user._id);
+});
+// 访问会员的文章
+router.route('/myarticle/:id').get(function (req, res) {
+    "use strict";
+    var id = req.params.id,
+        member;
+
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = data;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    getArticleList(req, res, {type:1, userId:id}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/user_article', member, data);
+                }
+            });
+        }
+    });
+});
+/**
+ * 获取文章列表内容
+ * @param  {Object} o 限制条件
+ * @param  {String} mod 模板路径
+ * @param  {Object} member 用户信息
+ * @return
+ */
+function getArticleList(req, res, o, pages, mod, member, info) {
+    archiveModel.getSort({
+        key: "Archive",
+        body:o,// 仅读取文章类型的档案
+        pages:pages, // 分页信息
+        occupation: "addDate"// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            userCount = 0,
+            allCount;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            if ( data.length < 1 ) {// 没有数据的时候直接返回
+                allCount = 0;
+                gosend();
+                return;
+            }
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    archiveModel.getOne({
+                        key: "Article_channel",
+                        body: {
+                            _id: data[i].channelId
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            data[i].channel = channelData.name;
+                            data[i].channelUrl = channelData.url;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取会员信息
+                    usersModel.getOne({
+                        key: "User",
+                        body: {
+                            _id: data[i].userId
+                        }
+                    }, function (err, userData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (userData) {
+                            data[i].user = userData.username;
+                            data[i].userId = userData._id;
+                        } else {
+                            data[i].user = "";
+                            data[i].userId = "";
+                        }
+                        userCount++;
+                        gosend();
+                        return;
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            archiveModel.getAll({// 查询分类，为添加文章做准备
+                key: "Archive",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+            var _page = pages;
+            if ( channelCount == data.length && userCount == data.length && allCount >= 0 ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: "会员发布的文章",
+                    result: data,
+                    pages:_page,
+                    member: member,
+                    info: info
+                });
+           }
+        };
+    });
+};
+
+// 访问我参与的活动【出现这个链接默认为会员访问自己参与的活动】
+router.route('/myactive').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至用户中心页面
+    res.redirect("/user/myactive/"+req.session.user._id);
+});
+// 访问会员与的活动
+router.route('/myactive/:id').get(function (req, res) {
+    "use strict";
+    var id = req.params.id,
+        member;
+
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = data;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    getActiveList(req, res, {mail:member.email}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/user_active', member, data);
+                }
+            });
+        }
+    });
+});
+/**
+ * 获取参与活动内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {Object} member 用户信息
+ * @param  {Object} info 用户详细信息
+ * @return
+ */
+function getActiveList(req, res, o, pages, mod, member, info) {
+    activeModel.getSort({// 获取报名信息
+        key: "Active_join",
+        body:o,// 仅读取文章类型的档案
+        pages: pages,// 分页信息
+        occupation: "aAddDate"// 排序字段
+    }, function (err, data) {
+        var joinCount = 0,
+            allCount;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            if ( data.length < 1 ) {// 没有数据的时候直接返回
+                allCount = 0;
+                gosend();
+                return;
+            }
+            
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    activeModel.getOne({
+                        key: "Active",
+                        body: {
+                            _id: data[i].aid
+                        }
+                    }, function (err, activeData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (activeData && activeData.aName) {
+                            data[i].activeName = activeData.aName;
+                            data[i].activeId = activeData._id;
+                            data[i].activeChannel = activeData.aClass;
+                            data[i].time = activeData.aTime;
+                            joinCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            activeModel.getAll({
+                key: "Active_join",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( joinCount == data.length && allCount >= 0 ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: "会员参与的活动",
+                    result: data,
+                    member: member,
+                    info: info,
+                    pages: _page
+                });
+           }
+        };
+    });
+};
+
+
+
 
 
 /*
@@ -565,18 +1039,10 @@ router.route("/updateEmail/:code").all(authorize).get(function (req, res) {
  */
 
 
-//编辑用户资料
-router.route('/').get(function (req, res) {
-    "use strict";
-    if (!req.session.user) {
-        res.redirect("/user/login");
-        return false;
-    }
 
-    // 跳转至用户中心页面
-    res.redirect("/user/"+req.session.user._id);
-});
-
+/**
+ * 获取用户头像相关
+ */
 
 // 读取并返回文件列表
 function geFileList(path) {
@@ -584,7 +1050,6 @@ function geFileList(path) {
     readFile(path, filesList);
     return filesList;
 }
-
 //遍历读取文件
 function readFile(path, filesList) {
     files = fs.readdirSync(path); //需要用到同步读取
@@ -604,7 +1069,6 @@ function readFile(path, filesList) {
         }
     }
 }
-
 // 获取用户头像
 router.route('/face/:id').get(function (req, res) {
     // 待完善，过去用户头像，头像路径不存数据库，上传头像的直接创建ID命名的图片，没上传的显示默认头像
@@ -638,6 +1102,12 @@ router.route('/face/:id').get(function (req, res) {
         });
     };
 });
+
+
+
+/**
+ * 用户帐号相关
+ */
 
 // 找回密码
 router.route('/forgotPassword').get(function (req, res) {
@@ -742,7 +1212,6 @@ router.route('/forgotPassword').post(function (req, res) {
         }
     });
 });
-
 
 // 访问重置密码链接
 router.route('/forgotPassword/:hash').get(function (req, res) {
@@ -1107,6 +1576,16 @@ router.route('/login').post(function (req, res) {
         }
         if (data && "email" in data) {
 
+            // 如果用户被锁定，禁止登录
+            if ( data.lock ) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "<span style='color:#f00;'>该账户被锁定！</span><br /><br />原因：" + data.lockMessage +"<br />请联系管理员开通帐号，邮箱：wdshare@163.com"
+                });
+                return;
+            }
+
             req.session.user = data;
 
             // 更新最后登录日期和IP
@@ -1253,11 +1732,6 @@ router.get('/logout', function (req, res) {
 // 个人主页
 router.route('/:id').get(function (req, res) {
     "use strict";
-    if (!req.session.user) {
-        res.redirect("/user/login");
-        return false;
-    }
-
     var id = req.params.id;
     if (id) {
         usersModel.getOne({
@@ -1272,24 +1746,39 @@ router.route('/:id').get(function (req, res) {
             }
             // 账户被锁定
             if (data.lock) {
-                res.render('users/empty', {title:'账户被锁定', content:data.lockMessage + "<br/>请联系管理员开通帐号，邮箱：wdshare@163.com"});
+                res.render('users/empty', {title:'该账户被锁定', content:"原因："+ data.lockMessage + "<br/>请联系管理员开通帐号，邮箱：wdshare@163.com"});
                 return false;
             }
 
-            // 查询info表是否有内容，没有直接跳转至信息填写
-            usersInfosModel.getOne({
-                key: "User_info",
-                body: {
-                    userid: id
-                }
-            }, function (err, data) {
-                if (err || !data) {
-                    res.redirect("/user/edit");
-                } else {
-                    res.render("users/user_home", {title:"个人主页", info:data});
-                }
-            });
-            
+            if (req.session.user && req.session.user._id == id) {
+                // 查询info表是否有内容，没有直接跳转至信息填写
+                usersInfosModel.getOne({
+                    key: "User_info",
+                    body: {
+                        userid: id
+                    }
+                }, function (err, infodata) {
+                    if (err || !infodata) {
+                        res.redirect("/user/editInfo");
+                    } else {
+                        res.render("users/user_home", {title:"个人主页", member:data, info:infodata});
+                    }
+                });
+            } else {
+                usersInfosModel.getOne({
+                    key: "User_info",
+                    body: {
+                        userid: id
+                    }
+                }, function (err, infodata) {
+                    if (err || !infodata) {
+                        res.render("users/user_home", {title:"个人主页", member:data});
+                    } else {
+                        res.render("users/user_home", {title:"个人主页", member:data, info:infodata});
+                    }
+                });
+            }
+
         });
     }
 

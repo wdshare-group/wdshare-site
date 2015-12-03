@@ -20,13 +20,22 @@
   if(userInfo && userInfo.realname) {
     name = userInfo.realname;
   }
+  if(name == "undefined") {
+    name = '';
+  }
 
   if(userInfo && userInfo.com) {
     com = userInfo.com;
   }
+  if(com == "undefined") {
+    com = '';
+  }
 
   if(userInfo && userInfo.www && userInfo.www != "http://") {
     www = userInfo.www;
+  }
+  if(www == "undefined") {
+    www = '';
   }
 %>
 <style type="text/css">

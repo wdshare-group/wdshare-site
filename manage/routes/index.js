@@ -6,7 +6,8 @@ var express = require('express'),
     goBack = init.goBack,
     crypto = require('crypto'),
     ObjectId = mongo.ObjectID,
-    config = require("../../server/config");
+    config = require("../../server/config"),
+    URL = require('url');
 
 
 var active = require('./active.js');
@@ -17,48 +18,294 @@ var active = require('./active.js');
  * 后台首页
  */
 router.get('/', function(req, res) {
-    acCon.find({}).then(function(result){
-        getJoin(result);
-    },function(err){
-        res.render('active/502', { title: '出错啦',error:err});
-    })
+    var avtive = false,
+        article = false;
 
-    function getJoin(result) {
-        var yes = 0,
-            no = 0,
-            max = result.length,
-            joinLength = {};
-        for (var i=0; i<max; i++) {
-            (function() {
-                var active = result[i],
-                    aId = ""+active._id;
-                // 获取报名信息
-                acCon.findJoin({aid:aId}).then(function(data) {
-                    joinLength[aId] = data.length;
-                    yes++;
-                    joinCallback();
-                }, function(err) {
-                    joinLength[aId] = "undefied";
-                    no++;
-                    joinCallback();
-                })
-            })(i);
-            
+    var pathname = URL.parse(req.originalUrl, true).pathname;
+    // 请求活动数据
+    getActiveList (req, res, {aStatus:{'$ne':'0'}}, {page:1, pagesize:5, pathname:pathname}, function(data) {
+        avtive = data;
+        gosend();
+        return;
+    });
+    // 请求文章数据
+    getArticleList (req, res, {type:1}, {page:1, pagesize:5, pathname:pathname}, function(data) {
+        article = data;
+        gosend();
+        return;
+    });
+
+    function gosend() {
+        if ( avtive && article ) {
+            res.render('manages/index', {
+                title: '后台首页调用活动模块',
+                avtive:avtive,
+                article:article
+            });
+        }
+    };
+});
+
+/**
+ * 获取列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {Function} callback 回调函数
+ * @return
+ */
+function getActiveList(req, res, o, pages, callback) {
+    activeModel.getSort({
+        key: "Active",
+        body:o,// 筛选内容
+        pages: pages,// 分页信息
+        occupation: "aAddDate"// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            joinCount = 0,
+            allCount,
+            channelItem;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
         }
 
-        function joinCallback() {
-            if ( yes + no == max ) {
-                res.render('manages/index', {
-                    title: '后台首页调用活动模块',
-                    result:result,
-                    joinLength:joinLength
-                });
-            }
-        };
-        
-    }
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    activeModel.getOne({
+                        key: "Active_channel",
+                        body: {
+                            _id: data[i].aClass
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
 
-});
+                        if (channelData && channelData.name) {
+                            data[i].channel = channelData.name;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取报名信息
+                    activeModel.getAll({
+                        key: "Active_join",
+                        body: {
+                            aid: data[i]._id
+                        }
+                    }, function (err, joins) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (joins) {
+                            data[i].joins = joins.length;
+                            joinCount++
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            activeModel.getAll({// 查询分类，为添加文章做准备
+                key: "Active",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            // 获取分类信息，列表页显示分类
+            activeModel.getAll({
+                key: "Active_channel"
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    channelItem = data;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( channelCount == data.length && joinCount == data.length && allCount >= 0 && channelItem ) {
+                _page.sum = allCount;
+                callback({
+                    title: "精彩活动",
+                    result: data,
+                    channel: channelItem,
+                    pages: _page
+                })
+           }
+        };
+    });
+};
+
+/**
+ * 获取文章列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {Function} callback 回调函数
+ * @return
+ */
+function getArticleList(req, res, o, pages, callback) {
+    archiveModel.getSort({
+        key: "Archive",
+        body:o,// 仅读取文章类型的档案
+        pages: pages,// 分页信息
+        occupation: "addDate"// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            userCount = 0,
+            allCount,
+            channelItem;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    archiveModel.getOne({
+                        key: "Article_channel",
+                        body: {
+                            _id: data[i].channelId
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            // console.log(channelData.name);
+                            data[i].channel = channelData.name;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取会员信息
+                    usersModel.getOne({
+                        key: "User",
+                        body: {
+                            _id: data[i].userId
+                        }
+                    }, function (err, userData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (userData) {
+                            data[i].user = userData.username;
+                            data[i].userId = userData._id;
+                        } else {
+                            data[i].user = "";
+                            data[i].userId = "";
+                        }
+                        userCount++;
+                        gosend();
+                        return;
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            archiveModel.getAll({
+                key: "Archive",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            // 获取分类信息，列表页显示分类
+            archiveModel.getAll({
+                key: "Article_channel"
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    channelItem = data;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( channelCount == data.length && userCount == data.length && allCount >= 0 && channelItem ) {
+                _page.sum = allCount;
+                callback({
+                    title: "精彩文章",
+                    result: data,
+                    channel: channelItem,
+                    pages: _page
+                })
+           }
+        };
+    });
+};
+
 
 
 /**

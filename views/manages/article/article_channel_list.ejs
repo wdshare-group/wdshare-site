@@ -37,7 +37,7 @@
               <tr>
                 <td><%= channel.name %></td>
                 <td><%= channel.url %></td>
-                <td><%= channel.template ? channel.template : '默认'%></td>
+                <td><%= channel.end_tpl ? channel.end_tpl : '默认'%></td>
                 <td><%= moment(channel.editDate).format('YYYY-MM-DD HH:mm:ss') %></td>
                 <td><a href="/article/<%= channel.url %>" target="_blank">预览</a><a href="/manage/article/channel/edit/<%= channel._id %>">修改</a><a href="#" data-id="<%= channel._id %>" class="js-articleChannels-delete">删除</a></td>
               </tr>

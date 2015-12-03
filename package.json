@@ -20,7 +20,10 @@
     "nodemailer": "*",
     "cookie-session": "*",
     "gravatar": "*",
-    "gm": "~1.18.1"
+    "gm": "~1.18.1",
+    "busboy": "^0.2.9",
+    "fs-extra": "^0.16.4",
+    "ueditor-nodejs": "~0.1.2"
   },
   "devDependencies": {
     "debug": "^2.0.0"

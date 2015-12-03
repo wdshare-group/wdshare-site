@@ -16,7 +16,7 @@ activeControl.find = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
         collection.find(query).sort({"aAddDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
@@ -46,7 +46,7 @@ activeControl.join = function(ao){
         ao.state = 1;// 报名状态：0屏蔽，1开启，2已发送邀请，3用户确认
         ao.code = "";// 生成的邀请码
         
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
 
         // 检测是否已经存在记录
         collection.findOne({
@@ -110,7 +110,7 @@ activeControl.joinUpdate = function(query, o){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
         collection.findOneAndUpdate(query,{$set:o},{w:1, upsert: true}, function(err, result) {
             if(err){
                 db.close();
@@ -137,7 +137,7 @@ activeControl.findJoin = function(query){
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active_join');
+        var collection = db.collection('active_joins');
         collection.find(query).sort({"addDate":-1}).toArray(function(err, result) {
             if(err){
                 db.close();
@@ -164,7 +164,7 @@ activeControl.click = function(id, click) {
             deferred.reject(err);
             return ;
         }
-        var collection = db.collection('active');
+        var collection = db.collection('actives');
         var obj = {
             "aClick" : count
         };

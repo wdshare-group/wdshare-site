@@ -25,7 +25,8 @@ define(['jquery', 'dialog'], function($, wx) {
     };
     member.loginCheck = function(form) {
         var email = form.email,
-            password = form.password;
+            password = form.password,
+            code = form.code;
         if ( !email.value ) {
             /*
             email.blur();
@@ -74,6 +75,12 @@ define(['jquery', 'dialog'], function($, wx) {
             });*/
             password.focus();
             this.loginError("填写密码后再登录吧！");
+            return false;
+        }
+
+        if ( code && !code.value ) {
+            code.focus();
+            this.loginError("填写验证码后再登录吧！");
             return false;
         }
         

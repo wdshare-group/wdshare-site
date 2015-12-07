@@ -802,6 +802,7 @@ function getActiveList(req, res, o, pages, mod, member, info) {
 
                         if (activeData && activeData.aName) {
                             data[i].activeName = activeData.aName;
+                            data[i].activeStatus = activeData.aStatus;
                             data[i].activeId = activeData._id;
                             data[i].activeChannel = activeData.aClass;
                             data[i].time = activeData.aTime;
@@ -1543,8 +1544,18 @@ router.get('/login', function (req, res) {
     if (req.session.user) { // 如果登录直接返回前一个页面
         res.redirect(goBack(req.headers.referer));
     }
-    // res.render('login');
-    res.render('users/login');
+    
+    console.log(req.session.captcha);
+    console.log(req.session.loginIsShowCaptcha);
+    // req.session.loginIsShowCaptcha = 0;
+    if ( req.session.loginIsShowCaptcha && req.session.loginIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+        res.render('users/login', {captcha:true});
+    } else {
+        // 不显示验证码时需要清空验证码session
+        req.session.captcha = null;
+        res.render('users/login', {});
+    }
+    
 });
 
 router.route('/login').post(function (req, res) {
@@ -1557,7 +1568,45 @@ router.route('/login').post(function (req, res) {
     }
     var email = req.body.email,
         password = req.body.password,
+        code = req.body.code,
         hash = crypto.createHash("sha1").update(new Buffer(password, "binary")).digest('hex');
+
+    // 验证码错误
+    if ( req.session.loginIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "验证码错误，请重试！"
+            });
+            return false;
+        }
+    }
+
+    // 记录该用户登录的次数
+    if ( req.session.loginIsShowCaptcha ) {
+        req.session.loginIsShowCaptcha++;
+    } else {
+        req.session.loginIsShowCaptcha = 1;
+    }
+
 
     usersModel.getOne({
         key: "User",
@@ -1566,6 +1615,9 @@ router.route('/login').post(function (req, res) {
             password: hash
         }
     }, function (err, data) {
+
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
 
         if (err) {
             res.send({
@@ -1627,7 +1679,17 @@ router.get('/register', function (req, res) {
     if (req.session.user) {
         res.redirect(goBack(req.headers.referer));
     }
-    res.render('users/reg');
+    
+    console.log(req.session.captcha);
+    console.log(req.session.regIsShowCaptcha);
+    // req.session.regIsShowCaptcha = 0;
+    if ( req.session.regIsShowCaptcha && req.session.regIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+        res.render('users/reg', {captcha:true});
+    } else {
+        // 不显示验证码时需要清空验证码session
+        req.session.captcha = null;
+        res.render('users/reg', {});
+    }
 });
 
 router.post('/register', function (req, res) {
@@ -1635,8 +1697,47 @@ router.post('/register', function (req, res) {
     var email = req.body.email,
         password = req.body.password,
         repassword = req.body.repassword,
+        code = req.body.code,
         hash = crypto.createHash("sha1").update(new Buffer(password, "binary")).digest('hex'),
         regCode = crypto.createHash("sha1").update(new Buffer(email + (Math.random() * 10000000000).toFixed(0), "binary")).digest('hex');
+
+    // 验证码错误
+    if ( req.session.regIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "验证码错误，请重试！"
+            });
+            return false;
+        }
+    }
+    
+
+    // 记录该用户登录的次数
+    if ( req.session.regIsShowCaptcha ) {
+        req.session.regIsShowCaptcha++;
+    } else {
+        req.session.regIsShowCaptcha = 1;
+    }
+
 
     if (email.length < 5 || !/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(email) || password.length < 6 || password !== repassword) {
         res.send({
@@ -1652,6 +1753,10 @@ router.post('/register', function (req, res) {
             email: email
         }
     }, function (err, data) {
+
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
+
         if (err) {
             res.send({
                 status: 200,

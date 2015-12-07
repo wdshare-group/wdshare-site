@@ -22,7 +22,7 @@ http://mindmap.4ye.me/eFokkvX5/1
 系统组件需求：
  	需要安装 ImageMagick 组件 【会员上传头像、ueditor、验证码】都有用到
 
-node自建调整：
+node组件调整：
 	\node_modules\ueditor-nodejs\ueditor.js
 	84行，修改为：'url': '/static' + urlRoot + '/' + file
 	123行，修改为：'url': '/static' + url,

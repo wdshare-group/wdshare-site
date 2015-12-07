@@ -19,6 +19,12 @@ define(['jquery', 'dialog'], function($) {
                 return false;
             }
 
+            if ( _form.code && !_form.code.value ) {
+                _form.code.focus();
+                alert("填写验证码后再提交！");
+                return false;
+            }
+
             if ( _form.aid ) {
                 if ( !confirm("提交修改后这篇文章将会进入未审核状态\n您确定修改吗？") ) {
                     return false;
@@ -47,12 +53,30 @@ define(['jquery', 'dialog'], function($) {
                             "lock":true,
                             "showButtons":true,
                             "cancelButton":false,
+                            "onReady": function() {
+                                $(".D_submit").focus();
+                            },
                             "onComplete": function() {
                                window.location = "/user/myarticle";
                             }
                         });
                     } else {// 失败
-                        alert(data.message);
+                        Dialog({
+                            "msg":"<br />"+ data.message +"<br /><br />",
+                            "lock":true,
+                            "showButtons":true,
+                            "cancelButton":false,
+                            "onReady": function() {
+                                $(".D_submit").focus();
+                            },
+                            "onComplete": function() {
+                               // 更新验证码
+                                $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                                if ( data.reload ) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
                     }
                 }
             });

@@ -26,6 +26,7 @@ router.get('/get', function(req, res) {
     code += str[Math.round(Math.random() * (str.length-1))];
     code += str[Math.round(Math.random() * (str.length-1))];
 
+    // 绘制验证码图片
     var _img = imageMagick(readPath)
     // .resize(width, height, "!")
     .resize(100, 40, "!")
@@ -48,6 +49,25 @@ router.get('/get', function(req, res) {
     // .write(path.join(staticPath, bg, "img-to.jpg"), function (err) {
     //   send(err);
     // });
+    
+
+    // 记录验证码到session
+    req.session.captcha = code;
+});
+
+
+/**
+ * path:  /captcha/check/:code
+ * 检查验证码
+ */
+router.get('/check/:code', function(req, res) {
+    var code = req.params.code;
+
+    if ( code.toUpperCase() == req.session.captcha.toUpperCase() ) {
+        res.send("Ok");
+    } else {
+        res.send("No");
+    }
 });
 
 

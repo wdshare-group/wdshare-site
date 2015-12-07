@@ -60,6 +60,13 @@
           <textarea name="description" cols="30" rows="5"></textarea><span>显示在meta标签的description</span></label>
         </div>
 
+        <% if ( captcha && captcha === true ) { %>
+        <div class="addActive-form-item" style="margin-bottom:20px;">
+          <label><strong>验证码：</strong>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" /></label>
+        </div>
+        <% } %>
+
         <div class="addActive-form-but">
           <input class="green" name="submitbutton" type="submit" value="提交"/>
         </div>

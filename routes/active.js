@@ -5,6 +5,7 @@ var acCon = require('../model/active.js');
 var sendMail  = require("../server/sendMail.js");
 var config    = require("../server/config");
 var router = express.Router();
+var init = require("../server/init.js");
 var ObjectId = mongo.ObjectID;
 var URL = require('url');
 
@@ -178,10 +179,9 @@ router.get('/open', function(req, res) {
             return;
         }
 
-        req.send({status:false,msg:"获取进行中的活动数量失败"});
+        res.send({status:false,msg:"获取进行中的活动数量失败"});
     });
 });
-
 
 
 /**
@@ -190,6 +190,242 @@ router.get('/open', function(req, res) {
  * 参加活动接口
  */
 router.post('/join/', function(req, res, next) {
+    var aid = req.body.aid,
+        mail = req.body.mail,
+        name = req.body.name,
+        com = req.body.com,
+        web = req.body.web,
+        content = req.body.content,
+        chi = req.body.chi,
+        code = req.body.code;
+
+    // 验证码错误
+    if ( req.session.activeIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: false,
+                msg: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: false,
+                msg: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: false,
+                msg: "验证码错误，请重试！"
+            });
+            return false;
+        }
+    }
+    
+
+    // 记录该用户登录的次数
+    if ( req.session.activeIsShowCaptcha ) {
+        req.session.activeIsShowCaptcha++;
+    } else {
+        req.session.activeIsShowCaptcha = 1;
+    }
+
+    if (mail.length < 5 || !/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(mail) || !name ) {
+        res.send({
+            status: false,
+            msg: "资料不够全面哦！请完善信息后再提交。"
+        });
+        return;
+    }
+
+    // 检测活动状态
+    activeModel.getOne({
+        key: "Active",
+        body: {
+            _id: aid
+        }
+    }, function (err, data) {
+        
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
+
+        if (err) {
+            res.send({
+                status: false,
+                msg: "服务器错误，请重试！"
+            });
+            return;
+        }
+
+        if (data && data.aName) {
+            // 错误提示
+            var activeStatus = '该活动状态异常，暂停报名！';
+            if ( data.aStatus === "0" ) {
+                activeStatus = '该活动已关闭！';
+            } else if ( data.aStatus === "2" ) {
+                activeStatus = '该活动为暂停状态，请稍后再试';
+            } else if ( data.aStatus === "3" ) {
+                activeStatus = '该活动筹备中，请密切关注';
+            }
+            
+            if ( data.aStatus === "1" ) {// 允许报名
+                console.log(data);
+                console.log("aaaa");
+                joinWrite(req, res, data);
+            } else {// 非开启状态
+                res.send({
+                    status: false,
+                    msg: activeStatus
+                });
+            }
+            return;
+        }
+
+        res.send({
+            status: false,
+            msg: "活动不存在！"
+        });
+    });
+
+    /**
+     * 写入报名信息
+     * @param  {Object} active 本次报名活动信息
+     * @return {[type]}
+     */
+    function joinWrite(req, res, active) {
+        // 检测是否为重复报名
+        activeModel.getOne({
+            key: "Active_join",
+            body: {
+                aid: aid,
+                mail: mail
+            }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: false,
+                    msg: "服务器错误，请重试！"
+                });
+                return;
+            }
+
+            if (data && data.mail) {
+                res.send({
+                    status: false,
+                    msg: data.name + "已报名，无需重复报名！"
+                });
+                return;
+            } else {
+                save(req, res);
+                return false;
+            }
+
+            res.send({
+                status: false,
+                msg: "报名异常，请重新报名！"
+            });
+        });
+
+        // 保存报名信息
+        function save(req, res) {
+            activeModel.save({
+                key: "Active_join",
+                body: {
+                    aid: aid,
+                    mail: mail,
+                    name: name,
+                    com: com,
+                    web: web,
+                    content: content,
+                    chi: chi,
+                    addDate: new Date().getTime(),
+                    invite: 0,
+                    state: 1,
+                    code: ""
+                }
+            }, function (err, data) {
+
+                if (err) {
+                    res.send({
+                        status: false,
+                        msg: "报名失败，请重新报名！"
+                    });
+                }
+
+                res.send({
+                    status: true,
+                    msg: "报名成功！",
+                    activeid: aid
+                });
+
+                // 报名成功邮件发送
+                sendMail({
+                    from: config.mail.sendMail,
+                    to: mail,
+                    subject: 'WDShare 报名成功',
+                    html: '亲爱的 '+ name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ active.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ active.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ active.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span><br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />'
+                }, function() {// succeed
+                    mailSucceed(mail, active._id);
+                    console.log("报名邮件发送成功");
+                }, function() {// error
+                    mailError(mail, active._id);
+                    console.log("报名邮件发送失败");
+                });
+            });
+        }
+    };
+
+    /**
+     * 报名邮件发送成功更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailSucceed(mail, aId) {
+        activeModel.update({
+            aid: aId,
+            mail: mail
+        }, {
+            key: "Active_join",
+            body: {
+                joinMailState: true
+            }
+        }, function (err, data) {
+            console.log(mail + " 发送邮件成功");
+        });
+    };
+
+    /**
+     * 报名邮件发送失败更新数据库
+     * @param  {String} mail 报名邮箱
+     * @param  {String} aId  活动ID
+     * @return
+     */
+    function mailError(mail, aId) {
+        activeModel.update({
+            aid: aId,
+            mail: mail
+        }, {
+            key: "Active_join",
+            body: {
+                joinMailState: false
+            }
+        }, function (err, data) {
+            console.log(mail + " 发送邮件失败");
+        });
+    };
+
+});
+
+/**  bak 旧方法，已放弃
+ * path:  /active/join/
+ * AJAX 请求
+ * 参加活动接口
+ */
+router.post('/join.bak/', function(req, res, next) {
     req.checkBody('mail', '邮件不正确').notEmpty().isEmail();
     req.checkBody('name', '姓名不能为空').notEmpty();
     var errors = req.validationErrors();
@@ -417,10 +653,24 @@ router.get('/:id', function(req, res,next) {
                         aClick: click + 1
                     }
                 }, function (err, data) {
-                    res.render('active/end/' + tpl, {
-                        activeInfo: active,
-                        userInfo: info
-                    });
+                    console.log(req.session.captcha);
+                    console.log(req.session.activeIsShowCaptcha);
+                    // req.session.activeIsShowCaptcha = 0;
+                    if ( req.session.activeIsShowCaptcha && req.session.activeIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+                        res.render('active/end/' + tpl, {
+                            activeInfo: active,
+                            userInfo: info,
+                            captcha:true
+                        });
+                    } else {
+                        // 不显示验证码时需要清空验证码session
+                        req.session.captcha = null;
+                        res.render('active/end/' + tpl, {
+                            activeInfo: active,
+                            userInfo: info
+                        });
+                    }
+
                 });
             }
             return;

@@ -60,6 +60,7 @@ if (user && user._id == member._id) {
 	<div class="user-article-item">
 		<h4>
 			<a href="/active/<%= active.activeId %>" title="<%= active.activeName %>"><%= active.activeName %></a>
+      <% if ( active.activeStatus > 0 ) { %><span style="font-size:12px; color:#f00; padding-left:20px;">进行中...</span><% } %>
 		</h4>
 		<p>
 			<% if ( active.activeChannel === "0" ) { %>
@@ -73,8 +74,10 @@ if (user && user._id == member._id) {
 			<% } %>
     		<span class="user-article-date">时间：<%= active.time %></span>
 		</p>
-		<% if ( active.state == 3 ) { %>
-		<span class="user-article-edit">确认参加</span>
+		<% if ( active.state == 2 ) { %>
+    <span class="user-article-edit">已发送邀请函</span>
+    <% } else if ( active.state == 3 ) { %>
+		<span class="user-article-edit">已确认参加</span>
 		<% } else { %>
 		<span class="user-article-edit">仅报名</span>
 		<% } %>

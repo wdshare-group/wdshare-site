@@ -19,7 +19,17 @@ define(["jquery"], function(){
                         "msg":"<br />"+ data.message +"<br /><br />",
                         "lock":true,
                         "showButtons":true,
-                        "cancelButton":false
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        },
+                        "onComplete":function() {
+                            // 更新验证码
+                            $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                            if ( data.reload ) {
+                                window.location.reload();
+                            }
+                        }
                     });
                 }
                 
@@ -47,7 +57,14 @@ define(["jquery"], function(){
                         "msg":"<br />"+ data.message +"<br /><br />",
                         "lock":true,
                         "showButtons":true,
-                        "cancelButton":false
+                        "cancelButton":false,
+                        "onComplete":function() {
+                            // 更新验证码
+                            $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                            if ( data.reload ) {
+                                window.location.reload();
+                            }
+                        }
                     });
                 }
                 

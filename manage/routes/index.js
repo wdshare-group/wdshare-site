@@ -545,9 +545,22 @@ router.get('/login', function(req, res) {
         res.redirect("/manage");
     }
 
-    res.render('manages/login', {
-        title: "后台登陆"
-    });
+    
+    console.log(req.session.captcha);
+    console.log(req.session.manageLoginIsShowCaptcha);
+    // req.session.manageLoginIsShowCaptcha = 0;
+    if ( req.session.manageLoginIsShowCaptcha && req.session.manageLoginIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+        res.render('manages/login', {
+            title: "后台登陆",
+            captcha:true
+        });
+    } else {
+        // 不显示验证码时需要清空验证码session
+        req.session.captcha = null;
+        res.render('manages/login', {
+            title: "后台登陆"
+        });
+    }
 });
 router.post('/login', function(req, res) {
     "use strict";
@@ -560,7 +573,44 @@ router.post('/login', function(req, res) {
     }
     var username = req.body.username,
         password = req.body.password,
+        code = req.body.code,
         hash = crypto.createHash("sha1").update(new Buffer(password, "binary")).digest('hex');
+
+    // 验证码错误
+    if ( req.session.manageLoginIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "验证码错误，请重试！"
+            });
+            return false;
+        }
+    }
+
+    // 记录该用户登录的次数
+    if ( req.session.manageLoginIsShowCaptcha ) {
+        req.session.manageLoginIsShowCaptcha++;
+    } else {
+        req.session.manageLoginIsShowCaptcha = 1;
+    }
 
     manageModel.getOne({
         key: "Manage_user",
@@ -570,6 +620,9 @@ router.post('/login', function(req, res) {
         }
     }, function (err, data) {
 
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
+        
         if (err) {
             res.send({
                 status: 200,

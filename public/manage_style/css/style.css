@@ -177,7 +177,7 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 
 .login-code { width:257px; border:0; background:none; padding-left:0;}
 .login-code input { background:#f7f7f7; padding-left:15px; width:90px; border:0;}
-.login-code img { width:130px; vertical-align:middle; margin-left:10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
+.login-code img { width:130px; height:43px; vertical-align:top; margin-left:10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
 .login-remember { display:block; width:240px; text-align:left;  vertical-align:middle; padding:5px 0; margin:0 auto;}
 .login-remember span { padding-left:10px;}
 

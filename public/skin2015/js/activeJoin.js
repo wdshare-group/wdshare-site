@@ -56,14 +56,17 @@ define(["jquery"], function(){
         // 注册表单失去焦点事件
         var _form = $("#js-joinform"),
             mail = _form.find("input[name='mail']"),
-            name = _form.find("input[name='name']");
+            name = _form.find("input[name='name']"),
+            code = _form.find("input[name='code']");
         mail.blur(function() {
             Active.checkFormMail(this);
         });
         name.blur(function() {
             Active.checkFormName(this);
         });
-
+        code.blur(function() {
+            Active.checkFormCode(this);
+        });
     };
 
     /**
@@ -73,10 +76,16 @@ define(["jquery"], function(){
     Active.activeCheckForm = function() {
         var _form = $("#js-joinform"),
             mail = _form.find("input[name='mail']"),
-            name = _form.find("input[name='name']");
+            name = _form.find("input[name='name']"),
+            code = _form.find("input[name='code']");
         if ( !Active.checkFormMail(mail[0], true) ||  !Active.checkFormName(name[0], true) ) {
             return false;
         };
+        if ( code.length > 0 ) {
+            if ( !Active.checkFormCode(code[0], true) ) {
+                return false;
+            };  
+        }
         return true;
     };
 
@@ -109,6 +118,22 @@ define(["jquery"], function(){
         }
         return true;
     };
+    /**
+     * 检测表单验证码
+     * @return {[type]} [description]
+     */
+    Active.checkFormCode = function(name, flag) {
+        if ( !name.value ) {
+            showError(name, "请填写验证码", flag);
+            return false;
+        } else if ( name.value.length < 5 ) {
+            showError(name, "验证码为5个字符", flag);
+            return false;
+        } else {
+            showYes(name);
+        }
+        return true;
+    };
 
 
 
@@ -129,6 +154,10 @@ define(["jquery"], function(){
         formParam.com = _form.com.value;
         formParam.web = _form.web.value;
         formParam.chi = _form.chi.value;
+
+        if ( document.getElementById("code") ) {
+            formParam.code = _form.code.value;
+        }
 
         if (share == "1") {
             share_text = "分享师：YES";
@@ -188,7 +217,22 @@ define(["jquery"], function(){
                 }});
             } else {// 错误提示
                 // 提示成功
-                Dialog({'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn'});
+                Dialog({
+                    'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>',
+                    'lock':true,
+                    'title':'活动报名',
+                    'animation':'animated bounceIn',
+                    "onReady": function() {
+                        $(".D_close").focus();
+                    },
+                    "onComplete":function() {
+                        // 更新验证码
+                        $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                        if ( data.reload ) {
+                            window.location.reload();
+                        }
+                    }
+                });
             };
 
             

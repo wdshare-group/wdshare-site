@@ -80,6 +80,7 @@ app.use(function(req,res,next){
     "use strict";
     res.locals.user = req.session.user;
     res.locals.manageuser = req.session.manageuser;
+    res.locals.captcha = req.session.captcha;// 验证码
     next();
 });
 
@@ -142,12 +143,12 @@ app.use('/static/ueditor/ue', ueditor({//这里的/ueditor/ue是因为文件件重命名为了
          * 会员用自己ID的图片上传目录，管理员用images
          */
         // 管理员
-        if (req.session.manageuser) {//如果是博主自己
+        if (req.session.manageuser) {//如果是管理员
             return '/upload/images';
         }
 
         // 会员
-        if (req.session.user) {//如果是博主自己
+        if (req.session.user) {//如果是会员
             return '/upload/'+ req.session.user._id;
         }
     }

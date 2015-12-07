@@ -177,10 +177,24 @@ router.get('/create', function(req, res) {
             }
 
             if (data) {
-                res.render('article/article_create', {
-                    title: "添加文章",
-                    result: data// 返回分类信息
-                });
+                
+                console.log(req.session.captcha);
+                console.log(req.session.addArticleIsShowCaptcha);
+                // req.session.addArticleIsShowCaptcha = 2;
+                if ( req.session.addArticleIsShowCaptcha && req.session.addArticleIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+                    res.render('article/article_create', {
+                        title: "添加文章",
+                        captcha:true,
+                        result: data// 返回分类信息
+                    });
+                } else {
+                    // 不显示验证码时需要清空验证码session
+                    req.session.captcha = null;
+                    res.render('article/article_create', {
+                        title: "添加文章",
+                        result: data// 返回分类信息
+                    });
+                }
                 return;
             }
 
@@ -190,6 +204,8 @@ router.get('/create', function(req, res) {
 });
 // 修改和添加共用
 router.post('/create', function(req, res) {
+    var code = req.body.code;
+
     if (!req.session.user) {
         res.redirect("/user/login");
         return false;
@@ -199,132 +215,203 @@ router.post('/create', function(req, res) {
         res.redirect("/user/activeAccount");
         return false;
     }
-    var type = 1,// 数据模型：1为文章、2为项目、3为招聘
-        title = req.body.title,
-        linkUrl = req.body.linkUrl,
-        cover = "",
-        channelId = req.body.channelId,
-        tag = req.body.tag,
-        source = req.body.source,
-        sourceUrl = req.body.sourceUrl,
-        userId = req.session.user._id,
-        content = req.body.content,
-        diyType = "",// 1头条、2推荐、3加粗
-        keywords = req.body.keywords,
-        description = req.body.description,
-        color = "",
-        tpl = "",
-        rank = 0,
-        sortup = false,
-        click = 0,
-        zan = 0,
-        notComment = true,
-        audit = false,
 
-        id = req.body.aid;
-
-    if ( !title || !channelId ) {
-        res.send({
-            status: 200,
-            code: 0,
-            message: "文章标题、归属栏目必须填写"
-        });
-    }
-    if ( !linkUrl && !content ) {
-        res.send({
-            status: 200,
-            code: 0,
-            message: "文章内容必须填写"
-        });
+    // 验证码错误
+    if ( req.session.addArticleIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "验证码错误，请重试！"
+            });
+            return false;
+        }
     }
 
-    if ( linkUrl == "http://" ) {
-        linkUrl = "";
-    }
-    if ( sourceUrl == "http://" ) {
-        sourceUrl = "";
+    // 记录该用户登录的次数
+    if ( req.session.addArticleIsShowCaptcha ) {
+        req.session.addArticleIsShowCaptcha++;
+    } else {
+        req.session.addArticleIsShowCaptcha = 1;
     }
 
-    if ( id ) {// 修改
-        archiveModel.update({
-                _id: id
-            }, {
-            key: "Archive",
-            body: {
-                channelId:channelId,
-                title: title,
-                linkUrl: linkUrl,
-                content: content,
-                keywords: keywords,
-                description: description,
-                tag: tag,
-                source: source,
-                sourceUrl: sourceUrl,
-                editDate: (new Date()).getTime(),
-                audit: audit,
-                rejected: ""
-            }
-        }, function (err, data) {
-            if (err) {
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: req.session.user._id
+        }
+    }, function (err, member) {
+        
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
+
+        if (err || !member) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "会员账户发生故障！"
+            });
+        } else {
+            if ( member.lock ) {// 被锁定账号发布文章时强退
+                req.session.user = null;
                 res.send({
                     status: 200,
                     code: 0,
-                    message: err
+                    message: "该账户被锁定！\n\n原因：" + member.lockMessage + "\n\n请联系管理员开通帐号，邮箱：wdshare@163.com"
                 });
+                return;
             }
-            // 发送邮件通知管理员
-            sendArticleChangeMail(req, res, "修改", title);
+
+            action();
+        }
+    });
+
+    function action() {
+        var type = 1,// 数据模型：1为文章、2为项目、3为招聘
+            title = req.body.title,
+            linkUrl = req.body.linkUrl,
+            cover = "",
+            channelId = req.body.channelId,
+            tag = req.body.tag,
+            source = req.body.source,
+            sourceUrl = req.body.sourceUrl,
+            userId = req.session.user._id,
+            content = req.body.content,
+            diyType = "",// 1头条、2推荐、3加粗
+            keywords = req.body.keywords,
+            description = req.body.description,
+            color = "",
+            tpl = "",
+            rank = 0,
+            sortup = false,
+            click = 0,
+            zan = 0,
+            notComment = true,
+            audit = false,
+
+            id = req.body.aid;
+
+        if ( !title || !channelId ) {
             res.send({
                 status: 200,
-                code: 1,
-                message: "修改成功！文章进入审核状态，审核后显示在官网"
+                code: 0,
+                message: "文章标题、归属栏目必须填写"
             });
-        });
-    } else {// 添加
-        archiveModel.save({
-            key: "Archive",
-            body: {
-                type: type,
-                channelId:channelId,
-                title: title,
-                linkUrl: linkUrl,
-                diyType: diyType,
-                color: color,
-                cover: cover,
-                content: content,
-                keywords: keywords,
-                description: description,
-                tpl: tpl,
-                tag: tag,
-                source: source,
-                sourceUrl: sourceUrl,
-                rank: rank,
-                sortup: sortup,
-                addDate: (new Date()).getTime(),
-                editDate: (new Date()).getTime(),
-                click: click,
-                userId: userId,
-                zan: zan,
-                notComment: notComment,
-                audit: audit
-            }
-        }, function (err, data) {
-            if (err) {
+        }
+        if ( !linkUrl && !content ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "文章内容必须填写"
+            });
+        }
+
+        if ( linkUrl == "http://" ) {
+            linkUrl = "";
+        }
+        if ( sourceUrl == "http://" ) {
+            sourceUrl = "";
+        }
+
+        if ( id ) {// 修改
+            archiveModel.update({
+                    _id: id
+                }, {
+                key: "Archive",
+                body: {
+                    channelId:channelId,
+                    title: title,
+                    linkUrl: linkUrl,
+                    content: content,
+                    keywords: keywords,
+                    description: description,
+                    tag: tag,
+                    source: source,
+                    sourceUrl: sourceUrl,
+                    editDate: (new Date()).getTime(),
+                    audit: audit,
+                    rejected: ""
+                }
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: err
+                    });
+                }
+                // 发送邮件通知管理员
+                sendArticleChangeMail(req, res, "修改", title);
                 res.send({
                     status: 200,
-                    code: 0,
-                    message: err
+                    code: 1,
+                    message: "修改成功！文章进入审核状态，审核后显示在官网"
                 });
-            }
-            // 发送邮件通知管理员
-            sendArticleChangeMail(req, res, "添加", title);
-            res.send({
-                status: 200,
-                code: 1,
-                message: "添加成功！审核后才会出现在官网"
             });
-        });
-    }
+        } else {// 添加
+            archiveModel.save({
+                key: "Archive",
+                body: {
+                    type: type,
+                    channelId:channelId,
+                    title: title,
+                    linkUrl: linkUrl,
+                    diyType: diyType,
+                    color: color,
+                    cover: cover,
+                    content: content,
+                    keywords: keywords,
+                    description: description,
+                    tpl: tpl,
+                    tag: tag,
+                    source: source,
+                    sourceUrl: sourceUrl,
+                    rank: rank,
+                    sortup: sortup,
+                    addDate: (new Date()).getTime(),
+                    editDate: (new Date()).getTime(),
+                    click: click,
+                    userId: userId,
+                    zan: zan,
+                    notComment: notComment,
+                    audit: audit
+                }
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: err
+                    });
+                }
+                // 发送邮件通知管理员
+                sendArticleChangeMail(req, res, "添加", title);
+                res.send({
+                    status: 200,
+                    code: 1,
+                    message: "添加成功！审核后才会出现在官网"
+                });
+            });
+        }
+    };
+    
 });
 /**
  * path:  /article/edit/:id
@@ -362,11 +449,25 @@ router.get('/edit/:id', function(req, res) {
 
                 // 不是自己的文章不能编辑
                 if (aricle && aricle.userId == req.session.user._id) {
-                    res.render('article/article_edit', {
-                        title: "修改文章",
-                        result: aricle,
-                        channels: data
-                    });
+                    console.log(req.session.captcha);
+                    console.log(req.session.addArticleIsShowCaptcha);
+                    // req.session.addArticleIsShowCaptcha = 0;
+                    if ( req.session.addArticleIsShowCaptcha && req.session.addArticleIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+                        res.render('article/article_edit', {
+                            title: "修改文章",
+                            captcha:true,
+                            result: aricle,
+                            channels: data
+                        });
+                    } else {
+                        // 不显示验证码时需要清空验证码session
+                        req.session.captcha = null;
+                        res.render('article/article_edit', {
+                            title: "修改文章",
+                            result: aricle,
+                            channels: data
+                        });
+                    }
                     return;
                 } else {
                     res.render('article/article_edit', {

@@ -1014,6 +1014,11 @@ function manageLogin() {
             _form.password.focus();
             return false;
         }
+        if ( _form.code && !_form.code.value ) {
+            _form.code.focus();
+            alert("填写验证码后再登录吧！");
+            return false;
+        }
 
         var formData = $(_form).serialize();
         $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
@@ -1034,7 +1039,22 @@ function manageLogin() {
                 if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
                     window.location = "/manage";
                 } else {// 失败
-                    alert(data.message);
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        },
+                        "onComplete":function() {
+                            // 更新验证码
+                            $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                            if ( data.reload ) {
+                                window.location.reload();
+                            }
+                        }
+                    });
                 }
             }
         });

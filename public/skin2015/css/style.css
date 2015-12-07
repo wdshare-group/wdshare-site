@@ -142,7 +142,7 @@ body { background:#f7f7f7;}
 
 .login-code { width:257px; border:0; background:none; padding-left:0;}
 .login-code input { background:#f7f7f7; padding-left:15px; width:90px; border:0;}
-.login-code img { width:130px; vertical-align:middle; margin-left:10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
+.login-code img { width:130px; height:43px; vertical-align:top; margin-left:10px; border-radius:8px; -webkit-border-radius:8px; -moz-border-radius:8px; -o-border-radius:8px;}
 .login-remember { display:block; width:240px; text-align:left;  vertical-align:middle; padding:5px 0; margin:0 auto;}
 .login-remember span { padding-left:10px;}
 
@@ -416,6 +416,7 @@ a.article-top-comment-link { color:#ff8400;}
 .active-join dd em { font-size:0.8em; color:#f00; padding-left:15px;}
 .active-join dd input { width:230px; border-radius:10px; font:1em/1em "Microsoft YaHei"; padding:8px 8px 5px; border:1px solid #ccc;}
 .active-join dd em { display:none;}
+.active-join dd img { height:34px; vertical-align:middle; margin-top:-7px; border-radius:5px;}
 .active-join .radio input { border:0; width:auto; vertical-align:middle; margin-top:-3px;}
 .active-join .radio label { float:left; padding-right:20px; line-height:2.4em;}
 .active-join textarea { border:1px solid #ccc; border-radius:10px; width:400px; height:50px; font:1em/1em "Microsoft YaHei"; padding:5px; line-height:1.4em;}
@@ -563,6 +564,7 @@ a.article-top-comment-link { color:#ff8400;}
 .addActive-form-item select { height:32px;}
 .addActive-form-item textarea { width:500px; height:60px; line-height:20px;}
 .addActive-form-item span { color:#999; padding-left:10px;}
+.addActive-form-item img { height:40px; vertical-align:middle;}
 .addActive-form-radio label { padding-right:30px;}
 .addActive-form-radio input { width:auto; border:0; box-shadow:none; vertical-align:middle;}
 

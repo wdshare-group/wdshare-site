@@ -31,9 +31,9 @@ router.get('/get', function(req, res) {
     // .resize(width, height, "!")
     .resize(100, 40, "!")
     .stroke("#ffff00", 2)
-    .font("Tahoma")
-    .fontSize(Math.round(Math.random() * 5) + 21)
-    .drawText(0, 5, code, "North")
+    .font(path.join(staticPath, bg, "Night Club Seventy.ttf"))
+    .fontSize(Math.round(Math.random() * 5) + 23)
+    .drawText(0, 8, code, "North")
     // .noise("impulse")
     .noise("laplacian")//增加噪点
     // .blur(1, 5)

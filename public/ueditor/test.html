@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>111</title>
+<meta name="auther" content="F7" />
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+<div>
+    <h1>完整demo</h1>
+    <textarea name="aContent" id="editor" style="height:400px;"></textarea>
+</div>
+<script src="/static/manage_style/js/require.min.js" data-main="/static/manage_style/js/main"></script>
+
+<script type="text/javascript">
+
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+</script>
+</body>
+</html>

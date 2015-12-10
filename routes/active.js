@@ -366,7 +366,7 @@ router.post('/join/', function(req, res, next) {
                     from: config.mail.sendMail,
                     to: mail,
                     subject: 'WDShare 报名成功',
-                    html: '亲爱的 '+ name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ active.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ active.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ active.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span><br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />'
+                    html: '亲爱的 '+ name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ active.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ active.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ active.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span>'+ config.mailSignature
                 }, function() {// succeed
                     mailSucceed(mail, active._id);
                     console.log("报名邮件发送成功");
@@ -486,7 +486,7 @@ router.post('/join.bak/', function(req, res, next) {
                     from: config.mail.sendMail,
                     to: joinObj.mail,
                     subject: 'WDShare 报名成功',
-                    html: '亲爱的 '+ joinObj.name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ active.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ active.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ active.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span><br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />'
+                    html: '亲爱的 '+ joinObj.name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ active.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ active.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ active.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span>' + config.mailSignature
                 }, function() {// succeed
                     mailSucceed(joinObj.mail, active._id);
                     console.log("报名邮件发送成功");

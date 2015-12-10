@@ -519,7 +519,7 @@ router.post('/audit', function(req, res) {
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;恭喜！<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的文章<b>《'+ title +'》</b>已通过审核，可以向朋友推荐你的文章了。<br /><br />'
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;网址：<a href="'+ config.url + '/article/'+ id +'">'+ config.url + '/article/'+ id +'</a><br />';
-                _html += '<br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />';
+                _html += config.mailSignature;
                 sendMail({
                     from: config.mail.sendMail,
                     to: mail,
@@ -580,7 +580,7 @@ router.post('/noaudit', function(req, res) {
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的文章<b>《'+ title +'》</b>审核失败的原因如下：<br /><br />'
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+ msg +'<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请在会员中心修改文章内容，系统会自动帮您提审。<br />';
-                _html += '<br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />';
+                _html += config.mailSignature;
                 sendMail({
                     from: config.mail.sendMail,
                     to: mail,

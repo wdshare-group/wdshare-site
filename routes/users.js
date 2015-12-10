@@ -502,8 +502,8 @@ router.route("/editFace").get(function (req, res) {
         file.on('end', function() {
             var readPath = path.join(staticPath, dPath, realName);
             fse.remove(path.join(staticPath, dPath), function(error) {// 先移动原有头像文件夹
-                console.log(saveTo);
-                console.log(readPath);
+                // console.log(saveTo);
+                // console.log(readPath);
                 
                 fse.move(saveTo, readPath, function(err) {
                     if (err) {
@@ -770,7 +770,7 @@ function getActiveList(req, res, o, pages, mod, member, info) {
         key: "Active_join",
         body:o,// 仅读取文章类型的档案
         pages: pages,// 分页信息
-        occupation: "aAddDate"// 排序字段
+        occupation: "addDate"// 排序字段
     }, function (err, data) {
         var joinCount = 0,
             allCount;
@@ -1158,12 +1158,12 @@ router.route('/forgotPassword').post(function (req, res) {
                         from: config.mail.sendMail,
                         to: email,
                         subject: 'WDShare会员密码重置邮件',
-                        html: '以下是您的密码重置链接：<br /> <a href="' + config.url + '/user/forgotPassword/' + data.hash + '">' + config.url + '/user/forgotPassword/' + data.hash + '</a><br />请访问链接以重设您的密码！'
+                        html: '以下是您的密码重置链接：<br /> <a href="' + config.url + '/user/forgotPassword/' + data.hash + '">' + config.url + '/user/forgotPassword/' + data.hash + '</a><br />请访问链接以重设您的密码！' + config.mailSignature
                     });
                     res.send({
                         status: 200,
                         code: 1,
-                        message: "找回密码成功，稍后请收取邮件并重设密码！",
+                        message: "找回密码成功，请收取邮件并重设密码！",
                         url: "/"
                     });
                 } else {
@@ -1191,7 +1191,7 @@ router.route('/forgotPassword').post(function (req, res) {
                                 from: config.mail.sendMail,
                                 to: email,
                                 subject: 'WDShare会员密码重置邮件',
-                                html: '以下是您的密码重置链接：<br /> <a href="' + config.url + '/user/forgotPassword/' + hash + '">' + config.url + '/user/forgotPassword/' + hash + '</a><br />请访问链接以重设您的密码！'
+                                html: '以下是您的密码重置链接：<br /> <a href="' + config.url + '/user/forgotPassword/' + hash + '">' + config.url + '/user/forgotPassword/' + hash + '</a><br />请访问链接重置您的密码！' + config.mailSignature
                             });
                             res.send({
                                 status: 200,
@@ -1435,7 +1435,7 @@ router.get("/activeAccountAjax/:code", function (req, res) {
                         from: config.mail.sendMail,
                         to: email,
                         subject: '激活成功',
-                        html: '感谢您注册' + config.title + '，您的账户已成功激活，可以正常使用，请访问：' + config.url
+                        html: '感谢您注册' + config.title + '，您的账户已成功激活，可以正常使用，请访问：' + config.url + config.mailSignature
                     });
 
                     // 再次请求数据以便更新session
@@ -1512,7 +1512,7 @@ router.route("/activeAccountAjax").get(function (req, res) {
                     from: config.mail.sendMail,
                     to: email,
                     subject: '注册成功',
-                    html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + user.regCode + '">' + config.url + '/user/activeAccount/' + user.regCode + '</a>请点击链接以激活您的账户！'
+                    html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + user.regCode + '">' + config.url + '/user/activeAccount/' + user.regCode + '</a>请点击链接以激活您的账户！' + config.mailSignature
                 });
                 usersModel.update({
                     email: email
@@ -1813,7 +1813,7 @@ router.post('/register', function (req, res) {
                 from: config.mail.sendMail,
                 to: email,
                 subject: '注册成功',
-                html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + regCode + '">' + config.url + '/user/activeAccount/' + regCode + '</a>请点击链接以激活您的账户！'
+                html: '感谢您注册' + config.title + '，以下是您的激活链接，\n\r <a href="' + config.url + '/user/activeAccount/' + regCode + '">' + config.url + '/user/activeAccount/' + regCode + '</a>请点击链接以激活您的账户！' + config.mailSignature
             });
             res.send({
                 status: 200,

@@ -395,6 +395,7 @@ a.article-top-comment-link { color:#ff8400;}
 .active-con dd { margin-left:160px;}
 .active-con dd span { color:#666; font-style:italic;}
 .active-con a { color:#4183c4;}
+.active-con img { display:inline-block; margin-right:5px;}
 
 /**/
 #js-description { display:none;}
@@ -573,7 +574,7 @@ a.article-top-comment-link { color:#ff8400;}
 .addActive-form-but input:hover { background:#cfc447;}
 
 .editor-box { margin-left:130px; position:relative; top:-8px; max-width:950px;}
-.editor-box textarea { visibility:hidden;}
+/*.editor-box textarea { visibility:hidden;}*/
 
 
 

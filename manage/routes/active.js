@@ -378,7 +378,7 @@ router.get('/channel/create', function(req, res) {
         }
 
         if (data) {
-            res.render('manages/active/Active_channel_create', {
+            res.render('manages/active/active_channel_create', {
                 title: "添加活动分类",
                 result: data
             });
@@ -757,8 +757,8 @@ router.post('/join/remailsent/', function(req, res,next) {
         sendMail({
             from: config.mail.sendMail,
             to: params.mail,
-            subject: 'WDShare 报名成功',
-            html: '亲爱的 '+ params.name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ params.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ params.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ params.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span><br /><br /><br /><br /><br /><br /><br /><br /><span style="color:#666;">WDShare筹委会<br />官网：<a href="http://www.wdshare.org/" target="_blank" style="color:#666;">http://www.wdshare.org</a><br />系统邮件，无需回复。 &nbsp;&nbsp;&nbsp; 联系我们：wdshare@163.com</span><br />'
+            subject: 'WDShare 活动报名成功',
+            html: '亲爱的 '+ params.name +'：<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 恭喜您，“'+ params.aName +'” <strong>报名成功！</strong><br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议时间：'+ params.aTime +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议地址：'+ params.aAddress +'<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 会议内容：请查阅官网<br /><br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>注意：</strong><span style="color:#ff0000;">邀请函需等到临近会议前两天发送，请注意查收邮件。</span>' + config.mailSignature
         }, function() {// succeed
             mailSucceed(params.mail, params.aid);
             console.log("邮件发送成功");
@@ -862,7 +862,8 @@ router.get('/invite/:id', function(req, res) {
         mailTpl = mailTpl.replace(/{=time}/g, active.aTime);
         mailTpl = mailTpl.replace(/{=address}/g, active.aAddress);
         mailTpl = mailTpl.replace(/{=blank}/g, "&nbsp;");
-
+        mailTpl = mailTpl.replace(/{=signature}/g, config.mailSignature);
+        
         // 邀请函邮件发送
         sendMail({
             from: config.mail.sendMail,

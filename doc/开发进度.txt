@@ -63,14 +63,19 @@
 // 增加报名、发布文章、登录、注册、后台登陆验证码功能
 // 以上调整为V1.1的内容
 
+// 数据导入
+// 修复后台文章引active_channel_create模板首字母大写错误
+// 修复 编辑器html模式下不能输入BUG .editor-box textarea { visibility:hidden;} 一行CSS引发的问题
+// 发送邮件，签名统一
 
 
 V1.0 完成报名、文章、会员及后台管理初版
 V1.1 增加报名、发布文章、登录、注册、后台登陆验证码功能
+V1.2 统一邮件签名
 
-数据导入
+mongodb数据库的备份与恢复   mongodump可以备份，mongorestore可以恢复
+http://blog.csdn.net/gzh0222/article/details/8559229
 
-发送邮件，签名统一
 
 评论留言系统
 会员留言

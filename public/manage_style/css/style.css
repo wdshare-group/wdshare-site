@@ -138,7 +138,7 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .manage-addActive-form-item .look-cover img { display:block; max-width:300px; border:1px solid #ccc;}
 
 .editor-box { margin-left:130px; position:relative; top:-38px; max-width:950px;}
-.editor-box textarea { visibility:hidden;}
+/*.editor-box textarea { visibility:hidden;}*/
 
 
 /**/

@@ -875,6 +875,85 @@ router.get('/tag/del/:id', function(req, res) {
 
 
 
+/**
+ * path:  /manage/importdata
+ * 导入旧网站的活动报名数据
+ */
+router.get('/importdata', function(req, res) {
+    var data = [],// 旧网站的活动报名数据写在这里
+        count = 0,
+        ok = 0,
+        repeat = 0;
+
+    for ( var i=0; i<data.length; i++ ) {
+        var _data = data[i];
+        _data.addDate = new Date(_data.addDate).getTime() + 1000*60*60*8
+        save(req, res, _data);
+    }
+
+
+    // 保存报名信息
+    function save(req, res, data) {
+        activeModel.getOne({
+            key: "Active_join",
+            body: {
+                aid: data.aid,
+                mail: data.mail
+            }
+        }, function (err, join) {
+            if (err) {
+                res.send({
+                    status: false,
+                    msg: "查询失败！"
+                });
+            }
+            if ( join && join.mail ) {
+                count++;
+                repeat++;
+                send(req, res);
+            } else {
+                activeModel.save({
+                    key: "Active_join",
+                    body: {
+                        aid: data.aid,
+                        mail: data.mail,
+                        name: data.name,
+                        com: data.com,
+                        web: data.web,
+                        content: data.content,
+                        chi: data.chi,
+                        addDate: +data.addDate,
+                        invite: +data.state > 1 ? 0 : 1,// 除了被屏蔽的人都认为被邀请了
+                        state: +data.state,
+                        code: "",
+                        joinMailState: true,
+                        inviteState: +data.state > 1 ? false : true// 除了被屏蔽的人都认为已发邀请函
+                    }
+                }, function (err, data) {
+
+                    if (err) {
+                        res.send({
+                            status: false,
+                            msg: "失败，请重来！"
+                        });
+                    }
+
+                    count++;
+                    ok++;
+                    send(req, res);
+                });
+            }
+        });
+        
+    }
+
+    function send(req, res) {
+        if ( count == data.length ) {
+            res.send('共有数据 '+data.length+' 条，剔除重复的 '+repeat+' 条，成功导入 '+ok+' 条！');
+        }
+    };
+});
+
 
 
 

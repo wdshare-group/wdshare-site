@@ -73,7 +73,7 @@ User_infos.prototype = {
         "use strict";
         // console.log("save");
         var content = new this[obj.key](obj.body);
-        console.log(content);
+        // console.log(content);
         content.save(function(err,doc){
             success && success(err,doc);
         });

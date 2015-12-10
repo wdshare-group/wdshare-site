@@ -22,8 +22,10 @@
       if ( join.state === 1 ) {
         noInvite++;
       }
-      if ( join.state === 2 ) {
+      if ( join.state > 1 ) {
         invite++;
+      }
+      if ( join.state === 2 ) {
         no_ok++;
       }
       if ( join.state === 3 ) {
@@ -32,6 +34,7 @@
       if ( join.state === 0 ) {
         pingbi++;
       }
+      
     })
     %>
     <h1 class="manage-title">报名管理</h1>

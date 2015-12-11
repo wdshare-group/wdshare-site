@@ -1,7 +1,12 @@
 var nodemailer = require('nodemailer');
+var later = require('later');
+// var sched = later.parse.recur().every(24).hour();
+var sched = later.parse.recur().every(24).hour();
+
 var cp = require('child_process');
 
 var mailAddress = ['ggiiss@qq.com', "106324307@qq.com"];
+// var mailAddress = ['ggiiss@qq.com'];
 
 var backupTime = getTime();
 // var backupPath = "/var/www/bak/mongodb/";
@@ -79,8 +84,10 @@ function sendMain(){
 }
 
 // 启动
-createBack(function(err, callback){
-  backup(err, function(err, callback){
-    sendMain()
-  })
-});
+later.setInterval(function() { 
+  createBack(function(err, callback){
+    backup(err, function(err, callback){
+      sendMain();
+    })
+  });
+}, sched); 

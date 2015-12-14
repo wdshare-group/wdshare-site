@@ -636,7 +636,7 @@ router.post('/login', function(req, res) {
                 res.send({
                     status: 200,
                     code: 0,
-                    message: "登录失败，你的帐号被锁定！\r锁定原因：" +data.lockMessage+ "\r联系管理员：wdshare@163.com"
+                    message: "登录失败，你的帐号被锁定！\r锁定原因：" +data.lockMessage+ "\r联系管理员：manage@wdshare.org"
                 });
             } else {
                 req.session.manageuser = data;

@@ -1633,7 +1633,7 @@ router.route('/login').post(function (req, res) {
                 res.send({
                     status: 200,
                     code: 0,
-                    message: "<span style='color:#f00;'>该账户被锁定！</span><br /><br />原因：" + data.lockMessage +"<br />请联系管理员开通帐号，邮箱：wdshare@163.com"
+                    message: "<span style='color:#f00;'>该账户被锁定！</span><br /><br />原因：" + data.lockMessage +"<br />请联系管理员开通帐号，邮箱：manage@wdshare.org"
                 });
                 return;
             }
@@ -1851,7 +1851,7 @@ router.route('/:id').get(function (req, res) {
             }
             // 账户被锁定
             if (data.lock) {
-                res.render('users/empty', {title:'该账户被锁定', content:"原因："+ data.lockMessage + "<br/>请联系管理员开通帐号，邮箱：wdshare@163.com"});
+                res.render('users/empty', {title:'该账户被锁定', content:"原因："+ data.lockMessage + "<br/>请联系管理员开通帐号，邮箱：manage@wdshare.org"});
                 return false;
             }
 

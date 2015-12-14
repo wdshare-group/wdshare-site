@@ -274,7 +274,7 @@ router.post('/create', function(req, res) {
                 res.send({
                     status: 200,
                     code: 0,
-                    message: "该账户被锁定！\n\n原因：" + member.lockMessage + "\n\n请联系管理员开通帐号，邮箱：wdshare@163.com"
+                    message: "该账户被锁定！\n\n原因：" + member.lockMessage + "\n\n请联系管理员开通帐号，邮箱：manage@wdshare.org"
                 });
                 return;
             }
@@ -493,7 +493,7 @@ router.get('/edit/:id', function(req, res) {
 function sendArticleChangeMail(req, res, state, title) {
     sendMail({
         from: config.mail.sendMail,
-        to: "wdshare@163.com",//需要通知的管理员邮箱
+        to: "manage@wdshare.org",//需要通知的管理员邮箱
         subject: "[需审批]"+req.session.user.username +" "+ state +" 《"+ title +"》",
         html: '管理员，你好：<br /> 会员【' + req.session.user.username + "】 刚才 " + state +"了 《"+ title +"》，请尽快进行审批。"
     });

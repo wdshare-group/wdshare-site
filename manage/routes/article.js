@@ -236,7 +236,7 @@ router.post('/create', function(req, res) {
         tag = req.body.tag,
         source = req.body.source,
         sourceUrl = req.body.sourceUrl,
-        email = req.body.email || "wdshare@163.com",// 没有填写用户时归入管理员名下
+        email = req.body.email || "manage@wdshare.org",// 没有填写用户时归入管理员名下
         content = req.body.content,
         diyType = req.body.diyType ? (typeof req.body.diyType == "string" ? req.body.diyType : req.body.diyType.join(",")) : "",// 1头条、2推荐、3加粗
         keywords = req.body.keywords,
@@ -514,7 +514,7 @@ router.post('/audit', function(req, res) {
 
         if (data) {
             // 除管理员外发送邮件通知
-            if ( mail != "wdshare@163.com" ) {
+            if ( mail != "manage@wdshare.org" ) {
                 var _html = '亲爱的，'+ name +'：<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;恭喜！<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的文章<b>《'+ title +'》</b>已通过审核，可以向朋友推荐你的文章了。<br /><br />'
@@ -574,7 +574,7 @@ router.post('/noaudit', function(req, res) {
 
         if (data) {
             // 除管理员外发送邮件通知
-            if ( mail != "wdshare@163.com" ) {
+            if ( mail != "manage@wdshare.org" ) {
                 var _html = '亲爱的，'+ name +'：<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;很抱歉的通知你，文章审核失败！<br /><br />';
                 _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的文章<b>《'+ title +'》</b>审核失败的原因如下：<br /><br />'

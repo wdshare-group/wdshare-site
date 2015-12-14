@@ -15,18 +15,18 @@ var config = {
         cookie: { path: '/', httpOnly: true, maxAge: null }
     },
     "mail":{
-        "sendMail":"wdshare_sent@163.com",
-        "service":"163",
-        "user":"wdshare_sent@163.com",
-        "pass":"zfadrfpnyqiuypbx"
+        "sendMail":"sent@wdshare.org",
+        "service":"qq",
+        "user":"sent@wdshare.org",
+        "pass":"***"
     },
     // "mail":{
-    //     "sendMail":"no-reply@ospring.pw",
-    //     "service":"Mailgun",
-    //     "user":"postmaster@koajs.cn",
-    //     "pass":"4-kx7d3lgtd2"
+    //     "sendMail":"wdshare_sent@163.com",
+    //     "service":"163",
+    //     "user":"wdshare_sent@163.com",
+    //     "pass":"vqjcadvqbnszanrg"
     // },
-    "mailSignature":'<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>微信：@wdshare</p><p>微博：@西安前端交流会</p><p>官网：<a href="http://www.wdshare.org" target="_blank">http://www.wdshare.org</a></p><p>联系我们：wdshare@163.com</p><p>WDShare.org 2016 期待与您共同成长，为西安前端行业发展努力。</p><p style="color:#777777">(此信件为系统自动发送，无需回复）</p>',// 邮件签名
+    "mailSignature":'<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>微信：@wdshare</p><p>微博：@西安前端交流会</p><p>官网：<a href="http://www.wdshare.org" target="_blank">http://www.wdshare.org</a></p><p>联系我们：manage@wdshare.org</p><p>WDShare.org 2016 期待与您共同成长，为西安前端行业发展努力。</p><p style="color:#777777">(此信件为系统自动发送，无需回复）</p>',// 邮件签名
     "db":"wdshare",
     "locale":"zh-cn",
 

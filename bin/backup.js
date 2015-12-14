@@ -1,16 +1,17 @@
+var cp = require('child_process');
 var nodemailer = require('nodemailer');
 var later = require('later');
-// var sched = later.parse.recur().every(24).hour();
-var sched = later.parse.recur().every(24).hour();
 
-var cp = require('child_process');
+later.date.localTime();
+var sched = later.parse.text('at 1:11 am');
 
 var mailAddress = ['ggiiss@qq.com', "106324307@qq.com"];
 // var mailAddress = ['ggiiss@qq.com'];
 
+var backupPath = "mongodb/";
 var backupTime = getTime();
 // var backupPath = "/var/www/bak/mongodb/";
-var backupPath = "mongodb/";
+
 // /var/www/bak/mongodb/201512111037
 var backupFolder = backupPath + backupTime;
 
@@ -20,13 +21,22 @@ var tarFilepath = backupPath + tarFilename;
 
 function getTime(){
   var now = new Date();
+  var min = now.getMinutes();
   var output = [];
+  min = min <= 9 ? '0' + min: min;
   output.push(now.getFullYear());
   output.push(now.getMonth() + 1);
   output.push(now.getDate());
   output.push(now.getHours());
-  output.push(now.getMinutes());
+  output.push(min);
   return  output.join('');
+}
+
+function generateNames(){
+  backupTime = getTime();
+  backupFolder = backupPath + backupTime;
+  tarFilename = 'wdshare-bak-' + backupTime + '.tar.gz';
+  tarFilepath = backupPath + tarFilename;  
 }
 
 // 生成备份文件 /var/www/bak/mongodb/201512111037'
@@ -85,6 +95,7 @@ function sendMain(){
 
 // 启动
 later.setInterval(function() { 
+  generateNames();
   createBack(function(err, callback){
     backup(err, function(err, callback){
       sendMain();

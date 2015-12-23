@@ -247,7 +247,7 @@ router.post('/create', function(req, res) {
         sortup = req.body.sortup == "1" ? true : false,
         click = req.body.click,
         zan = req.body.zan,
-        notComment = req.body.notComment == "1" ? true : false,
+        isComment = req.body.isComment == "1" ? true : false,
         audit =  req.body.audit == "1" ? true : false,
         rejected = req.body.rejected,
 
@@ -326,7 +326,7 @@ router.post('/create', function(req, res) {
                     click: click,
                     userId: userId,
                     zan: zan,
-                    notComment: notComment,
+                    isComment: isComment,
                     audit: audit,
                     rejected: rejected
                 }
@@ -370,7 +370,7 @@ router.post('/create', function(req, res) {
                     click: click,
                     userId: userId,
                     zan: zan,
-                    notComment: notComment,
+                    isComment: isComment,
                     audit: audit
                 }
             }, function (err, data) {

@@ -77,7 +77,8 @@ activeControl.update = function(id,ao){
             "aCodebefor" : ao["aCodebefor"],
             "aSort" : ao["aSort"],
             "aTpl" : ao["aTpl"],
-            "aEmailTpl" : ao["aEmailTpl"]
+            "aEmailTpl" : ao["aEmailTpl"],
+            "isComment" : ao["isComment"]
             // "aAddDate" : new Date(ao["aAddDate"]).getTime()
         };
         collection.findOneAndUpdate({_id:new ObjectId(id)},{$set:obj},{w:1, upsert: true}, function(err, result) {

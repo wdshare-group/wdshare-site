@@ -88,6 +88,11 @@
               <label><strong>模板：</strong>
               <input type="text" name="aTpl" value="<%= result.aTpl == undefined ? "index" : result.aTpl %>" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
             </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>是否允许评论：</strong>
+              <label><input type="radio" name="isComment" value="1" <%if (result.isComment) {%>checked="checked"<%}%> /> 是</label>
+              <label><input type="radio" name="isComment" value="0" <%if (!result.isComment) {%>checked="checked"<%}%> /> 否</label>
+            </div>
             <div class="manage-addActive-form-item">
               <label><strong>邀请函模板：</strong>
               <textarea name="aEmailTpl"><%= result.aEmailTpl == undefined ? "" : result.aEmailTpl %></textarea><br />

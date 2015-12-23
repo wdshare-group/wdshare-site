@@ -5,7 +5,7 @@
 <title><%= article.title %> - WDShare</title>
 <meta name="keywords" content="<%= article.keywords %>" />
 <meta name="description" content="<%= article.description %>" />
-<% include ../etc/htmlhead.ejs %>
+<% include ../../etc/htmlhead.ejs %>
 
 <link href="/static/ueditor/third-party/SyntaxHighlighter/shCoreSublime.css" rel="stylesheet" />
 <script src="/static/ueditor/third-party/SyntaxHighlighter/shCore.js"></script>
@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<% include ../etc/head.ejs %>
+<% include ../../etc/head.ejs %>
 
 node测试模板，非正式模板
 
@@ -44,7 +44,7 @@ node测试模板，非正式模板
 <!-- 引入广告 End -->
 
 
-<input id="js-articleId" type="hidden" value="<%= article._id %>" />
+<input id="js-archives-id" type="hidden" value="<%= article._id %>" />
 <div class="article">
   <div class="maxWidth module">
     <div class="article-head">
@@ -86,6 +86,6 @@ node测试模板，非正式模板
   </div>
 </div>
 
-<% include ../etc/foot.ejs %>
+<% include ../../etc/foot.ejs %>
 </body>
 </html>

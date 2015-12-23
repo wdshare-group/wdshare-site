@@ -303,7 +303,7 @@ router.post('/create', function(req, res) {
             sortup = false,
             click = 0,
             zan = 0,
-            notComment = true,
+            isComment = true,
             audit = false,
 
             id = req.body.aid;
@@ -390,7 +390,7 @@ router.post('/create', function(req, res) {
                     click: click,
                     userId: userId,
                     zan: zan,
-                    notComment: notComment,
+                    isComment: isComment,
                     audit: audit
                 }
             }, function (err, data) {
@@ -594,12 +594,26 @@ router.get('/:id', function(req, res) {
             }
 
             if ( !article.linkUrl ) {// 没有外链时返回文章信息
-                res.render('article/'+tpl, {
-                    title: "文章终极页",
-                    article: article,
-                    member: mamber,
-                    channel: channel
-                });
+                if ( req.session.addCommentIsShowCaptcha && req.session.addCommentIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+                    res.render('article/end/'+tpl, {
+                        title: "文章终极页",
+                        article: article,
+                        member: mamber,
+                        channel: channel,
+                        configIsComment: config.isComment,
+                        captcha:true
+                    });
+                } else {
+                    // 不显示验证码时需要清空验证码session
+                    req.session.captcha = null;
+                    res.render('article/end/'+tpl, {
+                        title: "文章终极页",
+                        article: article,
+                        member: mamber,
+                        channel: channel,
+                        configIsComment: config.isComment
+                    });
+                }
             };
 
             // 记录点击

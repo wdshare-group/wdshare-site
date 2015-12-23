@@ -1116,14 +1116,57 @@ router.route('/forgotPassword').get(function (req, res) {
     if (req.session.user) { // 如果登录直接返回前一个页面
         res.redirect(goBack(req.headers.referer));
     }
-    res.render('users/forgotPassword');
+    if ( req.session.forgotPasswordIsShowCaptcha && req.session.forgotPasswordIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+        res.render('users/forgotPassword', {captcha:true});
+    } else {
+        // 不显示验证码时需要清空验证码session
+        req.session.captcha = null;
+        res.render('users/forgotPassword', {});
+    }
 });
 // 找回密码提交
 router.route('/forgotPassword').post(function (req, res) {
     "use strict";
     var email = req.body.email,
         resetCode = (Math.random() * 10000000000).toFixed(0),
-        hash = crypto.createHash("sha1").update(new Buffer(email + resetCode, "binary")).digest('hex');
+        hash = crypto.createHash("sha1").update(new Buffer(email + resetCode, "binary")).digest('hex'),
+        code = req.body.code;
+
+    // 验证码错误
+    if ( req.session.forgotPasswordIsShowCaptcha >= config.isShowCaptcha ) {//需要检查验证码的正确性
+        if ( !code ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "请输入验证码！",
+                reload: true
+            });
+            return false;
+        }
+        if ( !req.session.captcha ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "系统出现异常，请稍后再试！"
+            });
+            return false;
+        }
+        if (code.toUpperCase() != req.session.captcha.toUpperCase() ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "验证码错误，请重试！"
+            });
+            return false;
+        }
+    }
+
+    // 记录该用户登录的次数
+    if ( req.session.forgotPasswordIsShowCaptcha ) {
+        req.session.forgotPasswordIsShowCaptcha++;
+    } else {
+        req.session.forgotPasswordIsShowCaptcha = 1;
+    }
 
     usersModel.getOne({
         key: "User",
@@ -1131,6 +1174,9 @@ router.route('/forgotPassword').post(function (req, res) {
             email: email
         }
     }, function (err, data) {
+
+        // 通过验证请求时清空验证码session
+        req.session.captcha = null;
 
         if (err) {
             res.send({
@@ -1545,8 +1591,8 @@ router.get('/login', function (req, res) {
         res.redirect(goBack(req.headers.referer));
     }
     
-    console.log(req.session.captcha);
-    console.log(req.session.loginIsShowCaptcha);
+    // console.log(req.session.captcha);
+    // console.log(req.session.loginIsShowCaptcha);
     // req.session.loginIsShowCaptcha = 0;
     if ( req.session.loginIsShowCaptcha && req.session.loginIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
         res.render('users/login', {captcha:true});
@@ -1680,8 +1726,8 @@ router.get('/register', function (req, res) {
         res.redirect(goBack(req.headers.referer));
     }
     
-    console.log(req.session.captcha);
-    console.log(req.session.regIsShowCaptcha);
+    // console.log(req.session.captcha);
+    // console.log(req.session.regIsShowCaptcha);
     // req.session.regIsShowCaptcha = 0;
     if ( req.session.regIsShowCaptcha && req.session.regIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
         res.render('users/reg', {captcha:true});

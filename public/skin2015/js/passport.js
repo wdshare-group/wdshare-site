@@ -109,6 +109,13 @@ define(["jquery"], function(){
                         },
                         "onSubmit":function() {
                             document.getElementById("js-forgotPasswordForm").email.select();
+                        },
+                        "onComplete":function() {
+                            // 更新验证码
+                            $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                            if ( data.reload ) {
+                                window.location.reload();
+                            }
                         }
                     });
                 }

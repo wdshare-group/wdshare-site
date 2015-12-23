@@ -63,7 +63,7 @@
         <% if ( captcha && captcha === true ) { %>
         <div class="addActive-form-item" style="margin-bottom:20px;">
           <label><strong>验证码：</strong>
-          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" /></label>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></label>
         </div>
         <% } %>
 

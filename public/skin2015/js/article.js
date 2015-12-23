@@ -16,7 +16,7 @@ define(['jquery', 'dialog'], function($) {
      * @return
      */
     function zan() {
-        var id = $("#js-articleId").val(),
+        var id = $("#js-archives-id").val(),
             c = 0;
         $(".article-top-zan, .article-like").click(function() {
             if ( c >= 5 ) {

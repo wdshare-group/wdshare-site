@@ -217,7 +217,8 @@ define(['jquery', 'dialog'], function($, wx) {
         $(".forgotPassword-error").html(str).show();
     };
     member.forgotPasswordCheck = function(form) {
-        var email = form.email;
+        var email = form.email,
+            code = form.code;
         if ( !email.value ) {
             email.focus();
             this.forgotPasswordError("填写您的注册邮箱！");
@@ -226,6 +227,11 @@ define(['jquery', 'dialog'], function($, wx) {
         if ( !chackMail(email.value) ) {
             email.select();
             this.forgotPasswordError("请填写正确的邮箱！");
+            return false;
+        }
+        if ( code && !code.value ) {
+            code.focus();
+            this.forgotPasswordError("填写验证码后再登录吧！");
             return false;
         }
         return true;

@@ -14,5 +14,6 @@
 	"aEmailTpl": "html编码",// 邀请函邮件发送模板，支持一些标签
 	"aAddDate" : 1437287625502,// 添加活动的时间
 	"aCodebefor": "WDS-",// 邀请码前缀
-	"aClick" : 15// 活动点击
+	"aClick" : 15,// 活动点击
+	"isComment":true// 是否允许评论 true 允许  false 不允许
 }

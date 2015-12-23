@@ -9,6 +9,7 @@ active_channels // 活动分类
 tags // 标签**
 archives // 档案内容，包含所有模型的内容【文章、项目、招聘等等】**
 article_crumbs // 文章单页面内容
+comments // 评论
 
 manage_users // 管理员
 

@@ -13,6 +13,7 @@ var active = require('./routes/active');
 var article = require('./routes/article');
 var other = require('./routes/other');
 var captcha = require('./routes/captcha');// 验证码
+var comment = require('./routes/comment');
 
 var app = express();
 
@@ -28,6 +29,9 @@ var archiveModel     = new Archives();
 // 活动相关数据模型
 var Actives     = require('./model/new_actives.js');
 var activeModel     = new Actives();
+// 评论相关数据模型
+var Comment     = require('./model/comment.js');
+var commentModel     = new Comment();
 // 后台数据模型
 var Manage_mode     = require('./manage/model/manage.js');
 var manageModel     = new Manage_mode();
@@ -51,6 +55,7 @@ global.usersInfosModel = usersInfosModel;
 global.archiveModel = archiveModel;
 global.activeModel = activeModel;
 global.manageModel = manageModel;
+global.commentModel = commentModel;
 
 
 global.siteDir = __dirname;
@@ -95,7 +100,8 @@ app.use('/article', article);
 app.use('/user/', users);
 // 验证码
 app.use('/captcha/', captcha);
-
+// 验证码
+app.use('/comment/', comment);
 
 
 /**

@@ -22,7 +22,7 @@
 	"click": 321,// 浏览次数
 	"userId": "",// 添加用户的ID
 	"zan": "",// 点赞数
-	"notComment":false,// 是否允许评论
+	"isComment":true// 是否允许评论 true 允许  false 不允许
 	"audit": true,// 是否审核
 	"rejected":"",// 驳回审核的理由
 	"rejectedData":1437287625502// 驳回时间

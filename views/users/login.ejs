@@ -22,7 +22,7 @@
         <p class="login-input login-username"><input type="text" name="email" placeholder="输入您的邮箱" /></p>
         <p class="login-input login-password"><input type="password" name="password" placeholder="输入您的密码" /></p>
         <% if ( captcha && captcha === true ) { %>
-        <p class="login-input login-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" /></p>
+        <p class="login-input login-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></p>
         <% } %>
         <div class="login-but">
           <input type="submit" name="submitbutton" value="登录" />

@@ -155,7 +155,7 @@
           <dl>
             <dt>验证码：</dt>
             <dd>
-              <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" /> <em>请填写验证码</em>
+              <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /> <em>请填写验证码</em>
             </dd>
           </dl>
           <% } %>

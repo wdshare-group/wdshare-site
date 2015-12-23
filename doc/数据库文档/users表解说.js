@@ -17,7 +17,6 @@
 	"activeTime": 0,// 激活时间
 	"changeEmail": "3235183@163.com",
 	"changeTimes": 0,
-	"__v": 0,
 	"lock": false,// 帐号是否锁定
 	"lockTime": 1429843870784, // 锁定时间
 	"lockMessage": "账号非法操作"// 锁定原因

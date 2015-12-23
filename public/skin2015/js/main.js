@@ -8,7 +8,8 @@ requirejs.config({
         jquery: [
             './jquery-1.11.1.min'
         ],
-        dialog: './dialog.3.1.min'
+        dialog: './dialog.3.1.min',
+        autosize: './autosize.min'// textarea自动调整大小
     },
     shim: {
     }
@@ -123,6 +124,16 @@ if ( document.getElementById("js-article-create-form") ) {
     });
 }
 
+
+/**
+ * 评论
+ * @return
+ */
+if ( document.getElementById("js-comment") ) {
+    require(["comment"], function(comment){
+        comment.init();
+    });
+}
 
 
 // 公共方法初始化

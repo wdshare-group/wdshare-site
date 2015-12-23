@@ -8,14 +8,14 @@ var mongoose = require('mongoose'),
 db           = mongoose.connection;
 
 // 请不要使用下面的 save 之后的方法，这些方法 mongoosee 有原生的，更好用。
-Active = function(){
+Comments = function() {
     "use strict";
     this.Schema = Schema;
     this.mongoose = mongoose;
     this.init();
 };
 
-Active.prototype = {
+Comments.prototype = {
     constructor:Factory,
     init:function(){
         "use strict";
@@ -24,68 +24,39 @@ Active.prototype = {
     },
     createSchemas : function(){
         "use strict";
-        this.Activechema = new this.Schema({
-            aId:String,//貌似没用
-            aClass:String,
-            aName:String,
-            aTime:String,
-            aAddress:String,
-            aSummary:String,
-            aContent:String,
-            aStatus:String,
-            aComment:String,
-            aSort:String,
-            aTpl:String,
-            aEmailTpl:String,
-            aAddDate:Number,
-            aCodebefor:String,
-            aClick:Number,
-            isComment:Boolean
-            
-        });
-        this.activeJoin = new this.Schema({
-            aid:String,
+        this.Commentchema = new this.Schema({
+            typeid:String,
+            model:String,
+            userid:String,
             mail:String,
-            name:String,
-            com:String,
-            web:String,
+            username:String,
+            title:String,
             content:String,
-            chi:String,
+            privacy:Boolean,
+            quote:String,
+            ip:String,
+            city:String,
             addDate:Number,
-            invite:Number,
-            state:Number,
-            code:Number,
-            joinMailState:Boolean,
-            inviteState:Boolean
-        });
-        this.activeChannel = new this.Schema({
-            name:String,
-            url:String,
-            parent:String,
-            keywords:String,
-            description:String,
-            addDate:Number,
-            editDate:Number
+            hide:Boolean,
+            notice:String,
+            zan:Number,
+            system:String
         });
     },
     createModel : function(){
         "use strict";
-        this.Active     = this.mongoose.model('Active',this.Activechema);
-        this.Active_join  = this.mongoose.model('Active_join',this.activeJoin);
-        this.Active_channel  = this.mongoose.model('Active_channel',this.activeChannel);
+        this.Comment     = this.mongoose.model('Comment',this.Commentchema);
     },
     /*
      * obj {}
      * {
-     *   key : Active
+     *   key : Comments/Article_Crumb
      *   body:{}
      * }
      * */
     save:function(obj,success,fail){
         "use strict";
-        // console.log("save");
         var content = new this[obj.key](obj.body);
-        // console.log(content);
         content.save(function(err,doc){
             success && success(err,doc);
         });
@@ -93,7 +64,7 @@ Active.prototype = {
     /*
      * obj {}
      * {
-     *   key : Active
+     *   key : Comments/Article_Crumb
      * }
      * */
     getAll : function(obj,callback){
@@ -155,4 +126,4 @@ Active.prototype = {
     }
 };
 
-module.exports = Active;
+module.exports = Comments;

@@ -47,7 +47,7 @@ Archives.prototype = {
             click:Number,
             userId:String,
             zan:String,
-            notComment:Boolean,
+            isComment:Boolean,
             audit:Boolean,
             rejected:String,
             rejectedData:Number

@@ -653,24 +653,28 @@ router.get('/:id', function(req, res,next) {
                         aClick: click + 1
                     }
                 }, function (err, data) {
-                    console.log(req.session.captcha);
-                    console.log(req.session.activeIsShowCaptcha);
-                    // req.session.activeIsShowCaptcha = 0;
-                    if ( req.session.activeIsShowCaptcha && req.session.activeIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
-                        res.render('active/end/' + tpl, {
+                    var param = {
                             activeInfo: active,
                             userInfo: info,
-                            captcha:true
-                        });
-                    } else {
+                            configIsComment: config.isComment,
+                            activeJoinCaptcha: false,
+                            captcha: false
+                        };
+                    // console.log(req.session.captcha);
+                    // console.log(req.session.activeIsShowCaptcha);
+                    // req.session.activeIsShowCaptcha = 0;
+                    // req.session.addCommentIsShowCaptcha = 0;
+                    if ( req.session.activeIsShowCaptcha && req.session.activeIsShowCaptcha >= config.isShowCaptcha ) {// 显示活动报名验证码
+                        param.activeJoinCaptcha = true;
+                    }
+                    if ( req.session.addCommentIsShowCaptcha && req.session.addCommentIsShowCaptcha >= config.isShowCaptcha ) { // 评论验证码
+                        param.captcha = true;
+                    }
+                    if ( (!req.session.activeIsShowCaptcha && !req.session.addCommentIsShowCaptcha) || (req.session.activeIsShowCaptcha < config.isShowCaptcha && req.session.addCommentIsShowCaptcha < config.isShowCaptcha) )  {
                         // 不显示验证码时需要清空验证码session
                         req.session.captcha = null;
-                        res.render('active/end/' + tpl, {
-                            activeInfo: active,
-                            userInfo: info
-                        });
                     }
-
+                    res.render('active/end/' + tpl, param);
                 });
             }
             return;

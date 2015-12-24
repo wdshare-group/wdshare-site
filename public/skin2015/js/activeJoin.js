@@ -155,7 +155,7 @@ define(["jquery"], function(){
         formParam.web = _form.web.value;
         formParam.chi = _form.chi.value;
 
-        if ( document.getElementById("code") ) {
+        if ( document.getElementById("activeJoin-code") ) {
             formParam.code = _form.code.value;
         }
 
@@ -227,7 +227,7 @@ define(["jquery"], function(){
                     },
                     "onComplete":function() {
                         // 更新验证码
-                        $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());
+                        $("#activeJoin-code").attr("src", $("#activeJoin-code").attr("src")+'?'+new Date().getTime());
                         if ( data.reload ) {
                             window.location.reload();
                         }

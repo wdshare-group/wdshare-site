@@ -12,6 +12,96 @@ var express = require('express'),
     URL = require('url');
 
 /**
+ * 公用方法
+ */
+
+/**
+ * 数组排重
+ * @param  {Array}   items    要排重的数组
+ * @return {Array}            排重后的数组
+ */
+function changeRepeat(items) {
+    var o = {},
+        _a = [];
+    for ( var i=0,l=items.length; i<l; i++ ) {
+        o[items[i]] = 1;
+    }
+    for ( key in o ) {
+        _a.push(key);
+    }
+    return _a;
+};
+
+// 会员昵称转ID，方便统一处理mail转化
+function nameToID(items, callback) {
+    var c = 0,
+        ids = [];
+    for ( var i=0,l=items.length; i<l; i++ ) {
+        usersModel.getOne({
+            key: "User",
+            body: {
+                username: items[i].replace("@", "")
+            }
+        }, function (err, user) {
+            if (err) {
+                c++;
+                go();
+                return false;
+            }
+            if ( user && user.username ) {
+                c++;
+                ids.push(user._id);
+                go();
+                return false;
+            }
+            c++;
+            go();
+            return false;
+        });
+    }
+    function go() {
+        if ( c == items.length && callback ) {
+            callback(ids);
+        }
+    }
+};
+// 会员ID转mail
+function idToMail(items, callback) {
+    var c = 0,
+        ids = [];
+    for ( var i=0,l=items.length; i<l; i++ ) {
+        usersModel.getOne({
+            key: "User",
+            body: {
+                _id: items[i]
+            }
+        }, function (err, user) {
+            if (err) {
+                c++;
+                go();
+                return false;
+            }
+            if ( user && user.username ) {
+                c++;
+                ids.push(user.email);
+                go();
+                return false;
+            }
+            c++;
+            go();
+            return false;
+        });
+    }
+    function go() {
+        if ( c == items.length && callback ) {
+            callback(ids);
+        }
+    }
+};
+
+
+
+/**
  * path:  /comment/get
  * 获取评论信息
  */
@@ -60,6 +150,16 @@ router.get('/get', function(req, res) {
             _data.push(_item);
         }
 
+        // 没有评论时直接返回
+        if ( data.length == 0 ) {
+            res.send({
+                status: 200,
+                code: 1,
+                data: data
+            });
+            return false;
+        }
+
         // 替换 @谁 为链接后返回数据
         replaceUserLink(_data, function(newData) {
             res.send({
@@ -102,7 +202,7 @@ router.get('/get', function(req, res) {
         };
     };
 
-    // 会员昵称转ID
+    // 会员昵称转ID【get专属，与公共方法略有不同】
     function nameToID(items, callback) {
         var ids = {},
             c = 0;
@@ -279,6 +379,7 @@ router.post('/add', function(req, res) {
 
         // 请求数据，为了获取该条数据是否允许评论
         if ( model == "article" || model == "project" || model == "job" ) {
+            // 查询内容，确保该ID能够使用
             archiveModel.getOne({
                 key: "Archive",
                 body: {
@@ -319,13 +420,13 @@ router.post('/add', function(req, res) {
                                         message: "操作太频繁了，"+ config.commentDuration +"分钟后再试！"
                                     });
                                 } else {
-                                    save(data);
+                                    save(data.isComment, data.userId);
                                 };
                                 return false;
                             });
                             return false;
                         }
-                        save(data);
+                        save(data.isComment, data.userId);
                         return false;
                     });
                     return false;
@@ -338,283 +439,266 @@ router.post('/add', function(req, res) {
                 });
             });
 
-            function save(data) {
-                // 档案是否允许评论
-                if ( !data.isComment ) {
-                    res.send({
-                        status: 200,
-                        code: 0,
-                        message: "本条信息禁止了评论功能！"
-                    });
-                    return false;
-                }
 
-                // 昵称不合法
-                if (req.session.user.username.indexOf("@") > -1) {
-                    res.send({
-                        status: 200,
-                        code: 0,
-                        message: "昵称不合法，请进行调整！",
-                        url:"/user/editInfo"
-                    });
-                    return false;
-                }
-
-                // 通过验证请求时清空验证码session
-                req.session.captcha = null;
-
-
-                // 开始汇总计算需要发送邮件里表
-                var archive_userid = data.userId;
-
-                // 保存评论
-                commentModel.save({
-                    key: "Comment",
-                    body: {
-                        typeid: typeid,
-                        model: model,
-                        userid: req.session.user._id,
-                        email: req.session.user.email,
-                        username: req.session.user.username,
-                        title: title,
-                        content: content,
-                        privacy: privacy,
-                        quote: quote,
-                        ip: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-                        city: "",// 预留字段，暂时没有解决方案
-                        addDate: (new Date()).getTime(),
-                        hide: false,
-                        zan: 0,
-                        system: _system
-                    }
-                }, function (err, data) {
-                    if (err) {
-                        res.send({
-                            status: 200,
-                            code: 0,
-                            message: "保存信息出错，请重试！"
-                        });
-                        return false;
-                    }
-
-                    res.send({
-                        status: 200,
-                        code: 1,
-                        message: "评论发布成功！",
-                        data: {
-                            userid: req.session.user._id,
-                            username: req.session.user.username,
-                            content: content,
-                            quote: quote
-                        }
-                    });
-                    commentSendMail(archive_userid, quote, content, data._id);
-                    return false;
-                });
-            };
-            
-            // 评论成功后发送邮件
-            function commentSendMail(archive_userid, quote, content, id) {
-                var userList = [];
-                userList.push(archive_userid);
-                if ( quote ) {
-                    commentModel.getOne({
-                        key: "Comment",
-                        body: {
-                            _id: quote
-                        }
-                    }, function (err, comment) {
-                        if (err) {
-                            res.send({
-                                status: 200,
-                                code: 0,
-                                message: "服务器错误，请重试！"
-                            });
-                            return false;
-                        }
-                        if ( comment && comment.userid ) {
-                            userList.push(comment.userid);
-                            checkContent(comment);
-                            return false;
-                        }
-                        res.send({
-                            status: 200,
-                            code: 0,
-                            message: "未知错误，请重试！"
-                        });
-                        return false;
-                    });
-                } else {
-                    checkContent();
-                }
-
-                // 检查内容中有没有@谁
-                function checkContent(quote) {
-                    if ( content.indexOf("@") < 0 ) {// 不包含
-                        send(quote);
-                    } else {
-                        usernameList = content.match(/@\S+/g);
-                        
-                        nameToID(usernameList, function(data) {
-                            userList = userList.concat(data);
-                            send(quote);
-                        });
-                    }
-                };
-
-                // 发送邮件
-                function send(quote) {
-                    var items = changeRepeat(userList);
-                    idToMail(items, function(mails) {
-                        var c = 0,
-                            str,
-                            notice = '';
-                        for ( var i=0,l=mails.length; i<l; i++ ) {
-                            (function(i) {
-                                if ( mails[i] == req.session.user.email ) {// 列表中存在自己时跳过
-                                    c++;
-                                    go();
-                                    return;
-                                } else {
-                                    if ( quote ) {
-                                        str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content + "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以上内容是对该评论的回复：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + quote.username +" 说："+ quote.content;
-                                    } else {
-                                        str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content;
-                                    }
-                                    str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + model + "/" + typeid + '">' + config.url + "/" + model + "/" + typeid + '</a>';
-                                    sendMail({
-                                        from: config.mail.sendMail,
-                                        to: mails[i],
-                                        subject: '《'+ title + '》有新的评论',
-                                        html: '亲爱的：<br /><br /> '+ str + config.mailSignature
-                                    }, function() {// succeed
-                                        notice += '{"mail":"'+mails[i]+'","state":"success"},';
-                                        c++;
-                                        go();
-                                    }, function() {// error
-                                        notice += '{"mail":"'+mails[i]+'","state":"error"},';
-                                        c++;
-                                        go();
-                                    });
-                                }
-                            })(i);
-                        }
-
-                        function go() {
-                            if ( c == mails.length ) {
-                                if ( notice ) {
-                                    notice = '[' + notice.substring(0, notice.length-1) + ']';
-                                } else {
-                                    notice = '[]';
-                                }
-                               commentModel.update({
-                                    _id: id
-                                }, {
-                                    key: "Comment",
-                                    body: {
-                                        notice: notice
-                                    }
-                                }, function (err, data) {}); 
-                            }
-                        };
-                        
-                    });
-                };
-
-                // 会员昵称转ID，方便统一处理mail转化
-                function nameToID(items, callback) {
-                    var c = 0,
-                        ids = [];
-                    for ( var i=0,l=items.length; i<l; i++ ) {
-                        usersModel.getOne({
-                            key: "User",
-                            body: {
-                                username: items[i].replace("@", "")
-                            }
-                        }, function (err, user) {
-                            if (err) {
-                                c++;
-                                go();
-                                return false;
-                            }
-                            if ( user && user.username ) {
-                                c++;
-                                ids.push(user._id);
-                                go();
-                                return false;
-                            }
-                            c++;
-                            go();
-                            return false;
-                        });
-                    }
-                    function go() {
-                        if ( c == items.length && callback ) {
-                            callback(ids);
-                        }
-                    }
-                };
-                // 会员ID转mail
-                function idToMail(items, callback) {
-                    var c = 0,
-                        ids = [];
-                    for ( var i=0,l=items.length; i<l; i++ ) {
-                        usersModel.getOne({
-                            key: "User",
-                            body: {
-                                _id: items[i]
-                            }
-                        }, function (err, user) {
-                            if (err) {
-                                c++;
-                                go();
-                                return false;
-                            }
-                            if ( user && user.username ) {
-                                c++;
-                                ids.push(user.email);
-                                go();
-                                return false;
-                            }
-                            c++;
-                            go();
-                            return false;
-                        });
-                    }
-                    function go() {
-                        if ( c == items.length && callback ) {
-                            callback(ids);
-                        }
-                    }
-                };
-
-                /**
-                 * 数组排重
-                 * @param  {Array}   items    要排重的数组
-                 * @return {Array}            排重后的数组
-                 */
-                function changeRepeat(items) {
-                    var o = {},
-                        _a = [];
-                    for ( var i=0,l=items.length; i<l; i++ ) {
-                        o[items[i]] = 1;
-                    }
-                    for ( key in o ) {
-                        _a.push(key);
-                    }
-                    return _a;
-                };
-            };
         }
 
         if ( model == "active" ) {
+            var manageID = "56299e4cf0edf11409dd6ea2"// 这个ID是管理员的ID，是为了评论内容邮件抄送给管理员
+            // 查询内容，确保该ID能够使用
+            activeModel.getOne({
+                key: "Active",
+                body: {
+                    _id: typeid
+                }
+            }, function (err, data) {
+                if ( err ) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "查询匹配内容出错！"
+                    });
+                    return false;
+                }
+                
+                if (data && data.aName) {
+                    // 先查询评论内容是否有，如果有则查看时间是否过于频繁，与config对比
+                    // 先确定该会员是否有评论，因为没有评论时获取最新评论会出错
+                    commentModel.getOne({
+                        key: "Comment",
+                        body: {
+                            userid: req.session.user._id
+                        }
+                    }, function (err, comment) {
+                        if ( comment && comment.username ) {
+                            commentModel.getSort({
+                                key: "Comment",
+                                body: {
+                                    userid: req.session.user._id
+                                },
+                                pages:{},
+                                occupation: "addDate"// 排序字段
+                            }, function (err, comment) {
+                                if ( (new Date()).getTime() - comment[0].addDate < config.commentDuration * 1000 * 60 ) {// 过于频繁的评论
+                                    res.send({
+                                        status: 200,
+                                        code: 0,
+                                        message: "操作太频繁了，"+ config.commentDuration +"分钟后再试！"
+                                    });
+                                } else {
+                                    save(data.isComment, manageID);
+                                };
+                                return false;
+                            });
+                            return false;
+                        }
+                        save(data.isComment, manageID);
+                        return false;
+                    });
+                    return false;
+                }
 
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "未知错误！"
+                });
+            });
         }
 
         if ( model == "message" ) {// 会员留言必须开启
 
         }
 
+        /**
+         * 保存评论
+         * @param  {Boolean} isComment 是否允许评论
+         * @param  {[type]}  userId    [description]
+         * @return
+         */
+        function save(isComment, userId) {
+            // 档案是否允许评论
+            if ( !isComment ) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "本条信息禁止了评论功能！"
+                });
+                return false;
+            }
+
+            // 昵称不合法
+            if (req.session.user.username.indexOf("@") > -1) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "昵称不合法，请进行调整！",
+                    url:"/user/editInfo"
+                });
+                return false;
+            }
+
+            // 通过验证请求时清空验证码session
+            req.session.captcha = null;
+
+
+            // 开始汇总计算需要发送邮件里表
+            var archive_userid = userId;
+
+            // 保存评论
+            commentModel.save({
+                key: "Comment",
+                body: {
+                    typeid: typeid,
+                    model: model,
+                    userid: req.session.user._id,
+                    email: req.session.user.email,
+                    username: req.session.user.username,
+                    title: title,
+                    content: content,
+                    privacy: privacy,
+                    quote: quote,
+                    ip: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+                    city: "",// 预留字段，暂时没有解决方案
+                    addDate: (new Date()).getTime(),
+                    hide: false,
+                    zan: 0,
+                    system: _system
+                }
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "保存信息出错，请重试！"
+                    });
+                    return false;
+                }
+
+                res.send({
+                    status: 200,
+                    code: 1,
+                    message: "评论发布成功！",
+                    data: {
+                        userid: req.session.user._id,
+                        username: req.session.user.username,
+                        content: content,
+                        quote: quote
+                    }
+                });
+                commentSendMail(archive_userid, quote, content, data._id);
+                return false;
+            });
+        };
+        
+        // 评论成功后发送邮件
+        function commentSendMail(archive_userid, quote, content, id) {
+            var userList = [];
+            userList.push(archive_userid);
+            if ( quote ) {
+                commentModel.getOne({
+                    key: "Comment",
+                    body: {
+                        _id: quote
+                    }
+                }, function (err, comment) {
+                    if (err) {
+                        res.send({
+                            status: 200,
+                            code: 0,
+                            message: "服务器错误，请重试！"
+                        });
+                        return false;
+                    }
+                    if ( comment && comment.userid ) {
+                        userList.push(comment.userid);
+                        checkContent(comment);
+                        return false;
+                    }
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "未知错误，请重试！"
+                    });
+                    return false;
+                });
+            } else {
+                checkContent();
+            }
+
+            // 检查内容中有没有@谁
+            function checkContent(quote) {
+                if ( content.indexOf("@") < 0 ) {// 不包含
+                    send(quote);
+                } else {
+                    usernameList = content.match(/@\S+/g);
+                    
+                    nameToID(usernameList, function(data) {
+                        userList = userList.concat(data);
+                        send(quote);
+                    });
+                }
+            };
+
+            // 发送邮件
+            function send(quote) {
+                var items = changeRepeat(userList);
+
+                idToMail(items, function(mails) {
+                    var c = 0,
+                        str,
+                        notice = '';
+                    for ( var i=0,l=mails.length; i<l; i++ ) {
+                        (function(i) {
+                            if ( mails[i] == req.session.user.email ) {// 列表中存在自己时跳过
+                                c++;
+                                go();
+                                return;
+                            } else {
+                                if ( quote ) {
+                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content + "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以上内容是对该评论的回复：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + quote.username +" 说："+ quote.content;
+                                } else {
+                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content;
+                                }
+                                str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + model + "/" + typeid + '">' + config.url + "/" + model + "/" + typeid + '</a>';
+                                sendMail({
+                                    from: config.mail.sendMail,
+                                    to: mails[i],
+                                    subject: '《'+ title + '》有新的评论',
+                                    html: '亲爱的：<br /><br /> '+ str + config.mailSignature
+                                }, function() {// succeed
+                                    notice += '{"mail":"'+mails[i]+'","state":"success"},';
+                                    c++;
+                                    go();
+                                }, function() {// error
+                                    notice += '{"mail":"'+mails[i]+'","state":"error"},';
+                                    c++;
+                                    go();
+                                });
+                            }
+                        })(i);
+                    }
+
+                    function go() {
+                        if ( c == mails.length ) {
+                            if ( notice ) {
+                                notice = '[' + notice.substring(0, notice.length-1) + ']';
+                            } else {
+                                notice = '[]';
+                            }
+                           commentModel.update({
+                                _id: id
+                            }, {
+                                key: "Comment",
+                                body: {
+                                    notice: notice
+                                }
+                            }, function (err, data) {}); 
+                        }
+                    };
+                    
+                });
+            };
+        };
         
     };
 });

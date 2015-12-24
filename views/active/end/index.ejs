@@ -43,6 +43,8 @@
 <body>
 <% include ../../etc/head.ejs %>
 
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
 <div class="active-head">
   <div class="active-head-bg">
     <div class="active-head-con maxWidth">
@@ -151,11 +153,11 @@
               <span style="color:#666;">聚餐是为了认识更多的朋友</span>
             </dd>
           </dl>
-          <% if ( captcha && captcha === true ) { %>
+          <% if ( activeJoinCaptcha && activeJoinCaptcha === true ) { %>
           <dl>
             <dt>验证码：</dt>
             <dd>
-              <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /> <em>请填写验证码</em>
+              <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="activeJoin-code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /> <em>请填写验证码</em>
             </dd>
           </dl>
           <% } %>
@@ -168,6 +170,52 @@
     </div>
   </div>
 </div>
+<% } %>
+
+<% if ( configIsComment && activeInfo.isComment ) { %>
+  <div class="maxWidth active-comment">
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这个活动</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= activeInfo._id %>" />
+              <input type="hidden" name="model" value="active" />
+              <input type="hidden" name="title" value="<%= activeInfo.aName %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+  </div>
 <% } %>
 
 <script>

@@ -447,11 +447,11 @@ a.article-top-comment-link { color:#ff8400;}
 .active-404 a:hover,
 .joinconfirm a:hover { color:#c00;}
 
+.active-comment { padding-bottom:80px;}
 
 
 
-
-/* active */
+/**/
 .myhome-head {
   background:#3a74ad;
   background: -moz-linear-gradient(45deg,  #3a74ad 0%, #3da0b5 100%); /* FF3.6+ */
@@ -591,6 +591,7 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 
 /* Comment */
 .comment { padding-top:30px;}
+.comment h1 { font-size:18px; line-height:2em; font-weight:bold; color:#666; padding-bottom:10px;}
 .comment-list { padding-top:20px; overflow:hidden;}
 .comment-list img { width:50px; height:50px;}
 .comment-count { font-size:18px; line-height:2em; padding-bottom:15px;}

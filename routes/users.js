@@ -856,7 +856,61 @@ function getActiveList(req, res, o, pages, mod, member, info) {
 };
 
 
+// 访问我的留言【出现这个链接默认为会员访问自己的留言】
+router.route('/message').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
 
+    // 跳转至用户中心页面
+    res.redirect("/user/message/"+req.session.user._id);
+});
+// 访问会员的留言
+router.route('/message/:id').get(function (req, res) {
+    "use strict";
+    var id = req.params.id,
+        member;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = data;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    res.render('users/user_message', {
+                        title: "会员留言",
+                        member: member,
+                        info: data
+                    });
+                }
+            });
+        }
+    });
+});
 
 
 /*

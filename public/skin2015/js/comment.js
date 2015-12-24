@@ -9,6 +9,7 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
         var param = {};
         param.id = $("#js-archives-id").val(),
         param.model = $("#js-archives-model").val();
+
         $.get("/comment/get", param, function(data) {
             if ( !data ) { return false };
             if ( typeof data == "string" ) {
@@ -75,8 +76,7 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                     _html += '        </div>';
                     _html += '    </div>';
                     _html += '</div>';
-console.log(i);
-console.log(this.content);
+
                     if ( !this.quote ) {
                         // $("#js-comment-list").append(_html);// 这两个插入方式可用来排序
                         $("#js-comment-list").prepend(_html);

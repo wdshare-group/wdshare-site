@@ -901,11 +901,25 @@ router.route('/message/:id').get(function (req, res) {
                         msg: "该用户没有此类信息！"
                     });
                 } else {// 已存在
-                    res.render('users/user_message', {
-                        title: "会员留言",
-                        member: member,
-                        info: data
-                    });
+                    if ( req.session.addCommentIsShowCaptcha && req.session.addCommentIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
+                        res.render('users/user_message', {
+                            title: "会员留言",
+                            member: member,
+                            info: data,
+                            configIsComment: config.isComment,
+                            captcha:true
+                        });
+                    } else {
+                        // 不显示验证码时需要清空验证码session
+                        req.session.captcha = null;
+                        res.render('users/user_message', {
+                            title: "会员留言",
+                            member: member,
+                            info: data,
+                            configIsComment: config.isComment
+                        });
+                    }
+                    
                 }
             });
         }

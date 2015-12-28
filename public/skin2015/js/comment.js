@@ -60,6 +60,9 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                     if ( this.system && this.system != "Windows" ) {
                         _html += '            <span class="comment-item-system">来自 '+this.system+'</span>';
                     }
+                    if ( this.privacy ) {
+                        _html += '            <span class="comment-item-privacy" title="只有发送人和接收人可以看见">私密消息</span>';
+                    }
                     _html += '        </div>';
                     _html += '        <div class="comment-item-body">'+this.content+'</div>';
                     _html += '        <div class="comment-item-foot">';
@@ -90,11 +93,19 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                     }
                 });
                 
-                $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条评论</div>');
+                if ( param.model == "message" ) {
+                    $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条留言</div>');
+                } else {
+                    $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条评论</div>');
+                }
                 $(".js-comment-count").html(data.data.length);
 
                 if ( data.data.length == 0 ) {
                     $("#js-comment-list").html("哎呦，我将成为第一个评论的人！");
+                }
+
+                if ( data.data.length == 0 && param.model == "message" ) {
+                    $("#js-comment-list").html("很荣幸，您将成为第一个留言的人！");
                 }
             }
         });
@@ -115,7 +126,7 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
             }
             
             if ( !_form.content.value ) {
-                alert("填写评论内容后再提交吧！");
+                alert("填写内容后再提交吧！");
                 _form.content.focus();
                 return false;
             }

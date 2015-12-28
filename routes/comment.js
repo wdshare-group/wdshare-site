@@ -128,9 +128,15 @@ router.get('/get', function(req, res) {
             return false;
         }
         for ( var i=0; i<data.length; i++ ) {
-            // 私密属性和隐藏属性的跳过
-            if ( data[i].hide == true || data[i].privacy == true ) {
+            // 隐藏属性的跳过
+            if ( data[i].hide == true ) {
                 continue;
+            }
+            // 私密属性进行过滤，只有主人和留言发布者显示
+            if ( data[i].privacy == true ) {
+                if ( !req.session.user || (req.session.user._id != data[i].typeid && req.session.user._id != data[i].userid) ) {
+                    continue;
+                }
             }
             _item = {};
             _item._id = data[i]._id;
@@ -140,6 +146,7 @@ router.get('/get', function(req, res) {
             _item.content = data[i].content;
             _item.quote = data[i].quote;
             _item.system = data[i].system;
+            _item.privacy = data[i].privacy;
             _item.zan = data[i].zan;
             _item.addDate = data[i].addDate;
             _item.nowDate = (new Date()).getTime();
@@ -438,8 +445,6 @@ router.post('/add', function(req, res) {
                     message: "未知错误！"
                 });
             });
-
-
         }
 
         if ( model == "active" ) {
@@ -506,7 +511,65 @@ router.post('/add', function(req, res) {
         }
 
         if ( model == "message" ) {// 会员留言必须开启
+            // 查询内容，确保该ID能够使用
+            usersModel.getOne({
+                key: "User",
+                body: {
+                    _id: typeid
+                }
+            }, function (err, data) {
+                if ( err ) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "查询匹配内容出错！"
+                    });
+                    return false;
+                }
+                
+                if (data && data.username) {
+                    // 先查询评论内容是否有，如果有则查看时间是否过于频繁，与config对比
+                    // 先确定该会员是否有评论，因为没有评论时获取最新评论会出错
+                    commentModel.getOne({
+                        key: "Comment",
+                        body: {
+                            userid: req.session.user._id
+                        }
+                    }, function (err, comment) {
+                        if ( comment && comment.username ) {
+                            commentModel.getSort({
+                                key: "Comment",
+                                body: {
+                                    userid: req.session.user._id
+                                },
+                                pages:{},
+                                occupation: "addDate"// 排序字段
+                            }, function (err, comment) {
+                                if ( (new Date()).getTime() - comment[0].addDate < config.commentDuration * 1000 * 60 ) {// 过于频繁的评论
+                                    res.send({
+                                        status: 200,
+                                        code: 0,
+                                        message: "操作太频繁了，"+ config.commentDuration +"分钟后再试！"
+                                    });
+                                } else {
+                                    save(true, data._id);
+                                };
+                                return false;
+                            });
+                            return false;
+                        }
+                        save(true, data._id);
+                        return false;
+                    });
+                    return false;
+                }
 
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "未知错误！"
+                });
+            });
         }
 
         /**
@@ -555,7 +618,7 @@ router.post('/add', function(req, res) {
                     username: req.session.user.username,
                     title: title,
                     content: content,
-                    privacy: privacy,
+                    privacy: privacy == "0" ? false : true,
                     quote: quote,
                     ip: req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
                     city: "",// 预留字段，暂时没有解决方案
@@ -646,7 +709,15 @@ router.post('/add', function(req, res) {
                 idToMail(items, function(mails) {
                     var c = 0,
                         str,
-                        notice = '';
+                        notice = '',
+                        str01 = '发表评论',
+                        str02 = '评论',
+                        userMessageLink = "";
+                    if ( model === "message" ) {
+                        str01 = '留言到';
+                        str02 = '留言';
+                        userMessageLink = "user/";
+                    }
                     for ( var i=0,l=mails.length; i<l; i++ ) {
                         (function(i) {
                             if ( mails[i] == req.session.user.email ) {// 列表中存在自己时跳过
@@ -655,15 +726,15 @@ router.post('/add', function(req, res) {
                                 return;
                             } else {
                                 if ( quote ) {
-                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content + "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以上内容是对该评论的回复：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + quote.username +" 说："+ quote.content;
+                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 【"+ title + "】"+str01+"：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content + "<br /><br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以上内容是对该"+str02+"的回复：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + quote.username +" 说："+ quote.content;
                                 } else {
-                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 《"+ title + "》发表评论：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content;
+                                    str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 【"+ title + "】"+str01+"：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content;
                                 }
-                                str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + model + "/" + typeid + '">' + config.url + "/" + model + "/" + typeid + '</a>';
+                                str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + userMessageLink + model + "/" + typeid + '">' + config.url + "/" + userMessageLink + model + "/" + typeid + '</a>';
                                 sendMail({
                                     from: config.mail.sendMail,
                                     to: mails[i],
-                                    subject: '《'+ title + '》有新的评论',
+                                    subject: '【'+ title + '】有新的'+str02,
                                     html: '亲爱的：<br /><br /> '+ str + config.mailSignature
                                 }, function() {// succeed
                                     notice += '{"mail":"'+mails[i]+'","state":"success"},';

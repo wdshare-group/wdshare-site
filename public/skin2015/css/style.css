@@ -607,6 +607,7 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .comment-item-name { font-weight:bold; color:#999;}
 /*.comment-item-del { padding-right:15px; color:#999;}*/
 .comment-item-system { font-size:12px;}
+.comment-item-privacy { color:#f00; cursor:default;}
 
 .comment-item-body { line-height:1.6em; padding:6px 0; color:#666;}
 .comment-item-body a { color:#4183c4;}
@@ -654,3 +655,9 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .comment-item-childList .comment-item-body { display:inline;}
 .comment-item-childList .comment-item-head span { padding-left:10px;}
 .comment-item-temporary { background:#e8ebed!important;}
+
+.user-message { padding-bottom:100px;}
+.user-message .comment-list { padding:0 0 40px;}
+.user-message-privacy { line-height:24px; padding:10px 0;}
+.user-message-privacy label { padding-right:30px;}
+.user-message-privacy input { margin-right:5px; vertical-align:middle; margin-top:-3px;}

@@ -20,7 +20,7 @@ var config = {
         "sendMail":"sent@wdshare.org",
         "service":"qq",
         "user":"sent@wdshare.org",
-        "pass":"#123dw86FG&^!"
+        "pass":"******"
     },
     // "mail":{
     //     "sendMail":"wdshare_sent@163.com",

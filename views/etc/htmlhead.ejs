@@ -15,3 +15,14 @@
 <link href="/static/skin2015/css/animate.css" rel="stylesheet" />
 <link href="/static/skin2015/css/motion.css" rel="stylesheet" />
 <link href="/static/skin2015/css/style.css" rel="stylesheet" />
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+<link rel="apple-touch-icon" href="/static/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon" sizes="72x72" href="/static/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png" />
+<script>
+<% if(user && user.email){ %>
+var user = {userid:"user._id", username:"user.username"};
+<% }else{ %>
+var user;
+<% } %>
+</script>

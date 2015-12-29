@@ -151,7 +151,8 @@ router.get('/get', function(req, res) {
             _item.addDate = data[i].addDate;
             _item.nowDate = (new Date()).getTime();
 
-            if ( req.session.user && data[i].userid == req.session.user._id ) {
+            // 发布者和留言本主人都可以删除
+            if ( req.session.user && (data[i].userid == req.session.user._id || data[i].typeid == req.session.user._id) ) {
                 _item.master = true;
             }
             _data.push(_item);
@@ -706,6 +707,10 @@ router.post('/add', function(req, res) {
             function send(quote) {
                 var items = changeRepeat(userList);
 
+                console.log(items);
+                console.log("测试期，暂停发送邮件");
+                return false;
+
                 idToMail(items, function(mails) {
                     var c = 0,
                         str,
@@ -807,7 +812,7 @@ router.get('/del/:id', function(req, res) {
         }
 
         if ( data && data.userid ) {
-            if ( data.userid !== req.session.user._id ) {
+            if ( data.userid !== req.session.user._id && data.typeid !== req.session.user._id ) {
                 res.send({
                     status: 200,
                     code: 0,

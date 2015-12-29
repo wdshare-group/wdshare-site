@@ -74,6 +74,7 @@
                   <%= member.regTime ? moment(member.regTime).format('YYYY-MM-DD') : "" %>
                 </td>
                 <td>
+                  <a href="/user/<%= member._id %>" target="_blank">预览</a>
                   <a href="/manage/member/edit/<%= member._id %>">修改</a>
                   <!--
                   <% if ( member.lock ) { %>

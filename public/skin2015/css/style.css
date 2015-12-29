@@ -15,10 +15,14 @@ a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,hea
 input { outline:none; font-family:"Microsoft YaHei";}
 textarea { outline:none; resize:none;}
 
-
 /**/
 body { background:#f7f7f7;}
 
+/**/
+@font-face { font-family: "Ionicons"; src: url("../fonts/ionicons.eot?v=2.0.0"); src: url("../fonts/ionicons.eot?v=2.0.0#iefix") format("embedded-opentype"), url("../fonts/ionicons.ttf?v=2.0.0") format("truetype"), url("../fonts/ionicons.woff?v=2.0.0") format("woff"), url("../fonts/ionicons.svg?v=2.0.0#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
+.wds-side-con a:before { display:block; font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+/**/
 .maxWidth { width:80%; max-width:1350px; margin:auto;}
 .maxWidth:after,
 .activity-con:after,
@@ -32,7 +36,10 @@ body { background:#f7f7f7;}
 .login-but input,
 .module-but a,
 .addActive-form-but input,
-.upface-submit a {
+.upface-submit a,
+.article .shareto a,
+.wds-side,
+.wds-side-con a {
   -webkit-transition-duration:250ms;
   -moz-transition-duration:250ms;
   transition-duration:250ms;
@@ -166,8 +173,12 @@ h3.login-error { display:none; color:#f00;}
 
 
 /**/
-.ie { text-align:center; font-size:18px; line-height:200%; padding:200px 50px; display:none; *display:block;}
-div { *display:none;}
+.ie { text-align:center; font-size:18px; line-height:200%; padding:200px 50px; display:none;}
+
+@media \0screen\,screen\9 {
+  .ie { display:block;}
+  div { display:none;}
+}
 
 
 /**/
@@ -198,7 +209,7 @@ div { *display:none;}
 .activity-state span { display:block; border:1px solid #ccc; background:#f7f7f7; color:#999; line-height:50px; padding:0 10px; white-space:nowrap;}
 .activity-state .over { display:none;}
 .activity-state .ready { background:#e9f1f4; color:#999; border:1px solid #d8dee2; color:#6b808d;}
-.activity-state .open { background:#3188de; color:#999; border:1px solid #3188de; color:#fff;}
+.activity-state .open { background:#3188de; color:#999; border:1px solid #3188de; color:#fff; border-radius:4px;}
 .activity-item:hover .activity-state .open { background:#3a74ad; color:#999; border:1px solid #3a74ad; color:#fff;}
 
 .activity-list .activity-con { min-height:700px;}
@@ -284,12 +295,6 @@ div { *display:none;}
 
 /* article */
 .article { background:#fff; padding-bottom:80px;}
-
-.article .shareto a {
-	-webkit-transition-duration:250ms;
-	-moz-transition-duration:250ms;
-	transition-duration:250ms;
-}
 
 .article-head { padding:0 0 30px; zoom:1; overflow:hidden; position:relative;}
 
@@ -661,3 +666,37 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .user-message-privacy { line-height:24px; padding:10px 0;}
 .user-message-privacy label { padding-right:30px;}
 .user-message-privacy input { margin-right:5px; vertical-align:middle; margin-top:-3px;}
+
+
+
+
+/**/
+.wds-side { position:fixed; width:100%; bottom:-300px; height:0; background:#000;}
+.wds-side-show { bottom:0;}
+.wds-side-con { position:relative;}
+.wds-side-link { position:absolute; right:-60px; bottom:0;}
+.wds-side-con em,
+.wds-side-con a { display:block; width:40px; height:40px; border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px; -o-border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.2); margin-bottom:4px; background:#c0c0c0; color:#fff; text-align:center; line-height:40px; font-size:18px;}
+
+.wds-side-con a:hover { background-color:#3188de;}
+.wds-side-con a:hover:before { color:#fff;}
+
+.wds-side-feedback:before { content:"\f11a";}
+.wds-side-con .wds-side-gotop { background:#7e7e7e;}
+.wds-side-gotop:before { content:"\f126";}
+
+
+/**/
+.dialog-not-login { padding:30px 0; width:350px; text-align:center;}
+.dialog-not-login a { color:#4183c4;}
+.dialog-not-login a:hover { color:#f00;}
+
+/**/
+.side-feedback-box { padding:10px 0 0; width:400px;}
+.side-feedback-box dl { width:100%; overflow:hidden; line-height:34px; padding:10px 0;}
+.side-feedback-box dt { width:60px; text-align:right; float:left;}
+.side-feedback-box dd { margin-left:60px;}
+.side-feedback-box dd select { border:1px solid #ccc; border-radius:5px; color:#333; height:34px; padding:0 5px; width:150px;}
+.side-feedback-box dd textarea { display:block; border:1px solid #ccc; padding:5px; border-radius:5px; color:#333; width:90%; height:80px;}
+.side-feedback-code input { border:1px solid #ccc; border-radius:5px; color:#333; line-height:18px; padding:8px 5px; width:80px;}
+.side-feedback-code img { height:36px; vertical-align:middle; margin-top:-3px; border-radius:5px;}

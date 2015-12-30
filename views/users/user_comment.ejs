@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title><%=member.username%>参与的活动 - WDShare</title>
+<title><%=member.username%>发布的文章 - WDShare</title>
 <% include ../etc/htmlhead.ejs %>
 
 <% if ( typeof info != "undefined") { %>
@@ -46,44 +46,41 @@ if (user && user._id == member._id) {
     return _html;
   };
 %>
+
 <% include etc/user_head.ejs %>
 
 <div id="js-myhome" style="display:none;"></div>
 <div class="maxWidth module">
-	<div class="user-article">
-
+	<div class="user-comment">
+  
 	<% if ( result.length < 1 ) { %>
-		<p style="padding:50px 0 0; text-align:center; font-size:16px;">该用户未参与任何活动，请前去参与本站 <a href="/active" style="font-weight:bold; color:#4183c4;">线下活动</a> 报名参与</p>
+		<p style="padding:50px 0 0; text-align:center; font-size:16px;">该用户未参与任何评论</p>
 	<% } else { %>
     <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
   <% } %>
 
-	<% result.forEach(function(active){ %>
-	<div class="user-article-item">
-		<h4>
-			<a href="/active/<%= active.activeId %>" title="<%= active.activeName %>"><%= active.activeName %></a>
-      <% if ( active.activeStatus > 0 ) { %><span style="font-size:12px; color:#f00; padding-left:20px;">进行中...</span><% } %>
-		</h4>
-		<p>
-			<% if ( active.activeChannel === "0" ) { %>
-			<span class="user-article-channel">[分享活动]</span>
-			<% } %>
-			<% if ( active.activeChannel === "1" ) { %>
-			<span class="user-article-channel">[前端培训]</span>
-			<% } %>
-			<% if ( active.activeChannel === "2" ) { %>
-			<span class="user-article-channel">[娱乐活动]</span>
-			<% } %>
-    		<span class="user-article-date">时间：<%= active.time %></span>
-		</p>
-		<% if ( active.state == 2 ) { %>
-    <span class="user-article-edit">已发送邀请函</span>
-    <% } else if ( active.state == 3 ) { %>
-		<span class="user-article-edit">已确认参加</span>
-		<% } else { %>
-		<span class="user-article-edit">仅报名</span>
-		<% } %>
-	</div>
+	<% result.forEach(function(comment){ %>
+		<%
+      var _href = "/" + comment.model + "/" + comment.typeid,
+          suffix = "评论到";
+      if ( comment.model == "message" ) {
+        _href = "/user/message/" + comment.typeid;
+        suffix = "留言到";
+      }
+    %>
+    <div class="user-comment-item">
+			<h4>
+				<%= who %>在 <a href="<%=_href%>" target="_blank"><%= comment.title %></a> 中<%= suffix %>：<% if (comment.privacy) { %><span class="red" title="只有发布者和接收者能看到">私密消息</span><% } %>
+			</h4>
+      <p><%- comment.content %></p>
+			<div class="type">
+        <span>赞 (<%= comment.zan %>)</span>
+        <span><%= moment(comment.addDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+        <% if (user && user._id == member._id) { %>
+        <a href="#" data-id="<%= comment._id %>" class="user-comment-del">删除</a>
+        <% } %>
+      </div>
+		</div>
 	<% }) %>
 
   <% if ( page_sum > 1 ) { %>

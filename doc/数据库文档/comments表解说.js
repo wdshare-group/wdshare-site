@@ -12,7 +12,7 @@
 	"ip": "127.0.0.1",// 评论是的IP
 	"city": "西安",// 评论者地区
 	"addDate": 1436062300249,// 评论时间
-	"hide": false,// 是否隐藏 true 不隐藏 false 隐藏
+	"hide": false,// 是否隐藏 false 不隐藏 true 隐藏
 	"notice": "",// 被通知的邮件列表，例如[{"mail":"3235183@163.com","state":"success"}, {"mail":"106324307@qq.com","state":"error"}]
 	"zan": 0,// 给这条评论点赞
 	"system": "iphone6s plus" // 评论者所使用的系统

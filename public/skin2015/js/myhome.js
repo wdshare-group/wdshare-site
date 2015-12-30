@@ -290,6 +290,60 @@ define(['jquery', 'dialog'], function($) {
     };
 
 
+    /**
+     * 我的评论中的删除功能
+     * @return
+     */
+    function delMyComment() {
+        $(".user-comment-del").click(function() {
+            removeComment(this);
+            return false;
+        });
+        /**
+         * 删除评论
+         * @return
+         */
+        function removeComment(elem) {
+            if ( !elem ) { return false };
+
+            var id = $(elem).attr("data-id"),
+                url = "/comment/del/"+id;
+
+            if ( confirm("确定要删除该评论？") ) {
+                action();
+            };
+
+            function action() {
+                var parent = $(elem).parents(".user-comment-item").eq(0);
+                parent.addClass("user-comment-del-note");
+                parent.append('<div class="user-comment-del-note-text"><p>数据删除中...</p></div>');
+                $.get(url, function(data) {
+                    if ( !data ) { return false };
+                    if ( typeof data == "string" ) {
+                        data = $.parseJSON(data);
+                    } else {
+                        data = data;
+                    };
+
+                    if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                        parent.find(".user-comment-del-note-text p").html("删除成功！");
+                        setTimeout(function() {
+                            $(parent).animate({
+                                opacity: 'hide',
+                                height: 0
+                            }, 500, function() {
+                                $(parent).remove();
+                            });
+                        }, 2000);
+                    } else {// 失败
+                        parent.find(".user-comment-del-note-text p").html("删除失败，请刷新重试！");
+                    }
+                });
+            };
+        };
+    };
+
+
 
     var myhome = {};
     myhome.init = function() {
@@ -312,6 +366,8 @@ define(['jquery', 'dialog'], function($) {
             });
             return false;
         });
+
+        delMyComment();
     };
 
 

@@ -55,13 +55,15 @@ if (user && user._id == member._id) {
 	<% if (user && user._id == member._id) { %>
 	<div style="font-size:16px; padding-bottom:30px; overflow:hidden;">
 		<div class="module-but"><a href="/article/create">发布新文章</a></div>
-		要想删除你发表的文章，请联系管理员。邮箱：manage@wdshare.org
+		要想删除已发表的文章，请联系管理员。邮箱：manage@wdshare.org
 	</div>
 	<% } %>
 
 	<% if ( result.length < 1 ) { %>
 		<p style="padding:50px 0 0; text-align:center; font-size:16px;">没有发布任何文章</p>
-	<% } %>
+	<% } else { %>
+    <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
+  <% } %>
 
 	<% result.forEach(function(article){ %>
 		<%
@@ -104,9 +106,8 @@ if (user && user._id == member._id) {
 		</div>
 		<% } %>
 	<% }) %>
-	</div>
 
-	<% if ( page_sum > 1 ) { %>
+  <% if ( page_sum > 1 ) { %>
     <div class="pages">
       <div class="pages-con">
         <% if ( page_current != 1 ) { %>
@@ -149,6 +150,8 @@ if (user && user._id == member._id) {
       </div>
     </div>
     <% } %>
+	</div>
+
 </div>
 
 <% include ../etc/foot.ejs %>

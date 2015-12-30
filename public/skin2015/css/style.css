@@ -494,7 +494,7 @@ a.article-top-comment-link { color:#ff8400;}
 
 
 .myhome-nav { line-height:220%; background:#ccc; color:#000; font-size:18px; text-align:center;}
-.myhome-nav a { display:inline-block; padding:0 15px; margin:10px 0;}
+.myhome-nav a { display:inline-block; padding:0 15px; margin:10px 0; border-radius:10px;}
 .myhome-nav a:hover,
 .myhome-nav .current { background:#666; color:#fff;}
 
@@ -585,14 +585,37 @@ a.article-top-comment-link { color:#ff8400;}
 
 /**/
 .user-article { padding-bottom:100px; min-height:350px;}
+.user-article-sum { font-size:16px; font-weight:bold; padding:0 0 15px 10px;}
 .user-article-item { font-size:16px; line-height:200%; padding:10px 20px; position:relative;}
-.user-article-item:nth-child(even) { background:#ebebeb;}
+.user-article-item:nth-child(even) { background:#f0f0f0;}
 .user-article-item h4 a { color:#4183c4;}
+.user-article-item h4 a:hover { color:#f00;}
 .user-article-item a .link-url { color:#000; font-size:12px; padding-left:10px;}
 .user-article-item p { font-size:14px;}
 .user-article-item p span { padding-right:20px;}
 .user-article-edit { position:absolute; top:50%; right:37px; background:#4183c4; color:#fff; line-height:40px; padding:0 20px; margin-top:-20px; border-radius:5px;}
 a.user-article-edit:hover { color:#fff; background:#3188de;}
+.user-article .pages { padding-top:50px;}
+
+/**/
+.user-comment { min-height:350px; padding-bottom:100px;}
+.user-comment-sum { font-size:16px; font-weight:bold; padding:0 0 15px 10px;}
+.user-comment-item { font-size:16px; line-height:200%; padding:10px 20px; position:relative;}
+.user-comment-item:nth-child(even) { background:#f0f0f0;}
+.user-comment-item h4 { color:#666; font-size:14px; font-weight:bold;}
+.user-comment-item a { color:#4183c4;}
+.user-comment-item a:hover { color:#f00;}
+.user-comment-item .type { font-size:14px; color:#999;}
+.user-comment-item .type a { color:#999;}
+.user-comment-item .type a:hover { color:#f00;}
+.user-comment-item .type a,
+.user-comment-item .type span { padding-right:20px;}
+.user-comment .pages { padding-top:50px;}
+.user-comment-item .red { color:#f00;}
+.user-comment-del-note { position:relative;}
+.user-comment-del-note-text { background:rgba(255,255,255,.6); position:absolute; top:0; left:0; right:0; bottom:0;}
+.user-comment-del-note-text p { position:absolute; width:100%; text-align:center; top:50%; margin-top:-20px; line-height:40px; font-size:14px; color:#000;}
+
 
 /* Comment */
 .comment { padding-top:30px;}
@@ -612,7 +635,7 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .comment-item-name { font-weight:bold; color:#999;}
 /*.comment-item-del { padding-right:15px; color:#999;}*/
 .comment-item-system { font-size:12px;}
-.comment-item-privacy { color:#f00; cursor:default;}
+.comment-item-privacy { color:#f00; cursor:default; padding-right:15px;}
 
 .comment-item-body { line-height:1.6em; padding:6px 0; color:#666;}
 .comment-item-body a { color:#4183c4;}

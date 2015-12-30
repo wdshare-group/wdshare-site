@@ -17,8 +17,8 @@
 	<div class="myhome-nav-con maxWidth">
 		<a href="/user/myactive/<%=member._id%>"><%=who%>参与的活动</a>
 		<a href="/user/myarticle/<%=member._id%>"><%=who%>的文章</a>
-		<!-- <a href="#"><%=who%>的项目</a>
-		<a href="#"><%=who%>的评论</a> -->
+		<!-- <a href="#"><%=who%>的项目</a> -->
+		<a href="/user/mycomment/<%=member._id%>"><%=who%>的评论</a>
 		<% if (user && user._id == member._id) { %>
 		<a href="/user/message/<%=member._id%>"><%=who%>的留言</a>
 		<% } else { %>

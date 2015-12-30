@@ -50,8 +50,11 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                     }
 
                     textDate = formatDate.getFullYear() +"-"+ (formatDate.getMonth()+1) +"-"+ formatDate.getDate() +" "+ formatDate.getHours() +":"+ formatDate.getMinutes() +":"+ formatDate.getSeconds();
-
-                    _html += '<div class="comment-item" data-id="'+this._id+'">';
+                    if ( this.privacy ) {
+                        _html += '<div class="comment-item" data-id="'+this._id+'" data-privacy="true">';
+                    } else {
+                        _html += '<div class="comment-item" data-id="'+this._id+'">';
+                    }
                     _html += '    <div class="comment-item-face"><a href="/user/'+this.userid+'"><img src="/user/face/'+this.userid+'" title="'+this.username+'" /></a></div>';
                     _html += '    <div class="comment-item-text">';
                     _html += '        <div class="comment-item-head">';
@@ -272,7 +275,7 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
 
             replyComment($(this).parents(".comment-item").eq(1).find(".comment-item-reply"), function() {
                 var he = $(that).parents(".comment-item-text").eq(0).find(".comment-item-name").html();
-                console.log(he);
+                
                 $(that).parents(".comment-item").eq(1).find("textarea").val("@"+ he +" ");
             });
             return false;
@@ -375,7 +378,10 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
             code = $("#js-comment-form .comment-form-code"),
             parent = $(elem).parents(".comment-item-foot"),
             _html = '',
-            codehtml;
+            codehtml,
+            privacy = $(elem).parents(".comment-item").eq(0).attr("data-privacy");
+
+        console.log(privacy);
 
         /*// 检测是关闭还是打开【暂时不需要这个检测，让每次点击都打开表单】
         var childForm = $(elem).parents(".comment-item-text").find("form");
@@ -393,11 +399,19 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
         _html += '  <input type="hidden" name="model" value="'+model+'">';
         _html += '  <input type="hidden" name="title" value="'+title+'">';
         _html += '  <input type="hidden" name="quote" value="'+id+'">';
-        _html += '  <input type="hidden" name="privacy" value="0">';
+        if ( !privacy ) {
+            _html += '  <input type="hidden" name="privacy" value="0">';
+        }
         _html += '  <div class="comment-form-box">';
         _html += '    <div class="comment-form-user">'+userface+'</div>';
         _html += '    <div class="comment-form-body">';
         _html += '      <textarea name="content" placeholder="'+placeholder+'"></textarea>';
+        if ( privacy ) {
+            _html += '    <div class="user-message-privacy">';
+            _html += '        <label><input type="radio" name="privacy" value="0" />公开</label>';
+            _html += '        <label title="只有发布者和接收者能看到"><input type="radio" name="privacy" value="1" checked="checked" /><span>私密消息</span></label>';
+            _html += '    </div>';
+        }
         if ( code.length > 0 ) {
             codehtml = code.html();
             codehtml = codehtml.replace(/id="code"/, 'id="code-child"');

@@ -134,7 +134,21 @@ router.get('/get', function(req, res) {
             }
             // 私密属性进行过滤，只有主人和留言发布者显示
             if ( data[i].privacy == true ) {
+                var condition = true,
+                    quoteParent;
                 if ( !req.session.user || (req.session.user._id != data[i].typeid && req.session.user._id != data[i].userid) ) {
+                    condition = false;
+                }
+                
+                // 回复的私密消息也要显示在发表主留言人列表里
+                if ( data[i].quote ) {
+                    quoteParent = quoteInComment(data[i].quote);
+                    if ( quoteParent && req.session.user && (req.session.user._id == quoteParent.typeid || req.session.user._id == quoteParent.userid) ) {
+                        condition = true;
+                    }
+                }
+
+                if ( !condition ) {
                     continue;
                 }
             }
@@ -178,6 +192,21 @@ router.get('/get', function(req, res) {
         });
 
         return false;
+
+        /**
+         * 通过引用查找到父评论
+         * @param  {String} id 父评论ID
+         * @return {Object}    父评论的内容
+         */
+        function quoteInComment(id) {
+            var pcomment;
+            for ( var i=0; i<data.length; i++ ) {
+                if ( data[i]._id == id ) {
+                    pcomment = data[i];
+                }
+            }
+            return pcomment;
+        };
     });
     
     // 替换 @谁 为链接
@@ -849,10 +878,36 @@ router.get('/del/:id', function(req, res) {
             }
 
             if (data) {
-                res.send({
-                    status: 200,
-                    code: 1,
-                    message: "删除成功！"
+                // 接着删除被引用的子评论
+                commentModel.remove({
+                    key: "Comment",
+                    body: {
+                        quote: id
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        res.send({
+                            status: 200,
+                            code: 0,
+                            message: "服务器错误，请重试！"
+                        });
+                        return;
+                    }
+
+                    if (data) {
+                        res.send({
+                            status: 200,
+                            code: 1,
+                            message: "删除成功！"
+                        });
+                        return;
+                    }
+
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "未知错误，请重试！"
+                    });
                 });
                 return;
             }

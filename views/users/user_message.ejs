@@ -56,7 +56,7 @@ if (user && user._id == member._id) {
                   <textarea name="content" placeholder="请输入留言内容，遵纪守法就是好公民！"></textarea>
                   <div class="user-message-privacy">
                     <label><input type="radio" name="privacy" value="0" checked="checked" />公开</label>
-                    <label><input type="radio" name="privacy" value="1" />只给主人看</label>
+                    <label title="只有发布者和接收者能看到"><input type="radio" name="privacy" value="1" /><span>私密消息</span></label>
                   </div>
                   <% if ( captcha && captcha === true ) { %>
                   <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>

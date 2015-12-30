@@ -856,6 +856,212 @@ function getActiveList(req, res, o, pages, mod, member, info) {
 };
 
 
+
+// 访问我的评论【出现这个链接默认为会员访问自己发布的文章】
+router.route('/mycomment').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至我的评论浏览页面
+    res.redirect("/user/mycomment/"+req.session.user._id);
+});
+// 访问会员与的评论
+router.route('/mycomment/:id').get(function (req, res) {
+    "use strict";
+    var id = req.params.id,
+        member;
+
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = data;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    getCommentList(req, res, {userid:id, hide:false}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/user_comment', member, data);
+                }
+            });
+        }
+    });
+});
+/**
+ * 获取参与的评论
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {Object} member 用户信息
+ * @param  {Object} info 用户详细信息
+ * @return
+ */
+function getCommentList(req, res, o, pages, mod, member, info) {
+    var backData = [];
+    commentModel.getSort({// 获取报名信息
+        key: "Comment",
+        body:o,// 仅读取当前会员
+        pages: pages,// 分页信息
+        occupation: "addDate"// 排序字段
+    }, function (err, data) {
+        var _page = pages;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            if ( data.length < 1 ) {
+                _page.sum = 0;
+                res.render(mod, {
+                    title: "会员参与的评论",
+                    result: [],
+                    member: member,
+                    info: info,
+                    pages: _page
+                });
+                return false;
+            }
+
+            // 获取总数【用于分页】
+            commentModel.getAll({
+                key: "Comment",
+                body: o
+            }, function (err, comment) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (comment) {
+                    _page.sum = comment.length;
+                    
+                    for ( var i=0; i<data.length; i++ ) {
+                        if ( data[i].privacy == true ) {
+                            if ( !req.session.user || (req.session.user._id != data[i].typeid && req.session.user._id != data[i].userid) ) {
+                                continue;
+                            }
+                        }
+                        backData.push(data[i]);
+                    }
+                    
+                    // 替换 @谁 为链接后返回数据
+                    replaceUserLink(backData, function(newData) {
+                        res.render(mod, {
+                            title: "会员参与的评论",
+                            result: newData,
+                            member: member,
+                            info: info,
+                            pages: _page
+                        });
+                    });
+                    
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+    });
+
+    // 会员昵称转ID【get专属，与公共方法略有不同】
+    function nameToID(items, callback) {
+        var ids = {},
+            c = 0;
+        for ( var i=0,l=items.length; i<l; i++ ) {
+            usersModel.getOne({
+                key: "User",
+                body: {
+                    username: items[i].replace("@", "")
+                }
+            }, function (err, user) {
+                if (err) {
+                    c++;
+                    go();
+                    return false;
+                }
+                if ( user && user.username ) {
+                    ids["@"+user.username] = user._id;
+                    c++;
+                    go();
+                    return false;
+                }
+                c++;
+                go();
+                return false;
+            });
+        }
+        function go() {
+            if ( c == items.length && callback ) {
+                callback(ids);
+            }
+        }
+    };
+    // 替换 @谁 为链接
+    function replaceUserLink(data, callback) {
+        var c = 0;
+        for ( var i=0,l=data.length; i<l; i++ ) {
+            (function(i) {
+                if ( data[i].content.indexOf("@") < 0 ) {
+                    c++;
+                    go();
+                } else {
+                    var usernameList = data[i].content.match(/@\S+/g);
+                    nameToID(usernameList, function(ids) {
+                        for ( var j=0,le=usernameList.length; j<le; j++ ) {
+                            if ( ids[usernameList[j]] ) {
+                                data[i].content = data[i].content.replace(usernameList[j], '<a href="/user/'+ids[usernameList[j]]+'" target="_blank">'+usernameList[j]+'</a>');
+                            }
+                        }
+                        c++;
+                        go();
+                    });
+                }
+            })(i);
+        }
+
+        function go() {
+            if ( c == data.length && callback ) {
+                callback(data);
+            }
+        };
+    };
+};
+
+
+
+
+
 // 访问我的留言【出现这个链接默认为会员访问自己的留言】
 router.route('/message').get(function (req, res) {
     "use strict";

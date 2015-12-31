@@ -183,7 +183,7 @@ h3.login-error { display:none; color:#f00;}
 
 /**/
 .inform { padding-top:40px; background:#fff;}
-.inform-con { padding:7px 10px; border:1px solid #fab418; background:#ffe9ad; border-radius:5px; line-height:26px; font-size:16px;}
+.inform-con { padding:7px 10px; border:1px solid #ffdf98; background:#fff1c9; border-radius:5px; line-height:26px; font-size:16px;}
 .inform strong { font-weight:bold;}
 .inform .red { color:#f00;}
 .inform .title { color:#666;}
@@ -257,6 +257,8 @@ h3.login-error { display:none; color:#f00;}
 
 /**/
 .index-mamber { border-top:1px solid #e5e5e5; padding-bottom:30px; background:#fff;}
+.all-mamber { padding-bottom:100px;}
+.all-mamber .mamber-con { padding:10px 0 20px; min-height:350px;}
 .mamber-item { width:50%; float:left; padding:20px 0;}
 .mamber-title { font-size:16px; line-height:180%;}
 .mamber-type { line-height:28px; color:#666;}
@@ -336,7 +338,7 @@ a.article-top-comment-link { color:#ff8400;}
 .article .shareto .bds_renren { background-image:url("../img/share-renren.png");}
 .article .shareto .bds_renren:hover { background-color:#046cd0;}
 
-.article-con { font-size:16px; line-height:200%; padding-bottom:30px;}
+.article-con { font-size:16px; line-height:180%; padding-bottom:30px;}
 .article-con strong { font-weight:bold;}
 .article-con p { padding:10px 0;}
 .article-con h3,

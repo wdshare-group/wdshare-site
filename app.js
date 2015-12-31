@@ -121,6 +121,7 @@ var manage_active = require('./manage/routes/active');
 var manage_article = require('./manage/routes/article');
 var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 var manage_member = require('./manage/routes/member');
+var manage_comment = require('./manage/routes/comment');
 
 // 后台首页
 app.use('/manage/', manage);
@@ -132,6 +133,8 @@ app.use('/manage/article', manage_article);
 app.use('/manage/articleCrumbs', manage_articleCrumbs);
 // 会员管理
 app.use('/manage/member', manage_member);
+// 评论管理
+app.use('/manage/comment', manage_comment);
 
 
 // ueditor相关

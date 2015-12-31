@@ -169,6 +169,9 @@ router.get('/get', function(req, res) {
             if ( req.session.user && (data[i].userid == req.session.user._id || data[i].typeid == req.session.user._id) ) {
                 _item.master = true;
             }
+            if ( req.session.manageuser ) {
+                _item.manageMaster = true;
+            }
             _data.push(_item);
         }
 
@@ -670,7 +673,7 @@ router.post('/add', function(req, res) {
                 res.send({
                     status: 200,
                     code: 1,
-                    message: "评论发布成功！",
+                    message: "信息提交成功！",
                     data: {
                         userid: req.session.user._id,
                         username: req.session.user.username,
@@ -841,6 +844,11 @@ router.get('/del/:id', function(req, res) {
         }
 
         if ( data && data.userid ) {
+            // 如果是后台管理员，直接执行删除
+            if ( req.session.manageuser ) {
+                remove();
+                return false;
+            }
             if ( data.userid !== req.session.user._id && data.typeid !== req.session.user._id ) {
                 res.send({
                     status: 200,

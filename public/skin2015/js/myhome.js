@@ -1,27 +1,6 @@
 define(['jquery', 'dialog'], function($) {
     
     // 子导航当前状态初始化
-    /*function childNavInit() {
-        if ( $(".myhome-nav-con").length < 1 ) { return false };
-        var url_menus = ["user/editInfo", "user/editPassword", "/user/myarticle/", "/user/myarticle/"],
-            page_menus = ["修改资料", "修改密码", "他的文章", "我的文章"],
-            _lis = $(".myhome-nav-con a"),
-            url = window.location.href,
-            current;
-
-        for ( var i=0, l=url_menus.length; i<l; i++ ) {
-            if ( url.indexOf( url_menus[i] ) >= 0 ) {
-                current = i;
-                break;
-            };
-        };
-
-        for ( var i=0, l=_lis.length; i<l; i++ ) {
-            if ( _lis[i].innerHTML == page_menus[current] ) {
-                _lis[i].className = "current";
-            };
-        };
-    };*/
     function childNavInit() {
         if ( $(".myhome-nav-con").length < 1 ) { return false };
         var _lis = $(".myhome-nav-con a"),

@@ -79,6 +79,9 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                     if ( this.master ) {
                         _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">删除</a>';
                     }
+                    if ( this.manageMaster ) {
+                        _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">管理员删除</a>';
+                    }
                     _html += '        </div>';
                     _html += '    </div>';
                     _html += '</div>';

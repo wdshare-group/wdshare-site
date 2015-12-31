@@ -196,7 +196,7 @@ router.get('/', function(req, res) {
             // 获取总数
             usersModel.getAll({
                 key: "User",
-                body: {}
+                body: {isActive:true, lock:false}
             }, function (err, data) {
                 if (err) {
                     res.send("服务器错误，请重试！");

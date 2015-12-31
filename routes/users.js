@@ -33,6 +33,122 @@ router.route('/').get(function (req, res) {
     res.redirect("/user/"+req.session.user._id);
 });
 
+// 全部会员列表
+router.route('/all').get(function (req, res) {
+    "use strict";
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+    getUsersList (req, res, {isActive:true, lock:false}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/all');
+});
+/**
+ * 获取会员列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {String} channelName 分类名称
+ * @return
+ */
+function getUsersList(req, res, o, pages, mod) {
+    usersModel.getSort({
+        key: "User",
+        body:o,// 筛选内容
+        pages: pages,// 分页信息
+        occupation: "regTime"// 排序字段
+    }, function (err, data) {
+        var articleCount = 0,
+            userInfoCount = 0,
+            allCount;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取文章数
+                    archiveModel.getAll({
+                        key: "Archive",
+                        body: {
+                            userId: data[i]._id,
+                            audit: true
+                        }
+                    }, function (err, article) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (article) {
+                            data[i].article = article.length;
+                            articleCount++
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取用户详细信息
+                    usersInfosModel.getOne({
+                        key: "User_info",
+                        body: {
+                            userid: data[i]._id
+                        }
+                    }, function (err, userInfo) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+                        
+                        data[i].userInfo = userInfo || {};
+                        userInfoCount++;
+                        gosend();
+                        return;
+                    });
+                })(i);
+            }
+
+            // 获取总数
+            usersModel.getAll({
+                key: "User",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( articleCount == data.length && userInfoCount == data.length && allCount >= 0 ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: "全部会员",
+                    result: data,
+                    pages:_page
+                });
+           }
+        };
+    });
+};
+
 
 // 编辑用户资料  user_infos表操作
 router.route('/editInfo').get(function (req, res) {

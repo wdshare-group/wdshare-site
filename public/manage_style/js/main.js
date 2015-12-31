@@ -1460,7 +1460,130 @@ ManageMember.editinfo = function() {
 };
 
 
+/**
+ * 评论管理
+ * @return
+ */
+var Comment = {};
+Comment.init = function() {
+    this.hide();
+    this.del();
+    this.show();
+};
+/**
+ * 隐藏评论
+ * @return
+ */
+Comment.hide = function() {
+    $(".js-comment-hide").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要隐藏这条评论？") ) {
+            request(id);
+        };
+        return false;
+    });
 
+    function request(id) {
+        $.get("/manage/comment/hide/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+/**
+ * 显示评论
+ * @return
+ */
+Comment.show = function() {
+    $(".js-comment-show").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要显示这条评论？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/comment/show/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+/**
+ * 删除评论
+ * @return
+ */
+Comment.del = function() {
+    $(".js-comment-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这条评论？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/comment/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
 
 
 /**
@@ -1482,6 +1605,8 @@ function domready() {
 
 
     Article.init();
+
+    Comment.init();
 };
 
 

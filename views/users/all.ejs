@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare全体学员</title>
+<meta name="keywords" content="WDShare,西安前端交流会" />
+<meta name="description" content="WDShare，W3C Developer Share 西安前端开发人员分享交流会" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+
+<div class="all-mamber">
+  <div class="maxWidth module">
+    <h2 class="module-title">
+      <% if(!user){ %>
+      <div class="module-but"><a href="/user/register">加入我们</a></div>
+      <% } %>
+      WDShare所有学员<span class="module-title-note">学员总数：<%= item_sum %>位</span>
+    </h2>
+    <div class="mamber-con">
+      <% result.forEach(function(member){ %>
+      <div class="mamber-item">
+        <div class="mamber-face"><a href="/user/<%=member._id%>"><img src="/user/face/<%=member._id%>" /></a></div>
+        <div class="mamber-text">
+          <h3 class="mamber-title">
+            <a href="/user/<%=member._id%>"><%=member.username%></a>
+          </h3>
+          <div class="mamber-type">
+            <% if ( member.userInfo.tag ) { %>
+            <%
+            var tags = member.userInfo.tag;
+            tags = tags.split(",");
+            %>
+            <div class="mamber-label">
+              <a href="#" onclick="return false;">标签<em></em></a>
+              <ul>
+                <% tags.forEach(function(tag){ %>
+                <li><%= tag %></li>
+                <% }) %>
+              </ul>
+            </div>
+            <% } %>
+            <!-- <div class="mamber-label">
+              <a href="#">勋章<em></em></a>
+              <ul>
+                <li>群主</li>
+                <li>WDShare创始团队</li>
+                <li>官网贡献者</li>
+                <li>WDShare技术文章贡献者</li>
+              </ul>
+            </div> -->
+            <span class="mamber-atricle">文章：<%= member.article%></span>
+            <!-- <span class="mamber-project">项目：5</span> -->
+            <span class="mamber-good">赞：<%= member.userInfo.zan ? member.userInfo.zan : 0 %></span>
+            <span class="mamber-job">橄榄枝：<%= member.userInfo.offer ? member.userInfo.offer : 0 %></span>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

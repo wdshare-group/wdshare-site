@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-评论管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">评论管理</h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">评论列表 <span style="font-size:16px; padding-left:20px;">共<%=item_sum%>条 &nbsp;&nbsp;&nbsp;&nbsp; 今日新增<%=today%>条</span></h3>
+        <!-- <div class="manage-tool">
+          <a href="/manage/tag/create" class="green">添加标签</a>
+        </div> -->
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th width="20%">Title</th>
+                <th>Model</th>
+                <th>Content</th>
+                <th width="10%">User</th>
+                <th>Send</th>
+                <th width="10%">Date</th>
+                <th width="10%">Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(comment){ %>
+              <%
+                var send = comment.send;
+                var sendSum = send.length;
+                var sendSuccess = 0;
+                var sendError = 0;
+                for ( var i=0; i<send.length; i++ ) {
+                  if ( send[i].state == "success" ) {
+                    sendSuccess++;
+                  }
+                  if ( send[i].state == "error" ) {
+                    sendError++;
+                  }
+                }
+
+
+                var url = "/"+comment.model+"/"+comment.typeid;
+                if ( comment.model == "message" ) {
+                  url = "/user/"+comment.model+"/"+comment.typeid;
+                }
+
+              %>
+              <% if ( comment.hide ) { %>
+              <tr class="head">
+              <% } else { %>
+              <tr>
+              <% } %>
+                <td class="no-a-style"><a href="<%=url%>" target="_blank"><%= comment.title %></a></td>
+                <td><%= comment.model %></td>
+                <td class="no-a-style" style="text-align:left;" title="被点赞：<%= comment.zan %>"><%- comment.content %><% if ( comment.privacy ) { %><span class="red">私密</span><% } %><% if ( comment.quote ) { %><span class="green">回复</span><% } %></td>
+                <td class="no-a-style"><a href="/user/<%=comment.userid%>" target="_blank"><%= comment.username %></a></td>
+                <td title="应发：<%= sendSum %>，实发：<%= sendSuccess %>，失败：<%= sendError %>，详情：<%= comment.notice %>"><%= sendSuccess %>/<%= sendSum %><% if ( sendError > 0 ) { %><span class="red">(<%=sendError%>)</span><% } %></td>
+                <td><%= moment(comment.addDate).format('YYYY-MM-DD HH:mm:ss') %></td>
+                <td><% if ( comment.hide ) { %><a href="#" data-id="<%= comment._id %>" class="js-comment-show">显示</a><% } else { %><a href="#" data-id="<%= comment._id %>" class="js-comment-hide">隐藏</a><% } %><a href="#" data-id="<%= comment._id %>" class="js-comment-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

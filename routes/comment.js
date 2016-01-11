@@ -408,6 +408,10 @@ router.post('/add', function(req, res) {
             quote = req.body.quote || "",
             content = req.body.content;
 
+        // 替换评论内容中的html尖括号为编码符
+        content = content.replace(/</g, "&lt;");
+        content = content.replace(/>/g, "&gt;");
+
         if ( content.length > config.commentMax ) {
             res.send({
                 status: 200,

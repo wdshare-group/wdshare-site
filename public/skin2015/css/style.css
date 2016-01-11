@@ -20,7 +20,13 @@ body { background:#f7f7f7;}
 
 /**/
 @font-face { font-family: "Ionicons"; src: url("../fonts/ionicons.eot?v=2.0.0"); src: url("../fonts/ionicons.eot?v=2.0.0#iefix") format("embedded-opentype"), url("../fonts/ionicons.ttf?v=2.0.0") format("truetype"), url("../fonts/ionicons.woff?v=2.0.0") format("woff"), url("../fonts/ionicons.svg?v=2.0.0#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
-.wds-side-con a:before { display:block; font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+.wds-side-con a:before,
+.font-icon-time:before,
+.font-icon-zan:before,
+.font-icon-click:before { font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+.font-icon-time:before { content:"\f3b3";}
+.font-icon-zan:before { content:"\f251";}
+.font-icon-click:before { content:"\f425";}
 
 /**/
 .maxWidth { width:80%; max-width:1350px; margin:auto;}
@@ -194,7 +200,8 @@ h3.login-error { display:none; color:#f00;}
 .activity-item { width:50%; float:left; padding:20px 0; position:relative;}
 .activity-title { font-size:16px; line-height:180%;}
 .activity-type { line-height:28px; color:#666;}
-.activity-type span { padding-right:25px;}
+.activity-type span { padding-right:25px; color:#999;}
+.activity-type em { font-size:17px; padding-right:7px;}
 
 .activity-title em { color:#4183c4;}
 /*.activity-item:hover { background:#f7f7f7;}*/
@@ -229,6 +236,7 @@ h3.login-error { display:none; color:#f00;}
 .article-item-type span { padding-right:15px;}
 .article-item-type a { color:#666;}
 .article-item-type a:hover { color:#4183c4;}
+.article-item-type em { font-size:17px; padding-right:5px;}
 
 .article-item-title em { color:#4183c4;}
 .article-item-text a:hover em { border-bottom:1px dashed #4183c4;}

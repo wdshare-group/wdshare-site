@@ -12,27 +12,28 @@ var users = require('./routes/users');
 var active = require('./routes/active');
 var article = require('./routes/article');
 var other = require('./routes/other');
-var captcha = require('./routes/captcha');// ÑéÖ¤Âë
+var captcha = require('./routes/captcha');// éªŒè¯ç 
 var comment = require('./routes/comment');
+var tags = require('./routes/tags');
 
 var app = express();
 
-// »áÔ±Êı¾İÄ£ĞÍ
+// ä¼šå‘˜æ•°æ®æ¨¡å‹
 var Users     = require('./model/users.js');
 var usersModel     = new Users();
-// »áÔ±ĞÅÏ¢Êı¾İÄ£ĞÍ
+// ä¼šå‘˜ä¿¡æ¯æ•°æ®æ¨¡å‹
 var UserInfos     = require('./model/user_infos.js');
 var usersInfosModel     = new UserInfos();
-// ËùÓĞµµ°¸Ïà¹ØÊı¾İÄ£ĞÍ
+// æ‰€æœ‰æ¡£æ¡ˆç›¸å…³æ•°æ®æ¨¡å‹
 var Archives     = require('./model/archives.js');
 var archiveModel     = new Archives();
-// »î¶¯Ïà¹ØÊı¾İÄ£ĞÍ
+// æ´»åŠ¨ç›¸å…³æ•°æ®æ¨¡å‹
 var Actives     = require('./model/new_actives.js');
 var activeModel     = new Actives();
-// ÆÀÂÛÏà¹ØÊı¾İÄ£ĞÍ
+// è¯„è®ºç›¸å…³æ•°æ®æ¨¡å‹
 var Comment     = require('./model/comment.js');
 var commentModel     = new Comment();
-// ºóÌ¨Êı¾İÄ£ĞÍ
+// åå°æ•°æ®æ¨¡å‹
 var Manage_mode     = require('./manage/model/manage.js');
 var manageModel     = new Manage_mode();
 
@@ -40,7 +41,7 @@ var moment    = require('moment');
 
 
 
-// Êı¾İ¿âÁ¬½Ó£¬ÆäËûÒ³ÃæÖ»ĞèÒªÒıÓÃmongooose²Ù×÷£¬ÎŞĞèconnectÁ´½Ó
+// æ•°æ®åº“è¿æ¥ï¼Œå…¶ä»–é¡µé¢åªéœ€è¦å¼•ç”¨mongoooseæ“ä½œï¼Œæ— éœ€connecté“¾æ¥
 var mongoose = require('mongoose'),
     dataBase = require("./server/config.js").db;
 mongoose.connect('mongodb://localhost/'+dataBase);
@@ -70,7 +71,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(expressValidator());
 app.use(cookieParser("wdshare"));
-app.use(cookieSession({          //session ¼ÓÃÜ×Ö·û´®
+app.use(cookieSession({          //session åŠ å¯†å­—ç¬¦ä¸²
     key:'wdshare',
     secret: 'wdshare',
     name  :'wdshare',
@@ -85,29 +86,31 @@ app.use(function(req,res,next){
     "use strict";
     res.locals.user = req.session.user;
     res.locals.manageuser = req.session.manageuser;
-    res.locals.captcha = req.session.captcha;// ÑéÖ¤Âë
+    res.locals.captcha = req.session.captcha;// éªŒè¯ç 
     next();
 });
 
 
-// Ê×Ò³
+// é¦–é¡µ
 app.use('/', index);
-// »î¶¯
+// æ´»åŠ¨
 app.use('/active', active);
-// ÎÄÕÂ
+// æ–‡ç« 
 app.use('/article', article);
-// ÓÃ»§
+// ç”¨æˆ·
 app.use('/user/', users);
-// ÑéÖ¤Âë
+// éªŒè¯ç 
 app.use('/captcha/', captcha);
-// ÑéÖ¤Âë
+// éªŒè¯ç 
 app.use('/comment/', comment);
+// æ ‡ç­¾
+app.use('/tags/', tags);
 
 
 /**
- * ¹ÜÀíºóÌ¨Ïà¹Ø
+ * ç®¡ç†åå°ç›¸å…³
  */
-// ºóÌ¨µÇÂ¼À¹½ØÆ÷
+// åå°ç™»å½•æ‹¦æˆªå™¨
 app.use(function (req, res, next) {
     var url = req.originalUrl;
     if (url != "/manage/login" && url.indexOf("/manage") > -1 && !req.session.manageuser) {
@@ -123,41 +126,41 @@ var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 var manage_member = require('./manage/routes/member');
 var manage_comment = require('./manage/routes/comment');
 
-// ºóÌ¨Ê×Ò³
+// åå°é¦–é¡µ
 app.use('/manage/', manage);
-// »î¶¯¹ÜÀí
+// æ´»åŠ¨ç®¡ç†
 app.use('/manage/active', manage_active);
-// ÎÄÕÂ¹ÜÀí
+// æ–‡ç« ç®¡ç†
 app.use('/manage/article', manage_article);
-// µ¥Ò³Ãæ¹ÜÀí
+// å•é¡µé¢ç®¡ç†
 app.use('/manage/articleCrumbs', manage_articleCrumbs);
-// »áÔ±¹ÜÀí
+// ä¼šå‘˜ç®¡ç†
 app.use('/manage/member', manage_member);
-// ÆÀÂÛ¹ÜÀí
+// è¯„è®ºç®¡ç†
 app.use('/manage/comment', manage_comment);
 
 
-// ueditorÏà¹Ø
+// ueditorç›¸å…³
 var ueditor = require('ueditor-nodejs');
-app.use('/static/ueditor/ue', ueditor({//ÕâÀïµÄ/ueditor/ueÊÇÒòÎªÎÄ¼ş¼şÖØÃüÃûÎªÁËueditor,Èç¹ûÃ»¸ÄÃû£¬ÄÇÃ´Ó¦¸ÃÊÇ/ueditor°æ±¾ºÅ/ue
-    // configFile: '/static/ueditor/php/config.json',//Èç¹ûÏÂÔØµÄÊÇjspµÄ£¬¾ÍÌîĞ´/ueditor/jsp/config.json
-    configFile: '/static/ueditor/config.json',//Èç¹ûÏÂÔØµÄÊÇjspµÄ£¬¾ÍÌîĞ´/ueditor/jsp/config.json
-    mode: 'local', //±¾µØ´æ´¢ÌîĞ´local
-    accessKey: 'Adxxxxxxx',//±¾µØ´æ´¢²»ÌîĞ´£¬bcsÌîĞ´
-    secrectKey: 'oiUqt1VpH3fdxxxx',//±¾µØ´æ´¢²»ÌîĞ´£¬bcsÌîĞ´
-    staticPath: path.join(__dirname, 'public'), //Ò»°ã¹Ì¶¨µÄĞ´·¨£¬¾²Ì¬×ÊÔ´µÄÄ¿Â¼£¬Èç¹ûÊÇbcs£¬¿ÉÒÔ²»Ìî
-    // dynamicPath: '/upload' //¶¯Ì¬Ä¿Â¼£¬ÒÔ/¿ªÍ·£¬bcsÌîĞ´buckectÃû×Ö£¬¿ªÍ·Ã»ÓĞ/.Â·¾¶¿ÉÒÔ¸ù¾İreq¶¯Ì¬±ä»¯£¬¿ÉÒÔÊÇÒ»¸öº¯Êı£¬function(req) { return '/xx'} req.query.actionÊÇÇëÇóµÄĞĞÎª£¬uploadimage±íÊ¾ÉÏ´«Í¼Æ¬£¬¾ßÌå²é¿´config.json.
+app.use('/static/ueditor/ue', ueditor({//è¿™é‡Œçš„/ueditor/ueæ˜¯å› ä¸ºæ–‡ä»¶ä»¶é‡å‘½åä¸ºäº†ueditor,å¦‚æœæ²¡æ”¹åï¼Œé‚£ä¹ˆåº”è¯¥æ˜¯/ueditorç‰ˆæœ¬å·/ue
+    // configFile: '/static/ueditor/php/config.json',//å¦‚æœä¸‹è½½çš„æ˜¯jspçš„ï¼Œå°±å¡«å†™/ueditor/jsp/config.json
+    configFile: '/static/ueditor/config.json',//å¦‚æœä¸‹è½½çš„æ˜¯jspçš„ï¼Œå°±å¡«å†™/ueditor/jsp/config.json
+    mode: 'local', //æœ¬åœ°å­˜å‚¨å¡«å†™local
+    accessKey: 'Adxxxxxxx',//æœ¬åœ°å­˜å‚¨ä¸å¡«å†™ï¼Œbcså¡«å†™
+    secrectKey: 'oiUqt1VpH3fdxxxx',//æœ¬åœ°å­˜å‚¨ä¸å¡«å†™ï¼Œbcså¡«å†™
+    staticPath: path.join(__dirname, 'public'), //ä¸€èˆ¬å›ºå®šçš„å†™æ³•ï¼Œé™æ€èµ„æºçš„ç›®å½•ï¼Œå¦‚æœæ˜¯bcsï¼Œå¯ä»¥ä¸å¡«
+    // dynamicPath: '/upload' //åŠ¨æ€ç›®å½•ï¼Œä»¥/å¼€å¤´ï¼Œbcså¡«å†™buckectåå­—ï¼Œå¼€å¤´æ²¡æœ‰/.è·¯å¾„å¯ä»¥æ ¹æ®reqåŠ¨æ€å˜åŒ–ï¼Œå¯ä»¥æ˜¯ä¸€ä¸ªå‡½æ•°ï¼Œfunction(req) { return '/xx'} req.query.actionæ˜¯è¯·æ±‚çš„è¡Œä¸ºï¼Œuploadimageè¡¨ç¤ºä¸Šä¼ å›¾ç‰‡ï¼Œå…·ä½“æŸ¥çœ‹config.json.
     dynamicPath: function (req) {
         /**
-         * »áÔ±ÓÃ×Ô¼ºIDµÄÍ¼Æ¬ÉÏ´«Ä¿Â¼£¬¹ÜÀíÔ±ÓÃimages
+         * ä¼šå‘˜ç”¨è‡ªå·±IDçš„å›¾ç‰‡ä¸Šä¼ ç›®å½•ï¼Œç®¡ç†å‘˜ç”¨images
          */
-        // ¹ÜÀíÔ±
-        if (req.session.manageuser) {//Èç¹ûÊÇ¹ÜÀíÔ±
+        // ç®¡ç†å‘˜
+        if (req.session.manageuser) {//å¦‚æœæ˜¯ç®¡ç†å‘˜
             return '/upload/images';
         }
 
-        // »áÔ±
-        if (req.session.user) {//Èç¹ûÊÇ»áÔ±
+        // ä¼šå‘˜
+        if (req.session.user) {//å¦‚æœæ˜¯ä¼šå‘˜
             return '/upload/'+ req.session.user._id;
         }
     }

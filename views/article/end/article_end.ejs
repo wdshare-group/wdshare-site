@@ -69,7 +69,7 @@
     <a href="#" class="article-like"><span>icon</span>喜欢(<em><%= article.zan %></em>)</a>
     <% if ( article.tag ) { %>
     <% var tags = article.tag.split(",") %>
-    <div class="article-tag" id="js-article-tag">标签：<% tags.forEach(function(tag){ %><%= tag %><% }) %></div>
+    <div class="article-tag" id="js-article-tag">标签：<% tags.forEach(function(tag){ %><a href="/tags/<%= tag %>"><%= tag %></a><% }) %></div>
     <% } %>
 
     <% if ( configIsComment && article.isComment ) { %>

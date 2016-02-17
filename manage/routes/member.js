@@ -64,6 +64,19 @@ router.get('/active', function(req, res) {
 });
 
 /**
+ * path:  /manage/member/vip
+ * 获取所有VIP会员
+ */
+router.get('/vip', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+    var pages = {page:page, pagesize:pagesize, pathname:pathname};
+    getUsersList(req, res, {vip:/[a-z]+/i}, pages, "manages/member/member_list", "VIP会员");
+});
+
+/**
  * 获取会员列表
  * @param  {Object} o 限制条件
  * @param  {Object} pages 分页参数对象
@@ -223,6 +236,7 @@ router.route('/edit').post(function (req, res) {
         password = req.body.password,
         lock = req.body.lock == "1" ? true : false,
         lockMessage = req.body.lockMessage,
+        vip = req.body.vip,
         passwordHash,
         _body;
     
@@ -230,7 +244,8 @@ router.route('/edit').post(function (req, res) {
         email:email,
         username: username,
         lock: lock,
-        lockMessage: lockMessage
+        lockMessage: lockMessage,
+        vip: vip
     };
     if ( password ) {
         _body.password = crypto.createHash("sha1").update(new Buffer(password, "binary")).digest('hex');
@@ -347,8 +362,6 @@ router.route('/editinfo').post(function (req, res) {
         offer: offer
     };
 
-    console.log(id);
-    console.log(_body);
     // 修改信息
     usersInfosModel.update({
         _id: id
@@ -368,7 +381,58 @@ router.route('/editinfo').post(function (req, res) {
             code: 1,
             message: "修改成功！"
         });
+        tagsCheck(tag);
     });
+
+    // 对标签进行检查，存在的增加计数，不存在的添加
+    function tagsCheck(tags) {
+        var tags = tags.split(",");
+        for ( var i=0,l=tags.length; i<l; i++ ) {
+            (function(i) {
+                var count;
+                // 获取翻个标签，检查是否存在
+                tagModel.getOne({
+                    key: "Tag",
+                    body: {
+                        name: tags[i],
+                        model: "member"
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        res.send("服务器错误，请重试！");
+                        return;
+                    }
+                    
+                    if ( data && data.name ) {// 存在
+                        count = data.level + 1;
+                        tagModel.update({
+                            name: data.name,
+                            model: "member"
+                        }, {
+                            key: "Tag",
+                            body: {
+                                level: count,
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    } else {// 不存在
+                        count = 1;
+                        tagModel.save({
+                            key: "Tag",
+                            body: {
+                                name: tags[i],
+                                level: count,
+                                model: "member",
+                                addDate: (new Date()).getTime(),
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    }
+                    return;
+                });
+            })(i);
+        }
+    };
 });
 
 

@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
     
 db           = mongoose.connection;
 
-// Çë²»ÒªÊ¹ÓÃÏÂÃæµÄ save Ö®ºóµÄ·½·¨£¬ÕâĞ©·½·¨ mongoosee ÓĞÔ­ÉúµÄ£¬¸üºÃÓÃ¡£
+// è¯·ä¸è¦ä½¿ç”¨ä¸‹é¢çš„ save ä¹‹åçš„æ–¹æ³•ï¼Œè¿™äº›æ–¹æ³• mongoosee æœ‰åŸç”Ÿçš„ï¼Œæ›´å¥½ç”¨ã€‚
 Users = function(){
     "use strict";
     this.Schema = Schema;
@@ -50,7 +50,8 @@ Users.prototype = {
             changeTimes:Number,
             lock:Boolean,
             lockTime:Number,
-            lockMessage:String
+            lockMessage:String,
+            vip:String
         });
         this.resetPassword = new this.Schema({
             email: {

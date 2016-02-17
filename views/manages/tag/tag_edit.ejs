@@ -29,6 +29,18 @@
               <label><strong>标签名称：</strong><input type="text" name="name" value="<%=result.name%>" /></label>
             </div>
             <div class="manage-addActive-form-item">
+              <label>
+                <strong>标签分类：</strong>
+                <select name="model">
+                  <option value="" <% if ( !result.model ) { %>selected<% } %>>请选择类型</option>
+                  <option value="article" <% if ( result.model === "article" ) { %>selected<% } %>>文章</option>
+                  <option value="project"<% if ( result.model === "article" ) { %>project<% } %>>项目</option>
+                  <option value="job"<% if ( result.model === "job" ) { %>selected<% } %>>招聘</option>
+                  <option value="member"<% if ( result.model === "member" ) { %>selected<% } %>>会员</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
               <label><strong>标签权重：</strong><input type="text" name="level" value="<%=result.level%>" /></label>
             </div>
             

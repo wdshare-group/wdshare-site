@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= title %> - WDShare</title>
+<meta name="keywords" content="<%= title %>" />
+<meta name="description" content="<%= title %>" />
+<% include etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include etc/head.ejs %>
+<% include etc/article-head-ad.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="article-list">
+  <div class="maxWidth module">
+    <h2 class="module-title">
+      我要捐赠
+    </h2>
+    <div class="article-con" id="article-detail">
+      <p><strong>捐赠目的：</strong>为了更好的发展线上QQ群以及线下交流会，特公布此捐赠方式，捐赠采取自愿形式，金额不限，如有意向请微信【或支付宝】扫码进行捐赠。捐赠后请联系F7说明一下您是谁，方便我们记入史册。</p>
+      <br><br>
+      <p>捐赠收款人：F7  &nbsp;&nbsp;&nbsp;&nbsp;    微信号：imfuqi</p>
+      <div style="text-align:center;"><img src="/static/img/donation-weixin.png"></div>
+      <br><br>
+      <p>捐赠收款人：F7【*琦】  &nbsp;&nbsp;&nbsp;&nbsp;    支付宝账号：323***@163.com</p>
+      <div style="text-align:center;"><img src="/static/img/donation-alipay.png"></div>
+    </div>
+    <div class="article-list-con" style="min-height:100px;">
+      <a name="list"></a>
+      <div class="article-tab-title">
+        <em class="right">共 <%=item_sum%> 条记录&nbsp;&nbsp;&nbsp;&nbsp;合计 <%=goldsum%> 元</em>
+        <a href="/donation#list" <%if(title=="所有捐赠"){%>class="current"<%}%>>所有捐赠</a>
+        <a href="/donation/gaoji#list" <%if(title=="高级群捐赠"){%>class="current"<%}%>>高级群捐赠</a>
+        <a href="/donation/zhongji#list" <%if(title=="中级群捐赠"){%>class="current"<%}%>>中级群捐赠</a>
+        <a href="/donation/chuji#list" <%if(title=="初级群捐赠"){%>class="current"<%}%>>初级群捐赠</a>
+        <a href="/donation/huodong#list" <%if(title=="活动捐赠"){%>class="current"<%}%>>活动捐赠</a>
+        <a href="/donation/other#list" <%if(title=="其他捐赠"){%>class="current"<%}%>>其他捐赠</a>
+        <a href="/donation/pay#list" <%if(title=="消费"){%>class="current"<%}%>>消费</a>
+      </div>
+      <div class="table-data">
+        <table>
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>日期</th>
+              <th>金额</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% result.forEach(function(donation){ %>
+            <tr>
+              <td><%= donation.name %></td>
+              <td><%= moment(donation.addDate).format('YYYY-MM-DD') %></td>
+              <% if ( donation.gold < 0 ) { %>
+              <td style="color:#f00;"><%= donation.gold %>元</td>
+              <% } else { %>
+              <td><%= donation.gold %>元</td>
+              <% } %>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<% include etc/foot.ejs %>
+</body>
+</html>

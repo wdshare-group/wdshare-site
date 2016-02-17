@@ -17,6 +17,7 @@
       <a href="/manage/member/notactive">未激活会员</a>
       <a href="/manage/member/lock">被锁定会员</a>
       <a href="/manage/member/active">活跃会员</a>
+      <a href="/manage/member/vip">VIP会员</a>
     </h1>
     <div class="manage-module">
       <form id="js-manageMember-edit-form">
@@ -43,6 +44,11 @@
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>密码：</strong><input type="text" name="password"  /><span>留空代表不修改</span></label>
+            </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>VIP：</strong>
+              <input type="hidden" name="vip" value="<%=result.vip ? result.vip : ''%>" />
+              <label title="技术文章发稿和修改没有未审核限制，直接发布"><input type="checkbox" name="vip_show" value="article_send" /> 文章发稿无限制</label>
             </div>
             <div class="manage-addActive-form-item manage-addActive-form-radio">
               <strong>锁定：</strong>

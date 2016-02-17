@@ -38,19 +38,11 @@ Manage.prototype = {
             lockTime:Number,
             lockMessage:String
         });
-        this.tags = new this.Schema({
-            name:String,
-            level:Number,
-            type:Number,
-            addDate:Number,
-            editDate:Number
-        });
 
     },
     createModel : function(){
         "use strict";
         this.Manage_user = this.mongoose.model('Manage_user',this.manageUsers);
-        this.Tag = this.mongoose.model('Tag',this.tags);
     },
     /*
      * obj {}
@@ -78,6 +70,25 @@ Manage.prototype = {
         "use strict";
         var condition = obj.body || {};
         this[obj.key].find(condition).exec(function(err,doc){
+            callback && callback(err,doc);
+        });
+    },
+    /**
+     * Person
+      .find({ occupation: /host/ })
+      .where('name.last').equals('Ghost')
+      .where('age').gt(17).lt(66)
+      .where('likes').in(['vaporizing', 'talking'])
+      .limit(10)
+      .sort('-occupation')
+      .select('name occupation')
+      .exec(callback);
+     */
+    getSort : function(obj,callback){
+        "use strict";
+        var condition = obj.body || {},
+            start = (obj.pages.page - 1) * obj.pages.pagesize || 0;
+        this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
             callback && callback(err,doc);
         });
     },

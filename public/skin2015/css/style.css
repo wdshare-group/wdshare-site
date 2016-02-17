@@ -18,15 +18,19 @@ textarea { outline:none; resize:none;}
 /**/
 body { background:#f7f7f7;}
 
-/**/
+/* http://ionicons.com/ */
 @font-face { font-family: "Ionicons"; src: url("../fonts/ionicons.eot?v=2.0.0"); src: url("../fonts/ionicons.eot?v=2.0.0#iefix") format("embedded-opentype"), url("../fonts/ionicons.ttf?v=2.0.0") format("truetype"), url("../fonts/ionicons.woff?v=2.0.0") format("woff"), url("../fonts/ionicons.svg?v=2.0.0#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
 .wds-side-con a:before,
 .font-icon-time:before,
 .font-icon-zan:before,
-.font-icon-click:before { font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+.font-icon-click:before,
+.font-icon-add:before,
+.font-icon-del:before { font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
 .font-icon-time:before { content:"\f3b3";}
 .font-icon-zan:before { content:"\f251";}
 .font-icon-click:before { content:"\f425";}
+.font-icon-add:before { content:"\f217";}
+.font-icon-del:before { content:"\f129";}
 
 /**/
 .maxWidth { width:80%; max-width:1350px; margin:auto;}
@@ -370,6 +374,29 @@ a.article-top-comment-link { color:#ff8400;}
 .crumbs-article .article-head-left { margin-left:0;}
 
 
+/**/
+.article-tab-title { overflow:hidden; line-height:38px;}
+.article-tab-title a { display:inline-block; padding:0 15px; font-size:16px;}
+.article-tab-title em { float:right; font-size:14px; color:#666;}
+.article-tab-title .current { background:#999; color:#fff; border-radius:10px;}
+
+/**/
+.table-data { margin:30px 0;}
+.table-data .text-align-left { text-align:left;}
+.table-data table { width:100%; line-height:200%; border:1px solid #ddd; border-collapse:collapse;}
+.table-data th { background:#f7f7f7; text-align:center; padding:10px 8px;}
+.table-data td { padding:10px 8px; border:1px solid #ddd; text-align:center; line-height:200%;}
+.table-data tr.head { opacity:0.3;}
+.table-data tr:nth-child(even) { background:#eff0f4;}
+.table-data tr:hover { background:#fffdcf;}
+.table-data td a { display:inline-block; background:#c4c4c4; color:#fff; line-height:20px; padding:3px 8px; border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px; -o-border-radius:5px; margin:2px; font-size:12px;}
+.table-data td a:hover { background:#999;}
+.table-data td .green { background:#2ecc71; color:#fff; display:inline-block; border-radius:4px; padding:0 5px; margin:0 5px;}
+.table-data td .red { background:#c00; color:#fff; display:inline-block; border-radius:4px; padding:0 5px; margin:0 5px;}
+.table-data .no-a-style a { background:none; color:#000; padding:0; margin:0; font-size:14px;}
+.table-data .no-a-style a:hover { background:none; color:#c00;}
+
+
 
 /* active */
 .active-head { background:#1b674d; color:#eee;}
@@ -516,6 +543,11 @@ a.article-top-comment-link { color:#ff8400;}
 .edit-body dt { float:left; width:100px; text-align:right;}
 .edit-body dd { margin-left:110px;}
 .edit-body .in-text { width:220px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2; font-size:14px;}
+.content-tegs .in-text { border-radius:8px 0 0 8px; padding:5px 5px 6px; border-right:0;}
+dd.content-tegs { float:none;}
+dd.content-tegs .content-tegs-show { line-height:30px; max-width:290px;}
+dd.content-tegs .content-tegs-show a { margin-top:-4px;}
+dl .content-tegs-list { margin-left:111px;}
 .edit-body dd span { padding-left:20px; font-size:14px; color:#999;}
 .edit-body dd textarea { width:400px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2; font-size:14px; line-height:20px;}
 .edit-body dd select { width:232px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2;}
@@ -571,7 +603,7 @@ a.article-top-comment-link { color:#ff8400;}
 
 /**/
 .add-article { width:80%; margin:auto;}
-.addActive-form-item { padding:8px 0; line-height:30px; position:relative; margin-top:0;}
+.addActive-form-item { padding:8px 0; line-height:30px; position:relative; margin-top:0; overflow:hidden;}
 
 .addActive-form-item strong { float:left; width:130px; text-align:right;}
 .addActive-form-item input,
@@ -580,7 +612,7 @@ a.article-top-comment-link { color:#ff8400;}
 .addActive-form-item select { height:32px;}
 .addActive-form-item textarea { width:500px; height:60px; line-height:20px;}
 .addActive-form-item span { color:#999; padding-left:10px;}
-.addActive-form-item img { height:40px; vertical-align:middle; cursor:pointer;}
+.addActive-form-item img { height:32px; vertical-align:middle; cursor:pointer; border-radius:4px; margin-top:-2px;}
 .addActive-form-radio label { padding-right:30px;}
 .addActive-form-radio input { width:auto; border:0; box-shadow:none; vertical-align:middle;}
 
@@ -588,8 +620,31 @@ a.article-top-comment-link { color:#ff8400;}
 .addActive-form-but input { background:#007cc2; color:#fff; border:0; font:400 1.2em/2.5em "Microsoft YaHei"; padding:0 30px; border-radius:10px; letter-spacing:0.3em; cursor:pointer;}
 .addActive-form-but input:hover { background:#cfc447;}
 
+
 .editor-box { margin-left:130px; position:relative; top:-8px; max-width:950px;}
 /*.editor-box textarea { visibility:hidden;}*/
+
+.content-tegs { float:left; overflow:hidden;}
+.content-tegs-show { max-width:400px; color:#999; font-size:12px; float:left; border:1px solid #ccc; background:#f7f7f7; border-radius:5px; margin-right:10px;}
+.content-tegs-show p { padding:0 10px;}
+.content-tegs-show a { color:#000; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin-right:3px; font-size:14px; vertical-align:middle;}
+.content-tegs-show a:hover { background:#ddd;}
+.content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle;}
+.content-tegs input { border-radius:5px 0 0 5px; border-right:0;}
+.content-tegs i,
+.content-tegs-list i { background:#007cc2; color:#fff; border:0; font:400 1em/32px "Microsoft YaHei"; height:32px; padding:0 10px; border-radius:0 5px 5px 0; cursor:pointer; display:inline-block; font-style:normal;}
+.content-tegs-list i { border-radius:5px; margin-left:5px; background:#999;}
+.content-tegs i:hover { background:#cfc447;}
+.content-tegs-list i:hover { background:#777;}
+
+.content-tegs-list { clear:left; margin-left:130px; padding:20px 0 10px;}
+.content-tegs-list-con { display:inline; overflow:hidden;}
+.content-tegs-list a { border:1px solid #ddd; color:#666; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin:0 3px 5px 0;}
+.content-tegs-list a:hover { background:#ddd;}
+.content-tegs-list a em { padding-right:6px;}
+
+
+
 
 
 

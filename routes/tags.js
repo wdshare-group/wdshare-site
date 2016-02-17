@@ -11,8 +11,108 @@ var express = require('express'),
     config = require("../server/config"),
     URL = require('url');
 
+
+
 /**
- * path:  /tage/:tag
+ * path:  /tags/getaddtagslist
+ * 添加内容是获取tags列表
+ */
+router.get('/getaddtagslist', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        model = urlParams.model;
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 10,
+        pathname = URL.parse(req.originalUrl, true).pathname,
+        tags = urlParams.tags.split(",");
+
+    getTagsList(req, res, {model:model, name:{'$nin':tags}}, {page:page, pagesize:pagesize, pathname:pathname});
+});
+
+/**
+ * 添加内容时获取标签列表
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @return
+ */
+function getTagsList(req, res, o, pages) {
+    tagModel.getSort({
+        key: "Tag",
+        body:o,// 限制条件
+        pages:pages, // 分页信息
+        occupation: "level"// 排序字段
+    }, function (err, data) {
+        var allCount;
+        if (err) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "服务器错误，请重试！"
+            });
+            return;
+        }
+
+        if (data) {
+            // 获取总数【用于分页】
+            tagModel.getAll({// 查询分类，为添加文章做准备
+                key: "Tag",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send({
+                        status: 200,
+                        code: 0,
+                        message: "服务器错误，请重试！"
+                    });
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "未知错误，请重试！"
+                });
+            });            
+
+            return;
+        }
+
+        res.send({
+            status: 200,
+            code: 0,
+            message: "未知错误，请重试！"
+        });
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+            _page.sum = allCount,
+            newData = [];
+
+            for (var i=0; i<data.length; i++) {
+                newData.push(data[i].name);
+            }
+
+            res.send({
+                status: 200,
+                code: 1,
+                message: "获取信息成功！",
+                result:newData,
+                pages:_page
+            });
+        };
+    });
+};
+
+
+
+/**
+ * path:  /tags/:tag
  * 文章终极页及分类列表
  */
 router.get('/:tag', function(req, res) {

@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-修改捐赠</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">捐赠</h1>
+    <div class="manage-module">
+      <form id="js-donation-create-form">
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">修改捐赠</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>捐赠分类：</strong>
+                <select name="channel">
+                  <option value="1" <% if ( result.channel === "1" ) { %>selected<% } %>>高级群</option>
+                  <option value="2" <% if ( result.channel === "2" ) { %>selected<% } %>>中级群</option>
+                  <option value="3" <% if ( result.channel === "3" ) { %>selected<% } %>>初级群</option>
+                  <option value="4" <% if ( result.channel === "4" ) { %>selected<% } %>>活动</option>
+                  <option value="5" <% if ( result.channel === "5" ) { %>selected<% } %>>其他</option>
+                  <option value="-1" <% if ( result.channel === "-1" ) { %>selected<% } %>>消费</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>姓名：</strong>
+                <input type="text" name="name" value="<%=result.name%>" /><span>请输入qq群昵称</span>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>qq号码：</strong>
+                <input type="text" name="qq" value="<%=result.qq%>" />
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>来源：</strong>
+                <select name="source">
+                  <option value="微信" <% if ( result.source === "微信" ) { %>selected<% } %>>微信</option>
+                  <option value="支付宝" <% if ( result.source === "支付宝" ) { %>selected<% } %>>支付宝</option>
+                </select>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>来源昵称：</strong>
+                <input type="text" name="sourceNickname" value="<%=result.sourceNickname%>" />
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>金额：</strong>
+                <input type="text" name="gold" value="<%=result.gold%>" /><span>元</span>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>捐赠时间：</strong>
+                <input type="text" class="js-calendar" name="addDate" value="<%= moment(result.addDate).format('YYYY-MM-DD') %>" data-date-format="yyyy-mm-dd" /><span>2016-01-01</span>
+              </label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label>
+                <strong>注释：</strong>
+                <textarea name="comment"><%=result.comment%></textarea>
+              </label>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

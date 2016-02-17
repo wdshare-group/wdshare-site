@@ -48,8 +48,17 @@
                   <% }) %>
                 </select></label>
             </div>
-            <div class="manage-addActive-form-item">
-              <label><strong>TAG：</strong><input type="text" name="tag" /><span>多个tag请使用英文逗号“,”隔开</span></label>
+            <div class="manage-addActive-form-item" id="js-articleadd-tag">
+              <strong>TAG：</strong>
+              <input type="hidden" name="tag" id="js-hidden-tag" value="" />
+              <div class="content-tegs">
+                <div class="content-tegs-show" id="js-content-tegs-show"></div>
+                <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+              </div>
+              <div class="content-tegs-list">
+                <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+                <i id="js-content-tegs-resetList">换一批</i>
+              </div>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" /></label>

@@ -8,10 +8,13 @@ requirejs.config({
         jquery: [
             './jquery-1.11.1.min'
         ],
-        dialog: './dialog.3.1.min'
+        dialog: './dialog.3.1.min',
+        moment: '/static/plugin/moment/moment.min',
+        datepicker: '/static/plugin/datepicker/js/bootstrap-datepicker'
     },
     shim: {
-        
+        datepicker: ['jquery'],
+        moment: ['jquery']
     }
 });
 
@@ -795,6 +798,12 @@ Tags.create = function() {
             _form.name.focus();
             return false;
         }
+
+        if ( !_form.model.value ) {
+            alert("标签类型必须选择！");
+            _form.model.focus();
+            return false;
+        }
         
         if ( !_form.level.value ) {
             alert("标签权重必须填写！");
@@ -877,6 +886,144 @@ Tags.del = function() {
 };
 
 
+
+
+/**
+ * 捐赠管理
+ * @return
+ */
+var Donation = {};
+Donation.init = function() {
+    this.create();
+    this.del();
+    this.setDate();
+};
+
+/**
+ * 设置捐赠时间
+ * @return
+ */
+Donation.setDate = function() {
+    if ( !document.getElementById("js-donation-create-form") ) { return false };
+    var elem = $('#js-donation-create-form input[name="addDate"]'),
+        now = new Date();
+
+    if ( !elem.val() ) {
+        elem.val(moment().format("YYYY-MM-DD"));
+    }
+};
+
+/**
+ * 创建捐赠
+ * @return
+ */
+Donation.create = function() {
+    if ( !document.getElementById("js-donation-create-form") ) { return false };
+    
+    $('#js-donation-create-form').submit(function() {
+        var _form = this;
+        if ( !_form.channel.value ) {
+            alert("请选择捐赠分类！");
+            _form.channel.focus();
+            return false;
+        }
+
+        if ( !_form.name.value ) {
+            alert("捐赠姓名必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        
+        if ( !_form.gold.value ) {
+            alert("捐赠金额必须填写！");
+            _form.gold.focus();
+            return false;
+        }
+        if ( isNaN(_form.gold.value) ) {
+            alert("金额必须为数字！");
+            _form.gold.focus();
+            return false;
+        }
+
+        if ( !_form.addDate.value ) {
+            alert("捐赠时间必须填写！");
+            _form.addDate.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/donation/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/donation";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除捐赠
+ * @return
+ */
+Donation.del = function() {
+    $(".js-donation-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这条捐赠？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/donation/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
 
 
 
@@ -1109,6 +1256,11 @@ Article.init = function() {
     this.del();
     this.audit();
     this.noaudit();
+
+    // 初始化标签选择效果
+    if ( document.getElementById("js-article-create-form") ) {
+        Manage_tags.init();
+    }
 };
 /**
  * 设置跳转链接显示状态
@@ -1128,9 +1280,35 @@ Article.setLinkUrl = function() {
  */
 Article.create = function() {
     if ( !document.getElementById("js-article-create-form") ) { return false };
-    
+
     $('#js-article-create-form').submit(function() {
         var _form = this;
+        // 先看添加标签的表单有没有内容，有内容则代表添加标签
+        if ( $("#js-newtag").val() ) {
+            // 检测是否超限制
+            if ( Manage_tags.checkMax() ) {
+                alert("最多添加"+Manage_tags.tagMax+"个标签");
+                $("#js-newtag").val("");
+                return false;
+            }
+            if ( $("#js-newtag").val().length > 15 ) {
+                alert("单个标签最大15个字");
+                return false;
+            }
+            if ( Manage_tags.checkRepeat($("#js-newtag").val()) ) {
+                alert("标签重复！");
+                return false;
+            }
+            // 添加显示之前先检测是否要清空内容
+            if ( $("#js-content-tegs-show a").length < 1 ) {
+                $("#js-content-tegs-show").html('');
+            }
+            $("#js-content-tegs-show").append('<a href="#">'+ $("#js-newtag").val() +'<em class="font-icon-del"></em></a>');
+            $("#js-newtag").val("");
+            Manage_tags.resetValue();
+            return false;
+        }
+
         if ( !_form.title.value ) {
             alert("页面标题必须填写！");
             _form.title.focus();
@@ -1340,6 +1518,334 @@ Article.noaudit = function() {
 
 
 /**
+ * 标签选择效果
+ * @return
+ */
+var Manage_tags = {};
+Manage_tags.tagMax = 6;
+Manage_tags.init = function() {
+    this.addEvent();
+    this.showSelected();
+    this.getTags();
+};
+// 现实已经选择的标签内容
+Manage_tags.showSelected = function() {
+    var _in = $("#js-hidden-tag").val(),
+        items,
+        _html = ''; 
+    if ( !_in ) {
+        $("#js-content-tegs-show").html('<p>请选择下方的标签或添加新的</p>');
+    } else {
+        items = _in.split(",");
+        $(items).each(function() {
+            if ( !this ) { return false };
+            _html += '<a href="#">'+ this +'<em class="font-icon-del"></em></a>';
+        });
+        $("#js-content-tegs-show").html(_html);
+    }
+};
+Manage_tags.getTags = function() {
+    var page = $("#js-content-tegs-list").attr("data-page") || 0,
+        pagesize = 10;
+    page++;
+    if ( $("#js-content-tegs-list").attr("data-sum") && page > Math.ceil($("#js-content-tegs-list").attr("data-sum")/pagesize) ) {
+        page = 1;
+    }
+    $.get("/tags/getaddtagslist?model=article&page="+page+"&pagesize="+pagesize+"&tags="+$("#js-hidden-tag").val(), function(data) {
+        if ( !data ) { return false };
+        if ( typeof data == "string" ) {
+            data = $.parseJSON(data);
+        } else {
+            data = data;
+        };
+
+        // 数据请求失败
+        if ( data.code != 1 ) {
+            $(".content-tegs-list").hide();
+            return false;
+        }
+
+        // 没有任何标签，隐藏列表内容
+        if ( data.result.length < 1 && $("#js-content-tegs-list a").length < 1 ) {
+            $(".content-tegs-list").hide();
+            return false;
+        }
+
+        // 初始化列表内容
+        $("#js-content-tegs-list").attr("data-page", data.pages.page);
+        $("#js-content-tegs-list").attr("data-sum", data.pages.sum);
+        var _html = '';
+        $(data.result).each(function() {
+            _html += '<a href="#"><em class="font-icon-add"></em>'+this+'</a>';
+        });
+        $("#js-content-tegs-list").html(_html);
+
+    });
+};
+Manage_tags.addEvent = function() {
+    var that = this;
+    // 删除已选择的标签
+    $("#js-content-tegs-show").on("click", "a", function() {
+        var text = $(this).text();
+        $(this).remove();
+        $("#js-content-tegs-list").append('<a href="#"><em class="font-icon-add"></em>'+text+'</a>');
+        // 检测有没有删完
+        if ( $("#js-content-tegs-show a").length < 1 ) {
+            $("#js-content-tegs-show").html('<p>请选择下方的标签或添加新的</p>');
+        }
+        that.resetValue();
+        return false;
+    });
+
+    // 添加列表中的标签到显示栏
+    $("#js-content-tegs-list").on("click", "a", function() {
+        var text = $(this).text();
+        // 检测是否超限制
+        if ( that.checkMax() ) {
+            alert("最多添加"+that.tagMax+"个标签");
+            $("#js-newtag").val("");
+            return false;
+        }
+        $(this).remove();
+        // 添加显示之前先检测是否要清空内容
+        if ( $("#js-content-tegs-show a").length < 1 ) {
+            $("#js-content-tegs-show").html('');
+        }
+        $("#js-content-tegs-show").append('<a href="#">'+ text +'<em class="font-icon-del"></em></a>');
+        that.resetValue();
+        return false;
+    });
+
+    // 表单添加按钮事件
+    $("#js-add-tag").click(function() {
+        if ( !$("#js-newtag").val() ) {
+            alert("请先输入标签");
+            $("#js-newtag").val("");
+            return false;
+        } else {
+            // 检测是否超限制
+            if ( that.checkMax() ) {
+                alert("最多添加"+that.tagMax+"个标签");
+                $("#js-newtag").val("");
+                return false;
+            }
+            if ( $("#js-newtag").val().length > 15 ) {
+                alert("单个标签最大15个字");
+                return false;
+            }
+            if ( that.checkRepeat($("#js-newtag").val()) ) {
+                alert("标签重复！");
+                return false;
+            }
+            // 添加显示之前先检测是否要清空内容
+            if ( $("#js-content-tegs-show a").length < 1 ) {
+                $("#js-content-tegs-show").html('');
+            }
+            $("#js-content-tegs-show").append('<a href="#">'+ $("#js-newtag").val() +'<em class="font-icon-del"></em></a>');
+            $("#js-newtag").val("");
+            that.resetValue();
+        }
+        return false;
+    });
+    
+    // 换一批点击
+    $("#js-content-tegs-resetList").click(function() {
+        that.getTags();
+    });
+};
+// 构建隐藏表单value
+Manage_tags.resetValue = function() {
+    var tags = [];
+    $("#js-content-tegs-show a").each(function() {
+        tags.push($(this).text());
+    });
+    $("#js-hidden-tag").val(tags.join(","));
+};
+//检测是否超限制
+Manage_tags.checkMax = function() {
+    if ( $("#js-content-tegs-show a").length >= this.tagMax ) {
+        return true;
+    }
+    return false;
+};
+//检测已添加标签是否重复
+Manage_tags.checkRepeat = function(str) {
+    var flag = false;
+    $("#js-content-tegs-show a").each(function() {
+        if ( $(this).text() == str ) {
+            flag = true;
+        }
+    });
+    return flag;
+};
+
+/**
+ * 会员标签选择效果
+ * @return
+ */
+var Manage_member_tags = {};
+Manage_member_tags.tagMax = 6;
+Manage_member_tags.init = function() {
+    this.addEvent();
+    this.showSelected();
+    this.getTags();
+};
+// 现实已经选择的标签内容
+Manage_member_tags.showSelected = function() {
+    var _in = $("#js-hidden-tag").val(),
+        items,
+        _html = ''; 
+    if ( !_in ) {
+        $("#js-content-tegs-show").html('<p>请选择下方的标签或添加新的</p>');
+    } else {
+        items = _in.split(",");
+        $(items).each(function() {
+            if ( !this ) { return false };
+            _html += '<a href="#">'+ this +'<em class="font-icon-del"></em></a>';
+        });
+        $("#js-content-tegs-show").html(_html);
+    }
+};
+Manage_member_tags.getTags = function() {
+    var page = $("#js-content-tegs-list").attr("data-page") || 0,
+        pagesize = 10;
+    page++;
+    if ( $("#js-content-tegs-list").attr("data-sum") && page > Math.ceil($("#js-content-tegs-list").attr("data-sum")/pagesize) ) {
+        page = 1;
+    }
+    
+    $.get("/tags/getaddtagslist?model=member&page="+page+"&pagesize="+pagesize+"&tags="+$("#js-hidden-tag").val(), function(data) {
+        console.log("vvv222");
+        if ( !data ) { return false };
+        if ( typeof data == "string" ) {
+            data = $.parseJSON(data);
+        } else {
+            data = data;
+        };
+
+        // 数据请求失败
+        if ( data.code != 1 ) {
+            $(".content-tegs-list").hide();
+            return false;
+        }
+
+        // 没有任何标签，隐藏列表内容
+        if ( data.result.length < 1 && $("#js-content-tegs-list a").length < 1 ) {
+            $(".content-tegs-list").hide();
+            return false;
+        }
+
+        // 初始化列表内容
+        $("#js-content-tegs-list").attr("data-page", data.pages.page);
+        $("#js-content-tegs-list").attr("data-sum", data.pages.sum);
+        var _html = '';
+        $(data.result).each(function() {
+            _html += '<a href="#"><em class="font-icon-add"></em>'+this+'</a>';
+        });
+        $("#js-content-tegs-list").html(_html);
+
+    });
+};
+Manage_member_tags.addEvent = function() {
+    var that = this;
+    // 删除已选择的标签
+    $("#js-content-tegs-show").on("click", "a", function() {
+        var text = $(this).text();
+        $(this).remove();
+        $("#js-content-tegs-list").append('<a href="#"><em class="font-icon-add"></em>'+text+'</a>');
+        // 检测有没有删完
+        if ( $("#js-content-tegs-show a").length < 1 ) {
+            $("#js-content-tegs-show").html('<p>请选择下方的标签或添加新的</p>');
+        }
+        that.resetValue();
+        return false;
+    });
+
+    // 添加列表中的标签到显示栏
+    $("#js-content-tegs-list").on("click", "a", function() {
+        var text = $(this).text();
+        // 检测是否超限制
+        if ( that.checkMax() ) {
+            alert("最多添加"+that.tagMax+"个标签");
+            $("#js-newtag").val("");
+            return false;
+        }
+        $(this).remove();
+        // 添加显示之前先检测是否要清空内容
+        if ( $("#js-content-tegs-show a").length < 1 ) {
+            $("#js-content-tegs-show").html('');
+        }
+        $("#js-content-tegs-show").append('<a href="#">'+ text +'<em class="font-icon-del"></em></a>');
+        that.resetValue();
+        return false;
+    });
+
+    // 表单添加按钮事件
+    $("#js-add-tag").click(function() {
+        if ( !$("#js-newtag").val() ) {
+            alert("请先输入标签");
+            $("#js-newtag").val("");
+            return false;
+        } else {
+            // 检测是否超限制
+            if ( that.checkMax() ) {
+                alert("最多添加"+that.tagMax+"个标签");
+                $("#js-newtag").val("");
+                return false;
+            }
+            if ( $("#js-newtag").val().length > 15 ) {
+                alert("单个标签最大15个字");
+                return false;
+            }
+            if ( that.checkRepeat($("#js-newtag").val()) ) {
+                alert("标签重复！");
+                return false;
+            }
+            // 添加显示之前先检测是否要清空内容
+            if ( $("#js-content-tegs-show a").length < 1 ) {
+                $("#js-content-tegs-show").html('');
+            }
+            $("#js-content-tegs-show").append('<a href="#">'+ $("#js-newtag").val() +'<em class="font-icon-del"></em></a>');
+            $("#js-newtag").val("");
+            that.resetValue();
+        }
+        return false;
+    });
+    
+    // 换一批点击
+    $("#js-content-tegs-resetList").click(function() {
+        that.getTags();
+    });
+};
+// 构建隐藏表单value
+Manage_member_tags.resetValue = function() {
+    var tags = [];
+    $("#js-content-tegs-show a").each(function() {
+        tags.push($(this).text());
+    });
+    $("#js-hidden-tag").val(tags.join(","));
+};
+//检测是否超限制
+Manage_member_tags.checkMax = function() {
+    if ( $("#js-content-tegs-show a").length >= this.tagMax ) {
+        return true;
+    }
+    return false;
+};
+//检测已添加标签是否重复
+Manage_member_tags.checkRepeat = function(str) {
+    var flag = false;
+    $("#js-content-tegs-show a").each(function() {
+        if ( $(this).text() == str ) {
+            flag = true;
+        }
+    });
+    return flag;
+};
+
+
+
+/**
  * 会员管理
  * @return
  */
@@ -1347,6 +1853,11 @@ var ManageMember = {};
 ManageMember.init = function() {
     this.edit();
     this.editinfo();
+    
+    // 初始化标签选择效果
+    if ( document.getElementById("js-manageMember-editinfo-form") ) {
+        Manage_member_tags.init();
+    }
 };
 
 /**
@@ -1355,7 +1866,22 @@ ManageMember.init = function() {
  */
 ManageMember.edit = function() {
     if ( !document.getElementById("js-manageMember-edit-form") ) { return false };
-    
+    var vip = $('#js-manageMember-edit-form input[name="vip"]').val(),
+        vip_show_elem = $('#js-manageMember-edit-form input[name="vip_show"]');
+    // 初始化vip显示
+    if ( vip ) {
+        vip = vip.split(",");
+        vip_show_elem.each(function() {
+            var in_elem = this,
+                _value = $(in_elem).val();
+            $(vip).each(function() {
+                if ( _value == this ) {
+                    in_elem.checked = true;
+                }
+            });
+        });
+    }
+
     $('#js-manageMember-edit-form').submit(function() {
         var _form = this;
         if ( !_form.email.value ) {
@@ -1380,6 +1906,16 @@ ManageMember.edit = function() {
             return false;
         }
 
+        // 处理vip权限
+        var vipvalue = [];
+        $(vip_show_elem).each(function() {
+            if ( this.checked == true ) {
+                vipvalue.push(this.value);
+            }
+        });
+        _form.vip.value = vipvalue.join(",");
+
+        // 提交数据
         var formData = $(_form).serialize();
         $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
         $.ajax({
@@ -1423,6 +1959,32 @@ ManageMember.editinfo = function() {
     
     $('#js-manageMember-editinfo-form').submit(function() {
         var _form = this;
+
+        // 先看添加标签的表单有没有内容，有内容则代表添加标签
+        if ( $("#js-newtag").val() ) {
+            // 检测是否超限制
+            if ( Manage_member_tags.checkMax() ) {
+                alert("最多添加"+Manage_member_tags.tagMax+"个标签");
+                $("#js-newtag").val("");
+                return false;
+            }
+            if ( $("#js-newtag").val().length > 15 ) {
+                alert("单个标签最大15个字");
+                return false;
+            }
+            if ( Manage_member_tags.checkRepeat($("#js-newtag").val()) ) {
+                alert("标签重复！");
+                return false;
+            }
+            // 添加显示之前先检测是否要清空内容
+            if ( $("#js-content-tegs-show a").length < 1 ) {
+                $("#js-content-tegs-show").html('');
+            }
+            $("#js-content-tegs-show").append('<a href="#">'+ $("#js-newtag").val() +'<em class="font-icon-del"></em></a>');
+            $("#js-newtag").val("");
+            Manage_member_tags.resetValue();
+            return false;
+        }
         
         var formData = $(_form).serialize();
         $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
@@ -1586,6 +2148,13 @@ Comment.del = function() {
 };
 
 
+function calendarInit() {
+    var calendar = $('.js-calendar').datepicker().on('changeDate', function(ev) {
+          calendar.hide();
+        }).data('datepicker');
+};
+
+
 /**
  * 启动
  * @return
@@ -1599,6 +2168,7 @@ function domready() {
     ArticleChannels.init();
     ActiveChannels.init();
     Tags.init();
+    Donation.init();
     ManageUser.init();
     manageLogin();
     ManageMember.init();
@@ -1607,11 +2177,13 @@ function domready() {
     Article.init();
 
     Comment.init();
+
+    calendarInit();
 };
 
 
 
-require(["jquery", "dialog"], function($, Dialog) {
+require(["jquery", "dialog", "moment", "datepicker"], function($, Dialog) {
     domready();
 });
 

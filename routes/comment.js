@@ -389,6 +389,27 @@ router.post('/add', function(req, res) {
         }
     }
 
+
+    // 检测非法字符
+    var nullFlag = false;
+    var nullWordsCommon = config.nullWordsCommon;
+    // 评论内容检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.content.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "内容中含有非法字符！"
+        });
+        return false;
+    }
+
+
+
     // 记录该用户评论的次数
     if ( req.session.addCommentIsShowCaptcha ) {
         req.session.addCommentIsShowCaptcha++;

@@ -15,6 +15,7 @@ var other = require('./routes/other');
 var captcha = require('./routes/captcha');// 验证码
 var comment = require('./routes/comment');
 var tags = require('./routes/tags');
+var donation = require('./routes/donation');
 
 var app = express();
 
@@ -33,6 +34,12 @@ var activeModel     = new Actives();
 // 评论相关数据模型
 var Comment     = require('./model/comment.js');
 var commentModel     = new Comment();
+// 标签数据模型
+var Tags_mode     = require('./model/tags.js');
+var tagModel     = new Tags_mode();
+// 捐赠数据模型
+var Donation_mode     = require('./model/donation.js');
+var donationModel     = new Donation_mode();
 // 后台数据模型
 var Manage_mode     = require('./manage/model/manage.js');
 var manageModel     = new Manage_mode();
@@ -57,6 +64,8 @@ global.archiveModel = archiveModel;
 global.activeModel = activeModel;
 global.manageModel = manageModel;
 global.commentModel = commentModel;
+global.tagModel = tagModel;
+global.donationModel = donationModel;
 
 
 global.siteDir = __dirname;
@@ -105,6 +114,8 @@ app.use('/captcha/', captcha);
 app.use('/comment/', comment);
 // 标签
 app.use('/tags/', tags);
+// 捐赠
+app.use('/donation/', donation);
 
 
 /**
@@ -125,6 +136,7 @@ var manage_article = require('./manage/routes/article');
 var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 var manage_member = require('./manage/routes/member');
 var manage_comment = require('./manage/routes/comment');
+var manage_donation = require('./manage/routes/donation');
 
 // 后台首页
 app.use('/manage/', manage);
@@ -138,6 +150,8 @@ app.use('/manage/articleCrumbs', manage_articleCrumbs);
 app.use('/manage/member', manage_member);
 // 评论管理
 app.use('/manage/comment', manage_comment);
+// 捐赠管理
+app.use('/manage/donation', manage_donation);
 
 
 // ueditor相关

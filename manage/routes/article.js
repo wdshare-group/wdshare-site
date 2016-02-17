@@ -267,6 +267,32 @@ router.post('/create', function(req, res) {
             message: "文章内容必须填写"
         });
     }
+    var tagArray = tag.split(",");
+    if ( tagArray.length > 6 ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "标签个数不能大于6个"
+        });
+        return false;
+    }
+
+    if ( tagArray.length > 0 ) {
+        var tagMaxFontCount = false;
+        for ( var i=0,l=tagArray.length; i<l; i++ ) {
+            if ( tagArray[i].length > 15 ) {
+                tagMaxFontCount = true;
+            }
+        }
+        if ( tagMaxFontCount ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "单个标签字数不能大于15"
+            });
+            return false;
+        }
+    }
 
     if ( linkUrl == "http://" ) {
         linkUrl = "";
@@ -344,6 +370,7 @@ router.post('/create', function(req, res) {
                     code: 1,
                     message: "修改成功！"
                 });
+                tagsCheck(tag);
             });
         } else {// 添加
             archiveModel.save({
@@ -387,10 +414,60 @@ router.post('/create', function(req, res) {
                     code: 1,
                     message: "添加成功！"
                 });
+                tagsCheck(tag);
             });
         }
-        
     });
+
+    // 对标签进行检查，存在的增加计数，不存在的添加
+    function tagsCheck(tags) {
+        var tags = tags.split(",");
+        for ( var i=0,l=tags.length; i<l; i++ ) {
+            (function(i) {
+                var count;
+                // 获取翻个标签，检查是否存在
+                tagModel.getOne({
+                    key: "Tag",
+                    body: {
+                        name: tags[i],
+                        model: "article"
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        res.send("服务器错误，请重试！");
+                        return;
+                    }
+                    
+                    if ( data && data.name ) {// 存在
+                        count = data.level + 1;
+                        tagModel.update({
+                            name: data.name,
+                            model: "article"
+                        }, {
+                            key: "Tag",
+                            body: {
+                                level: count,
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    } else {// 不存在
+                        count = 1;
+                        tagModel.save({
+                            key: "Tag",
+                            body: {
+                                name: tags[i],
+                                level: count,
+                                model: "article",
+                                addDate: (new Date()).getTime(),
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    }
+                    return;
+                });
+            })(i);
+        }
+    };
 });
 /**
  * path:  /manage/article/edit/:id

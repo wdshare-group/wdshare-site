@@ -19,7 +19,8 @@
 	"changeTimes": 0,
 	"lock": false,// 帐号是否锁定
 	"lockTime": 1429843870784, // 锁定时间
-	"lockMessage": "账号非法操作"// 锁定原因
+	"lockMessage": "账号非法操作",// 锁定原因
+	"vip":"article_send,other"// 会员vip权限：article_send代表会员发布和修改文章不需要审核，other有其他权限时在这里增加
 	
 
 

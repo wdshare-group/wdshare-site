@@ -1,6 +1,5 @@
 var express = require('express'),
     mongo = require('mongodb'),
-    acCon = require('../model/active.js'),
     router = express.Router(),
     init = require("../../server/init.js"),
     goBack = init.goBack,
@@ -687,25 +686,91 @@ router.get('/logout', function (req, res) {
  * 获取标签
  */
 router.get('/tags', function(req, res) {
-    manageModel.getAll({
-        key: "Tag"
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        model = urlParams.model;
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 10,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    getTagsList(req, res, {}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/tag/tag_list', "所有标签");
+});
+router.get('/tags/article', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        model = urlParams.model;
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 10,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    getTagsList(req, res, {model:"article"}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/tag/tag_list', "文章标签");
+});
+router.get('/tags/member', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        model = urlParams.model;
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 10,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    getTagsList(req, res, {model:"member"}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/tag/tag_list', "会员标签");
+});
+
+/**
+ * 获取Tag列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {String} channelName 分类名称
+ * @return
+ */
+function getTagsList(req, res, o, pages, mod, channelName) {
+    tagModel.getSort({
+        key: "Tag",
+        body:o,// 仅读取文章类型的档案
+        pages:pages, // 分页信息
+        occupation: "level"// 排序字段
     }, function (err, data) {
+        var allCount;
         if (err) {
             res.send("服务器错误，请重试！");
             return;
         }
 
         if (data) {
-            res.render('manages/tag/tag_list', {
-                title: "标签",
-                result: data
-            });
+            // 获取总数【用于分页】
+            tagModel.getAll({// 查询分类，为添加文章做准备
+                key: "Tag",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });            
+
             return;
         }
 
         res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+            _page.sum = allCount;
+            res.render(mod, {
+                title: channelName || "所有标签",
+                result: data,
+                pages:_page
+            });
+        };
     });
-});
+};
 
 
 /**
@@ -721,17 +786,18 @@ router.get('/tag/create', function(req, res) {
 router.post('/tag/create', function(req, res) {
     var name = req.body.name,
         level = req.body.level,
-        type = 0,
+        model = req.body.model,
         id = req.body.aid;
 
     if ( id ) {// 修改
-        manageModel.update({
+        tagModel.update({
                 _id: id
             }, {
             key: "Tag",
             body: {
                 name: name,
                 level: level,
+                model: model,
                 editDate: (new Date()).getTime()
             }
         }, function (err, data) {
@@ -750,7 +816,7 @@ router.post('/tag/create', function(req, res) {
             });
         });
     } else {// 添加
-        manageModel.getOne({
+        tagModel.getOne({
             key: "Tag",
             body: {
                 name: name
@@ -774,12 +840,12 @@ router.post('/tag/create', function(req, res) {
                 return;
             }
 
-            manageModel.save({
+            tagModel.save({
                 key: "Tag",
                 body: {
                     name: name,
                     level: level,
-                    type: type,
+                    model: model,
                     addDate: (new Date()).getTime(),
                     editDate: (new Date()).getTime()
                 }
@@ -808,7 +874,7 @@ router.post('/tag/create', function(req, res) {
  */
 router.get('/tag/edit/:id', function(req, res) {
     var id = req.params.id;
-    manageModel.getOne({
+    tagModel.getOne({
         key: "Tag",
         body: {
             _id: id
@@ -838,7 +904,7 @@ router.get('/tag/edit/:id', function(req, res) {
  */
 router.get('/tag/del/:id', function(req, res) {
     var id = req.params.id;
-    manageModel.remove({
+    tagModel.remove({
         key: "Tag",
         body: {
             _id: id

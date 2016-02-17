@@ -26,6 +26,22 @@ body { background:#245062;}
 .font-gray { color:#999;}
 
 
+/* http://ionicons.com/ */
+@font-face { font-family: "Ionicons"; src: url("../fonts/ionicons.eot?v=2.0.0"); src: url("../fonts/ionicons.eot?v=2.0.0#iefix") format("embedded-opentype"), url("../fonts/ionicons.ttf?v=2.0.0") format("truetype"), url("../fonts/ionicons.woff?v=2.0.0") format("woff"), url("../fonts/ionicons.svg?v=2.0.0#Ionicons") format("svg"); font-weight: normal; font-style: normal; }
+.wds-side-con a:before,
+.font-icon-time:before,
+.font-icon-zan:before,
+.font-icon-click:before,
+.font-icon-add:before,
+.font-icon-del:before { font-family:"Ionicons"; speak:none; font-style:normal;font-variant: normal; text-transform:none; text-rendering:auto; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+.font-icon-time:before { content:"\f3b3";}
+.font-icon-zan:before { content:"\f251";}
+.font-icon-click:before { content:"\f425";}
+.font-icon-add:before { content:"\f217";}
+.font-icon-del:before { content:"\f129";}
+
+
+
 /**/
 .manage-head { position:absolute; top:0; left:0; width:100%; background:#245062; padding:10px 0; overflow:hidden; background:-webkit-gradient(linear,left top,left bottom,from(#3f768e), to(#245062)); background:-moz-linear-gradient(top, #3f768e, #245062); background:-o-linear-gradient(top, #3f768e, #245062); border-bottom:2px solid #1f4757; box-shadow:0 2px 0 #2a5e73;}
 .manage-head img { display:block; height:40px;}
@@ -141,6 +157,26 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 
 .editor-box { margin-left:130px; position:relative; top:-38px; max-width:950px;}
 /*.editor-box textarea { visibility:hidden;}*/
+
+.content-tegs { float:left; overflow:hidden;}
+.content-tegs-show { max-width:400px; color:#999; font-size:12px; float:left; border:1px solid #ccc; background:#f7f7f7; border-radius:5px; margin-right:10px;}
+.content-tegs-show p { padding:0 10px;}
+.content-tegs-show a { color:#000; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin-right:3px; font-size:14px; vertical-align:middle; margin-top:-4px;}
+.content-tegs-show a:hover { background:#ddd;}
+.content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle;}
+.content-tegs input { border-radius:5px 0 0 5px; border-right:0;}
+.content-tegs i,
+.content-tegs-list i { background:#007cc2; color:#fff; border:0; font:400 1em/32px "Microsoft YaHei"; height:32px; padding:0 10px; border-radius:0 5px 5px 0; cursor:pointer; display:inline-block; font-style:normal;}
+.content-tegs-list i { border-radius:5px; margin-left:5px; background:#999;}
+.content-tegs i:hover { background:#cfc447;}
+.content-tegs-list i:hover { background:#777;}
+
+.content-tegs-list { clear:left; margin-left:130px; padding:20px 0 10px;}
+.content-tegs-list-con { display:inline; overflow:hidden;}
+.content-tegs-list a { border:1px solid #ddd; color:#666; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin:0 3px 5px 0;}
+.content-tegs-list a:hover { background:#ddd;}
+.content-tegs-list a em { padding-right:6px;}
+
 
 
 /**/

@@ -17,6 +17,7 @@
       <a href="/manage/member/notactive">未激活会员</a>
       <a href="/manage/member/lock">被锁定会员</a>
       <a href="/manage/member/active">活跃会员</a>
+      <a href="/manage/member/vip">VIP会员</a>
     </h1>
     <div class="manage-module">
       <form id="js-manageMember-editinfo-form">
@@ -46,8 +47,17 @@
             <div class="manage-addActive-form-item">
               <label><strong>真是姓名：</strong><input type="text" name="realname" value="<%=result.realname%>" /></label>
             </div>
-            <div class="manage-addActive-form-item">
-              <label><strong>技能标签：</strong><input type="text" name="tag" placeholder="请输入技能标签" class="in-text" value="<%= !result.tag ? "" : result.tag %>" /><span>请填写您的技能标签，用英文“,”逗号隔开</span></label>
+            <div class="manage-addActive-form-item" id="js-articleadd-tag">
+              <strong>TAG：</strong>
+              <input type="hidden" name="tag" id="js-hidden-tag" value="<%= !result.tag ? "" : result.tag %>" />
+              <div class="content-tegs">
+                <div class="content-tegs-show" id="js-content-tegs-show"></div>
+                <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+              </div>
+              <div class="content-tegs-list">
+                <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+                <i id="js-content-tegs-resetList">换一批</i>
+              </div>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>求职状态：</strong>

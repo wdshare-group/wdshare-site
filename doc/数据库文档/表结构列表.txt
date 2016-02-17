@@ -10,9 +10,6 @@ tags // 标签**
 archives // 档案内容，包含所有模型的内容【文章、项目、招聘等等】**
 article_crumbs // 文章单页面内容
 comments // 评论
+donations // 捐赠
 
 manage_users // 管理员
-
-inventory // 不清楚是什么【本地有：一条数据】 
-	{ "_id" : ObjectId("55360e4abb107131ed6e0bd0"), "type" : "book", "item" : "notebook", "qty" : 40 }
-system.indexes // 不清楚是什么【本地有：有一些数据】

@@ -177,9 +177,6 @@ router.get('/create', function(req, res) {
             }
 
             if (data) {
-                
-                console.log(req.session.captcha);
-                console.log(req.session.addArticleIsShowCaptcha);
                 // req.session.addArticleIsShowCaptcha = 2;
                 if ( req.session.addArticleIsShowCaptcha && req.session.addArticleIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
                     res.render('article/article_create', {
@@ -245,6 +242,111 @@ router.post('/create', function(req, res) {
         }
     }
 
+
+    // 检测非法字符
+    var nullFlag = false;
+    var nullWordsCommon = config.nullWordsCommon;
+    // 文章标题检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.title.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "标题中含有非法字符！"
+        });
+        return false;
+    }
+    // 跳转链接检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.linkUrl.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "跳转链接中含有非法字符！"
+        });
+        return false;
+    }
+    // 文章来源检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.source.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "来源中含有非法字符！"
+        });
+        return false;
+    }
+    // 文章来源链接检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.sourceUrl.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "来源链接中含有非法字符！"
+        });
+        return false;
+    }
+    // 文章内容检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.content.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "内容中含有非法字符！"
+        });
+        return false;
+    }
+    // TAG内容检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.tag.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "TAG中含有非法字符！"
+        });
+        return false;
+    }
+    // 摘要描述检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( req.body.description.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "摘要描述中含有非法字符！"
+        });
+        return false;
+    }
+
+
+
     // 记录该用户登录的次数
     if ( req.session.addArticleIsShowCaptcha ) {
         req.session.addArticleIsShowCaptcha++;
@@ -305,7 +407,8 @@ router.post('/create', function(req, res) {
             zan = 0,
             isComment = true,
             audit = false,
-
+            vip = false,
+        
             id = req.body.aid;
 
         if ( !title || !channelId ) {
@@ -314,6 +417,7 @@ router.post('/create', function(req, res) {
                 code: 0,
                 message: "文章标题、归属栏目必须填写"
             });
+            return false;
         }
         if ( !linkUrl && !content ) {
             res.send({
@@ -321,6 +425,33 @@ router.post('/create', function(req, res) {
                 code: 0,
                 message: "文章内容必须填写"
             });
+            return false;
+        }
+        var tagArray = tag.split(",");
+        if ( tagArray.length > 6 ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "标签个数不能大于6个"
+            });
+            return false;
+        }
+
+        if ( tagArray.length > 0 ) {
+            var tagMaxFontCount = false;
+            for ( var i=0,l=tagArray.length; i<l; i++ ) {
+                if ( tagArray[i].length > 15 ) {
+                    tagMaxFontCount = true;
+                }
+            }
+            if ( tagMaxFontCount ) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "单个标签字数不能大于15"
+                });
+                return false;
+            }
         }
 
         if ( linkUrl == "http://" ) {
@@ -328,6 +459,14 @@ router.post('/create', function(req, res) {
         }
         if ( sourceUrl == "http://" ) {
             sourceUrl = "";
+        }
+
+        // 检查是否为vip会员并拥有文章发布无限制权限
+        if ( req.session.user.vip && req.session.user.vip.indexOf("article_send") >= 0 ) {
+            vip = true;
+            if ( req.body.audit && req.body.audit == 1 ) {
+                audit = true;
+            }
         }
 
         if ( id ) {// 修改
@@ -357,13 +496,20 @@ router.post('/create', function(req, res) {
                         message: err
                     });
                 }
-                // 发送邮件通知管理员
-                sendArticleChangeMail(req, res, "修改", title);
+                // 发送邮件通知管理员[VIP会员无需发送邮件]
+                if ( !vip ) {
+                    sendArticleChangeMail(req, res, "修改", title);
+                }
+                var msg = "修改成功！文章进入审核状态，审核后显示在官网";
+                if ( vip ) {
+                    msg = "修改成功！";
+                }
                 res.send({
                     status: 200,
                     code: 1,
-                    message: "修改成功！文章进入审核状态，审核后显示在官网"
+                    message: msg
                 });
+                tagsCheck(tag);
             });
         } else {// 添加
             archiveModel.save({
@@ -401,17 +547,73 @@ router.post('/create', function(req, res) {
                         message: err
                     });
                 }
-                // 发送邮件通知管理员
-                sendArticleChangeMail(req, res, "添加", title);
+                // 发送邮件通知管理员[VIP会员无需发送邮件]
+                if ( !vip ) {
+                    sendArticleChangeMail(req, res, "添加", title);
+                }
+                var msg = "添加成功！审核后才会出现在官网";
+                if ( vip ) {
+                    msg = "添加成功！";
+                }
                 res.send({
                     status: 200,
                     code: 1,
-                    message: "添加成功！审核后才会出现在官网"
+                    message: msg
                 });
+                tagsCheck(tag);
             });
         }
     };
     
+    // 对标签进行检查，存在的增加计数，不存在的添加
+    function tagsCheck(tags) {
+        var tags = tags.split(",");
+        for ( var i=0,l=tags.length; i<l; i++ ) {
+            (function(i) {
+                var count;
+                // 获取翻个标签，检查是否存在
+                tagModel.getOne({
+                    key: "Tag",
+                    body: {
+                        name: tags[i],
+                        model: "article"
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        res.send("服务器错误，请重试！");
+                        return;
+                    }
+                    
+                    if ( data && data.name ) {// 存在
+                        count = data.level + 1;
+                        tagModel.update({
+                            name: data.name,
+                            model: "article"
+                        }, {
+                            key: "Tag",
+                            body: {
+                                level: count,
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    } else {// 不存在
+                        count = 1;
+                        tagModel.save({
+                            key: "Tag",
+                            body: {
+                                name: tags[i],
+                                level: count,
+                                model: "article",
+                                addDate: (new Date()).getTime(),
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    }
+                    return;
+                });
+            })(i);
+        }
+    };
 });
 /**
  * path:  /article/edit/:id
@@ -449,8 +651,6 @@ router.get('/edit/:id', function(req, res) {
 
                 // 不是自己的文章不能编辑
                 if (aricle && aricle.userId == req.session.user._id) {
-                    console.log(req.session.captcha);
-                    console.log(req.session.addArticleIsShowCaptcha);
                     // req.session.addArticleIsShowCaptcha = 0;
                     if ( req.session.addArticleIsShowCaptcha && req.session.addArticleIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
                         res.render('article/article_edit', {
@@ -728,7 +928,6 @@ router.get('/setzan/:id', function(req, res) {
                         return;
                     }
                     var newzan = parseInt(userData.zan || 0) + 1;
-                    console.log("zan:"+newzan);
                     // 再写入会员收集赞
                     usersInfosModel.update({
                             userid: data.userId

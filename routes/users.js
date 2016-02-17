@@ -256,6 +256,207 @@ router.route('/editInfo').get(function (req, res) {
         user_flag,
         info_flag;
 
+    var tagArray = tag.split(",");
+    if ( tagArray.length > 6 ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "标签个数不能大于6个"
+        });
+        return false;
+    }
+
+    if ( tagArray.length > 0 ) {
+        var tagMaxFontCount = false;
+        for ( var i=0,l=tagArray.length; i<l; i++ ) {
+            if ( tagArray[i].length > 15 ) {
+                tagMaxFontCount = true;
+            }
+        }
+        if ( tagMaxFontCount ) {
+            res.send({
+                status: 200,
+                code: 0,
+                message: "单个标签字数不能大于15"
+            });
+            return false;
+        }
+    }
+
+    // 检测非法字符
+    var nullFlag = false;
+    var nullWordsNickname = config.nullWordsNickname;
+    var nullWordsCommon = config.nullWordsCommon;
+    // 昵称检测
+    for ( var i=0,l=nullWordsNickname.length; i<l; i++ ) {
+        if ( req.body.nickname.indexOf(nullWordsNickname[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "昵称中含有非法字符！"
+        });
+        return false;
+    }
+    // 签名检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( mood.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "签名中含有非法字符！"
+        });
+        return false;
+    }
+    // 技能标签检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( tag.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "技能标签中含有非法字符！"
+        });
+        return false;
+    }
+    // 公司名称检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( com.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "公司名称中含有非法字符！"
+        });
+        return false;
+    }
+    // 职位名称检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( jobs.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "职位名称中含有非法字符！"
+        });
+        return false;
+    }
+    // 学校名称检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( school.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "学校名称中含有非法字符！"
+        });
+        return false;
+    }
+    // QQ号检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( qq.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "QQ号中含有非法字符！"
+        });
+        return false;
+    }
+    // 微信号检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( wechat.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "微信号中含有非法字符！"
+        });
+        return false;
+    }
+    // 个人网站检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( www.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "个人网站中含有非法字符！"
+        });
+        return false;
+    }
+    // 微博地址检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( weibo.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "微博地址中含有非法字符！"
+        });
+        return false;
+    }
+    // Github检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( github.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "Github中含有非法字符！"
+        });
+        return false;
+    }
+    // 个人介绍检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( introduction.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "个人介绍中含有非法字符！"
+        });
+        return false;
+    }
+
+
 
     // 检测是否有http://
     if ( www.indexOf("http://") < 0 ) {
@@ -420,6 +621,7 @@ router.route('/editInfo').get(function (req, res) {
                 code: 1,
                 message: "信息提交成功！"
             });
+            tagsCheck(tag);
         } else {
             res.send({
                 status: 200,
@@ -429,6 +631,55 @@ router.route('/editInfo').get(function (req, res) {
         }
     };
     
+    // 对标签进行检查，存在的增加计数，不存在的添加
+    function tagsCheck(tags) {
+        var tags = tags.split(",");
+        for ( var i=0,l=tags.length; i<l; i++ ) {
+            (function(i) {
+                var count;
+                // 获取翻个标签，检查是否存在
+                tagModel.getOne({
+                    key: "Tag",
+                    body: {
+                        name: tags[i],
+                        model: "member"
+                    }
+                }, function (err, data) {
+                    if (err) {
+                        res.send("服务器错误，请重试！");
+                        return;
+                    }
+                    
+                    if ( data && data.name ) {// 存在
+                        count = data.level + 1;
+                        tagModel.update({
+                            name: data.name,
+                            model: "member"
+                        }, {
+                            key: "Tag",
+                            body: {
+                                level: count,
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    } else {// 不存在
+                        count = 1;
+                        tagModel.save({
+                            key: "Tag",
+                            body: {
+                                name: tags[i],
+                                level: count,
+                                model: "member",
+                                addDate: (new Date()).getTime(),
+                                editDate: (new Date()).getTime()
+                            }
+                        }, function (err, data) {});
+                    }
+                    return;
+                });
+            })(i);
+        }
+    };
 });
 
 

@@ -764,10 +764,6 @@ router.post('/add', function(req, res) {
             function send(quote) {
                 var items = changeRepeat(userList);
 
-                console.log(items);
-                console.log("测试期，暂停发送邮件");
-                return false;
-
                 idToMail(items, function(mails) {
                     var c = 0,
                         str,

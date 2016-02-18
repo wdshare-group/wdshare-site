@@ -16,6 +16,10 @@ a,div,p,ul,li,dl,dt,dd,input,span,em,strong,img,em,aside,section,article,nav,hea
 input { font-family:"Microsoft YaHei";}
 
 
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input { padding:0; }
+label { display:inline-block; }
+
+
 /**/
 body { background:#245062;}
 .font-red { color:#c00;}
@@ -143,7 +147,7 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .manage-addActive-form-item select { height:32px;}
 .manage-addActive-form-item textarea { width:500px; height:80px;}
 .manage-addActive-form-item span { color:#999; padding-left:10px;}
-.manage-addActive-form-radio label { padding-right:30px;}
+.manage-addActive-form-radio label { display:inline-block; padding-right:30px;}
 .manage-addActive-form-radio input { width:auto; border:0; box-shadow:none; vertical-align:middle;}
 .manage-form-but { padding:20px 0 20px 115px;}
 
@@ -164,7 +168,7 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .content-tegs-show a { color:#000; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin-right:3px; font-size:14px; vertical-align:middle; margin-top:-4px;}
 .content-tegs-show a:hover { background:#ddd;}
 .content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle;}
-.content-tegs input { border-radius:5px 0 0 5px; border-right:0;}
+.content-tegs input { border-radius:5px 0 0 5px; border-right:0; padding:1px 0 1px 5px; margin-bottom:0; vertical-align:top;}
 .content-tegs i,
 .content-tegs-list i { background:#007cc2; color:#fff; border:0; font:400 1em/32px "Microsoft YaHei"; height:32px; padding:0 10px; border-radius:0 5px 5px 0; cursor:pointer; display:inline-block; font-style:normal;}
 .content-tegs-list i { border-radius:5px; margin-left:5px; background:#999;}

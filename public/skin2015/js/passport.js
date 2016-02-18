@@ -60,7 +60,7 @@ define(["jquery"], function(){
                         "cancelButton":false,
                         "onReady": function() {
                             $(".D_submit").focus();
-                        }
+                        },
                         "onComplete":function() {
                             // 更新验证码
                             $("#code").attr("src", $("#code").attr("src")+'?'+new Date().getTime());

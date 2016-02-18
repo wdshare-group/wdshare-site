@@ -24,10 +24,11 @@ router.get('/get', function(req, res) {
     code += str[Math.round(Math.random() * (str.length-1))];
     code += str[Math.round(Math.random() * (str.length-1))];
     code += str[Math.round(Math.random() * (str.length-1))];
-    code += str[Math.round(Math.random() * (str.length-1))];
+    // code += str[Math.round(Math.random() * (str.length-1))];
 
     // 绘制验证码图片
     var _img = imageMagick(readPath)
+    /* 比较模糊的
     // .resize(width, height, "!")
     .resize(100, 40, "!")
     .stroke("#ffff00", 2)
@@ -38,6 +39,16 @@ router.get('/get', function(req, res) {
     .noise("laplacian")//增加噪点
     // .blur(1, 5)
     // .quality(50)//质量
+    */
+   
+    // 清晰版
+    .resize(100, 40, "!")
+    .font(path.join(staticPath, bg, "Night Club Seventy.ttf"))
+    .fontSize(Math.round(Math.random() * 5) + 23)
+    .drawText(0, 8, code, "North")
+    
+
+    
     .toBuffer(function (err, buffer) { // 以图片请求的形式返回
         if (err) {
             return res.sendfile(getFilePath());

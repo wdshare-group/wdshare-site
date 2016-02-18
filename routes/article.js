@@ -246,6 +246,7 @@ router.post('/create', function(req, res) {
     // 检测非法字符
     var nullFlag = false;
     var nullWordsCommon = config.nullWordsCommon;
+    var nullWordsCommonHTML = config.nullWordsCommonHTML;
     // 文章标题检测
     for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
         if ( req.body.title.indexOf(nullWordsCommon[i]) >= 0 ) {
@@ -303,8 +304,8 @@ router.post('/create', function(req, res) {
         return false;
     }
     // 文章内容检测
-    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
-        if ( req.body.content.indexOf(nullWordsCommon[i]) >= 0 ) {
+    for ( var i=0,l=nullWordsCommonHTML.length; i<l; i++ ) {
+        if ( req.body.content.indexOf(nullWordsCommonHTML[i]) >= 0 ) {
             nullFlag = true;
         }
     }
@@ -461,6 +462,14 @@ router.post('/create', function(req, res) {
             sourceUrl = "";
         }
 
+        // tag内容进行优化
+        // 避免两个重复的逗号
+        tag = tag.replace(/,,/g, ",");
+        // 最后一个字符为逗号时清除掉
+        if ( tag.lastIndexOf(",") == tag.length-1 ) {
+            tag = tag.substring(0, tag.lastIndexOf(","));
+        }
+
         // 检查是否为vip会员并拥有文章发布无限制权限
         if ( req.session.user.vip && req.session.user.vip.indexOf("article_send") >= 0 ) {
             vip = true;
@@ -597,6 +606,9 @@ router.post('/create', function(req, res) {
                             }
                         }, function (err, data) {});
                     } else {// 不存在
+                        if ( !tags[i] ) {
+                            return;
+                        }
                         count = 1;
                         tagModel.save({
                             key: "Tag",

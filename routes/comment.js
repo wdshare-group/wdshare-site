@@ -392,10 +392,10 @@ router.post('/add', function(req, res) {
 
     // 检测非法字符
     var nullFlag = false;
-    var nullWordsCommon = config.nullWordsCommon;
+    var nullWordsCommonHTML = config.nullWordsCommonHTML;
     // 评论内容检测
-    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
-        if ( req.body.content.indexOf(nullWordsCommon[i]) >= 0 ) {
+    for ( var i=0,l=nullWordsCommonHTML.length; i<l; i++ ) {
+        if ( req.body.content.indexOf(nullWordsCommonHTML[i]) >= 0 ) {
             nullFlag = true;
         }
     }

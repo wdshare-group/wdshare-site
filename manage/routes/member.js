@@ -340,7 +340,15 @@ router.route('/editinfo').post(function (req, res) {
     if ( github == "http://" ) {
         github = "";
     }
-    console.log(id);
+
+    // tag内容进行优化
+    // 避免两个重复的逗号
+    tag = tag.replace(/,,/g, ",");
+    // 最后一个字符为逗号时清除掉
+    if ( tag.lastIndexOf(",") == tag.length-1 ) {
+        tag = tag.substring(0, tag.lastIndexOf(","));
+    }
+
     _body = {
         mood: mood,
         sex: sex,
@@ -416,6 +424,9 @@ router.route('/editinfo').post(function (req, res) {
                             }
                         }, function (err, data) {});
                     } else {// 不存在
+                        if ( !tags[i] ) {
+                            return;
+                        }
                         count = 1;
                         tagModel.save({
                             key: "Tag",

@@ -24,8 +24,9 @@ var config = {
     "mailSignature": '<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p><p>微信：@wdshare</p><p>微博：@西安前端交流会</p><p>官网：<a href="http://www.wdshare.org" target="_blank">http://www.wdshare.org</a></p><p>联系我们：manage@wdshare.org</p><p>WDShare.org 2016 期待与您共同成长，为西安前端行业发展努力。</p><p style="color:#777777">(此信件为系统自动发送，无需回复）</p>',// 邮件签名
     "db": "wdshare",
     "locale": "zh-cn",
-    "nullWordsCommon": ['操你妈', '淫荡', '卖淫', '嫖娼', '强奸', '麻醉药', '麻醉乙醚', '出售假币', '麻醉钢枪', '蒙汗药'],// 被屏蔽的非法词汇--除用户昵称外的所有表单
-    "nullWordsNickname": ['admin', 'manage'],// 被屏蔽的非法词汇--用户昵称
+    "nullWordsCommon": ['<', '操你妈', '淫荡', '卖淫', '嫖娼', '强奸', '麻醉药', '麻醉乙醚', '出售假币', '麻醉钢枪', '蒙汗药'],// 被屏蔽的非法词汇--除用户昵称外的所有表单
+    "nullWordsCommonHTML": ['操你妈', '淫荡', '卖淫', '嫖娼', '强奸', '麻醉药', '麻醉乙醚', '出售假币', '麻醉钢枪', '蒙汗药'],// 允许输入html的字段使用，被屏蔽的非法词汇--除用户昵称外的所有表单
+    "nullWordsNickname": ['<', '>','admin', 'manage'],// 被屏蔽的非法词汇--用户昵称
 
 
     "static_path": "/static/skin2015"// 可以不带结束/斜杠［暂时没用］

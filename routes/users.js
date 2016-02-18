@@ -315,6 +315,20 @@ router.route('/editInfo').get(function (req, res) {
         });
         return false;
     }
+    // 真实姓名检测
+    for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
+        if ( realname.indexOf(nullWordsCommon[i]) >= 0 ) {
+            nullFlag = true;
+        }
+    }
+    if ( nullFlag ) {
+        res.send({
+            status: 200,
+            code: 0,
+            message: "真实姓名中含有非法字符！"
+        });
+        return false;
+    }
     // 技能标签检测
     for ( var i=0,l=nullWordsCommon.length; i<l; i++ ) {
         if ( tag.indexOf(nullWordsCommon[i]) >= 0 ) {
@@ -467,6 +481,14 @@ router.route('/editInfo').get(function (req, res) {
     }
     if ( github.indexOf("http://") < 0 ) {
         github = "http://" + github;
+    }
+
+    // tag内容进行优化
+    // 避免两个重复的逗号
+    tag = tag.replace(/,,/g, ",");
+    // 最后一个字符为逗号时清除掉
+    if ( tag.lastIndexOf(",") == tag.length-1 ) {
+        tag = tag.substring(0, tag.lastIndexOf(","));
     }
 
 
@@ -663,6 +685,9 @@ router.route('/editInfo').get(function (req, res) {
                             }
                         }, function (err, data) {});
                     } else {// 不存在
+                        if ( !tags[i] ) {
+                            return;
+                        }
                         count = 1;
                         tagModel.save({
                             key: "Tag",

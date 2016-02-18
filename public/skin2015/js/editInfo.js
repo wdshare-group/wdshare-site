@@ -9,6 +9,10 @@ define(['jquery', 'dialog'], function($) {
 
         // 先看添加标签的表单有没有内容，有内容则代表添加标签
         if ( $("#js-newtag").val() ) {
+            if ($("#js-newtag").val().indexOf("<") >= 0) {
+                alert("标签中含有非法字符！");
+                return false;
+            }
             // 检测是否超限制
             if ( tags.checkMax() ) {
                 alert("最多添加"+tags.tagMax+"个标签");
@@ -95,6 +99,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.nickname.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -107,6 +114,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.nickname.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -120,6 +130,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.mood.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -133,6 +146,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.realname.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -154,6 +170,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.tag.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -167,6 +186,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.com.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -180,6 +202,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.jobs.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -193,6 +218,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.school.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -206,6 +234,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.phone.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -219,6 +250,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.qq.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -232,6 +266,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.wechat.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -245,6 +282,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.www.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -258,6 +298,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.weibo.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -271,6 +314,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.github.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -284,6 +330,9 @@ define(['jquery', 'dialog'], function($) {
                 "cancelButton":false,
                 "onComplete": function() {
                    elem.introduction.focus(); 
+                },
+                "onReady": function() {
+                    $(".D_submit").focus();
                 }
             });
             return false;
@@ -436,6 +485,10 @@ define(['jquery', 'dialog'], function($) {
                 $("#js-newtag").val("");
                 return false;
             } else {
+                if ($("#js-newtag").val().indexOf("<") >= 0) {
+                    alert("标签中含有非法字符！");
+                    return false;
+                }
                 // 检测是否超限制
                 if ( that.checkMax() ) {
                     alert("最多添加"+that.tagMax+"个标签");

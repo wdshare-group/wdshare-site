@@ -21,7 +21,7 @@
 <link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png" />
 <script>
 <% if(user && user.email){ %>
-var user = {userid:"user._id", username:"user.username"};
+var user = {userid:"<%=user._id%>", username:"<%=user.username%>"};
 <% }else{ %>
 var user;
 <% } %>

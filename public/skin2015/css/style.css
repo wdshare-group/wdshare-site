@@ -313,7 +313,7 @@ h3.login-error { display:none; color:#f00;}
 .article-head { padding:0 0 30px; zoom:1; overflow:hidden; position:relative;}
 
 .article-head-user { width:58px; float:left; margin-right:15px; padding-top:8px;}
-.article-head-user img { display:block; width:100%;}
+.article-head-user img { display:block; width:100%; border-radius:8px;}
 
 .article-head-left { margin-left:60px;}
 .article-head-right { position:absolute; top:0; right:0; text-align:right; color:#bbb; padding-top:15px;}

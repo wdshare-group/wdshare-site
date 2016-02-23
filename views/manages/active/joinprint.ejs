@@ -6,17 +6,17 @@
 <meta name="auther" content="F7" />
 <style type="text/css">
   body { text-align:center;}
-  table { border-collapse:collapse; width:94%; margin:auto;}
-  td,th { padding:0; border:1px solid #333; line-height:30px; padding:10px 5px;}
+  table { border-collapse:collapse; width:94%; margin:0 auto 0;}
+  td,th { padding:0; border:1px solid #333; line-height:30px; padding:12px 5px; font-size:14px;}
 
-  h1 { line-height:240%; font-size:20px;}
+  h1 { line-height:240%; font-size:20px; padding-top:5px;}
 </style>
 </head>
 
 <body>
 <% 
-  var count = 1;// 序号计数器
-  var pagesize = 17;// 每页显示数量
+  var count = 0;// 序号计数器
+  var pagesize = 15;// 每页显示数量
   var max = Math.ceil(result.length/pagesize);
   var page = 1;// 当前页面标识
   var i = 0;
@@ -41,9 +41,9 @@
       %>
       <% if ( join.state !== 0 ) { %>
         <tr>
-          <td><%= count %></td>
+          <td><%= count+1 %></td>
           <td><%= join.name %></td>
-          <td><%= join.com %></td>
+          <td><span style="display:block; height:30px; overflow:hidden;"><%= join.com %></span></td>
           <td><% if ( join.code ) { %>
                       <%= active.aCodebefor %><%= join.code %>
                       <% } else { %>

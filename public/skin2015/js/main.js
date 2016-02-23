@@ -31,7 +31,23 @@ function getUrlParam( name ) {
     if (reg.test(location.href)) return unescape(RegExp.$2.replace(/\+/g, " ")); return "";
 };
 
-
+// cookie
+var setCookie = function(name, value, expires, path, domain){
+    if( expires && isNaN(expires)===false ){expires=new Date(new Date().getTime()+expires)};
+    document.cookie=name+"="+escape(value)+((expires)?"; expires="+expires.toGMTString():"")+((path)?"; path="+path:"; path=/")+((domain)?";domain="+domain:"");
+};
+var getCookie = function(name){
+    var arr=document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+    if(arr!=null){
+        return unescape( arr[2] );
+    }
+    return null;
+};
+var clearCookie = function(name, path, domain){
+    if(getCookie(name)){
+        document.cookie=name+"="+((path)?"; path="+path:"; path=/")+((domain)?"; domain="+domain:"")+";expires=Fri, 02-Jan-1970 00:00:00 GMT";
+    }
+};
 
 
 /**
@@ -41,14 +57,32 @@ function getUrlParam( name ) {
 function openActive() {
     var elem = $("#js-openActive-count");
     $.get("/active/open", function(data) {
+        var cookieActiveid = getCookie("WDS_newActiveLook"),
+            count = 0;
+
         if ( !data ) { return false };
         if ( typeof data == "string" ) {
             data = $.parseJSON(data);
         }
 
         if ( data.status ) {// 成功
-            if ( data.count > 0 ) {
-                elem.html(data.count).show();
+            if ( !cookieActiveid ) {
+                if ( data.count > 0 ) {
+                    elem.html(data.count).show();
+                }
+                return false;
+            }
+            
+            // 对比cookie中存储的ID
+            if ( data.data.length > 0 ) {
+                $(data.data).each(function() {
+                    if ( cookieActiveid.indexOf(this) < 0 ) {
+                        count++;
+                    }
+                });
+            }
+            if ( count > 0 ) {
+                elem.html(count).show();
             }
         };
     });

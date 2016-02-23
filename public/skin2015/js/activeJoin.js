@@ -34,6 +34,7 @@ define(["jquery"], function(){
     Active.init = function() {
         if ( !document.getElementById("js-active-join") ) { return false };
         this.addEvent();
+        this.newActiveLookTrail();
     };
 
     Active.addEvent = function() {
@@ -244,7 +245,30 @@ define(["jquery"], function(){
         return false;
     };
 
+    /**
+     * 新活动查看轨迹记录
+     * @return
+     */
+    Active.newActiveLookTrail = function() {
+        if ( !document.getElementById("js-archives-model") || !document.getElementById("js-archives-id") || !activeStatus ) {
+            return false;
+        }
+        if ( document.getElementById("js-archives-model").value != "active" || activeStatus == 0 ) {
+            return false;
+        }
 
+        var activeid = document.getElementById("js-archives-id").value,
+            cookieActiveid = getCookie("WDS_newActiveLook");
+        if ( !cookieActiveid ) {
+            setCookie("WDS_newActiveLook", activeid, 1000*60*60*24*365);
+        } else {
+            if ( cookieActiveid.indexOf(activeid) >= 0 ) {
+                return;
+            }
+            setCookie("WDS_newActiveLook", cookieActiveid +","+activeid, 1000*60*60*24*365);
+        }
+
+    };
 
 
     return Active;

@@ -175,7 +175,11 @@ router.get('/open', function(req, res) {
         body: {aStatus:{'$ne':'0'}}
     }, function (err, data) {
         if (data) {
-            res.send({status:true,count:data.length});
+            var ids = [];
+            for ( var i=0,l=data.length; i<l; i++ ) {
+                ids.push(data[i]._id);
+            }
+            res.send({status:true,count:data.length, data:ids});
             return;
         }
 

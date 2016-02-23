@@ -30,6 +30,9 @@ define(['jquery', 'dialog'], function($) {
                     "cancelButton":false,
                     "onComplete": function() {
                        _form.password.focus(); 
+                    },
+                    "onReady": function() {
+                        $(".D_submit").focus();
                     }
                 });
                 return false;
@@ -42,6 +45,9 @@ define(['jquery', 'dialog'], function($) {
                     "cancelButton":false,
                     "onComplete": function() {
                        _form.newPassword.focus(); 
+                    },
+                    "onReady": function() {
+                        $(".D_submit").focus();
                     }
                 });
                 return false;
@@ -54,6 +60,9 @@ define(['jquery', 'dialog'], function($) {
                     "cancelButton":false,
                     "onComplete": function() {
                        _form.reNewPassword.focus(); 
+                    },
+                    "onReady": function() {
+                        $(".D_submit").focus();
                     }
                 });
                 return false;
@@ -63,7 +72,10 @@ define(['jquery', 'dialog'], function($) {
                     "msg":"<br />两次密码不一致！<br /><br />",
                     "lock":true,
                     "showButtons":true,
-                    "cancelButton":false
+                    "cancelButton":false,
+                    "onReady": function() {
+                        $(".D_submit").focus();
+                    }
                 });
                 return false;
             }
@@ -92,6 +104,9 @@ define(['jquery', 'dialog'], function($) {
                         "cancelButton":false,
                         "onComplete": function() {
                            window.location = "/user/login";
+                        },
+                        "onReady": function() {
+                            $(".D_submit").focus();
                         }
                     });
                 } else {// 修改失败
@@ -99,7 +114,10 @@ define(['jquery', 'dialog'], function($) {
                         "msg":"<br />"+ data.message +"<br /><br />",
                         "lock":true,
                         "showButtons":true,
-                        "cancelButton":false
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        }
                     });
                 }
             });
@@ -175,6 +193,23 @@ define(['jquery', 'dialog'], function($) {
                         box.appendChild(img1);
                         box.appendChild(img2);
                         box.appendChild(img3);
+                        if ($(img1).width() != $(img1).height()) {
+                            Dialog({
+                                "msg":"<br />您上传的图片不是正方形，可能被拉伸！<br /><br />",
+                                "title": "头像上传",
+                                "lock":true,
+                                "lockClose": false,
+                                "showButtons":true,
+                                "submitButton": "继续上传",
+                                "cancelButton": "重新选择",
+                                "onCancel": function() {
+                                   window.location.reload();
+                                },
+                                "onReady": function() {
+                                    $(".D_submit").focus();
+                                }
+                            });
+                        };
                     }
 
                     // 完成预览时隐藏loading

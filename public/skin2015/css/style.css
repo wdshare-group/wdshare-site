@@ -255,7 +255,7 @@ h3.login-error { display:none; color:#f00;}
 .article-item-state .ready { background:#e9f1f4; color:#999; border:1px solid #d8dee2; color:#6b808d;}
 .article-item-state .open { background:#3188de; color:#999; border:1px solid #3188de; color:#fff;}
 .article-item:hover .article-item-state .open { background:#3a74ad; color:#999; border:1px solid #3a74ad; color:#fff;}
-.article-list-con { min-height:700px;}
+.article-list-con { min-height:700px; padding-bottom:30px;}
 
 /**/
 .pages { text-align:center; padding-bottom:30px;}
@@ -477,7 +477,7 @@ a.article-top-comment-link { color:#ff8400;}
 /*.active-login .but-login { background:#5bb75b;}
 .active-login .but-login:hover { background:#51a351;}*/
 
-.dialog-jion-alert { text-align:center; padding:30px; line-height:200%; font-size:1.6em;}
+.dialog-jion-alert { text-align:center; padding:30px; line-height:200%; font-size:1.3em;}
 
 
 

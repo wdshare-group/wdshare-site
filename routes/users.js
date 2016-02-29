@@ -1496,7 +1496,7 @@ router.route('/message/:id').get(function (req, res) {
                 if (err || !data) {// 会员信息不存在
                     res.render('article/error', {
                         title: "错误提示",
-                        msg: "该用户没有此类信息！"
+                        msg: "该用户未完善会员信息，不支持留言功能！"
                     });
                 } else {// 已存在
                     if ( req.session.addCommentIsShowCaptcha && req.session.addCommentIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码

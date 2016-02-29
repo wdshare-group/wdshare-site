@@ -185,6 +185,16 @@ router.get('/get', function(req, res) {
             return false;
         }
 
+        // 没有可见评论时直接返回
+        if ( _data.length == 0 ) {
+            res.send({
+                status: 200,
+                code: 1,
+                data: _data
+            });
+            return false;
+        }
+
         // 替换 @谁 为链接后返回数据
         replaceUserLink(_data, function(newData) {
             res.send({

@@ -868,7 +868,7 @@ router.get('/invite/:id', function(req, res) {
         sendMail({
             from: config.mail.sendMail,
             to: join.mail,
-            subject: active.aName + ' 邀请函',
+            subject: 'WDShare邀请函 ' + active.aName,
             html: mailTpl
         }, function() {// succeed
             mailSucceed(join.mail, active._id);

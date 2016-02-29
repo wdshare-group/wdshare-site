@@ -127,8 +127,8 @@ define(["jquery"], function(){
         if ( !name.value ) {
             showError(name, "请填写验证码", flag);
             return false;
-        } else if ( name.value.length < 5 ) {
-            showError(name, "验证码为5个字符", flag);
+        } else if ( name.value.length < 4 ) {
+            showError(name, "验证码为4个字符", flag);
             return false;
         } else {
             showYes(name);
@@ -213,7 +213,7 @@ define(["jquery"], function(){
                 }
 
                 // 提示成功
-                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn', onClose:function() {
+                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'showButtons':true, 'cancelButton':false, 'animation':'animated bounceIn', onClose:function() {
                     window.location = "/user/myactive";
                 }});
             } else {// 错误提示
@@ -222,7 +222,7 @@ define(["jquery"], function(){
                     'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>',
                     'lock':true,
                     'title':'活动报名',
-                    'animation':'animated bounceIn',
+                    'animation':'animated bounceIn', 'showButtons':true, 'cancelButton':false,
                     "onReady": function() {
                         $(".D_close").focus();
                     },

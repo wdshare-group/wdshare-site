@@ -14,6 +14,7 @@ wdshare-site 是为西安前端交流会开发的网站程序，主要包括活�
 4. 执行 `npm start` 启动应用
 5. 访问 `http://localhost:3000`
 6. 后台管理 `http://127.0.0.1:3000/manage/`
+
     ```
     # 目前后台没有管理员账户，请使用下面命令添加管理员账户(admin/123456)
     $ mongo # 进入 mongo shell界面
@@ -33,4 +34,4 @@ wdshare-site 是为西安前端交流会开发的网站程序，主要包括活�
 
 ## 贡献代码
 
-wdshare-site 还处于不端的开发中，欢迎大家参与进来，提交bug, 给出建议甚至贡献代码。wdshare开发群QQ：116706714
+wdshare-site 还处于不断的开发中，欢迎大家参与进来，提交bug, 给出建议甚至贡献代码。wdshare开发群QQ：116706714

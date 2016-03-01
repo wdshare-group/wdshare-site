@@ -1,8 +1,8 @@
-<p align="center"><a href="http://www.wdshare.org/" target="_blank"><img width="164" src="http://www.wdshare.org/static/skin2015/img/logo.png"></a></p>
+<p align="center"><a href="http://www.wdshare.org/" target="_blank"><img width="300" src="http://www.wdshare.org/static/skin2015/img/logo.png"></a></p>
 
 ## 介绍
 
-wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：http://www.wdshare.org/，主要包括活动，文章等模块，技术上后端使用了 node , express, mongodb 等技术。
+wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：http://www.wdshare.org/，主要包括活动，文章等模块，技术上后端使用了 node , express, mongodb 等技术。wdshare开发群QQ：116706714
 
 ## 安装部署
 
@@ -11,7 +11,8 @@ wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：h
 3. 进入 wdshare-site 源码目录执行 `npm install` 安装所需依赖
 4. 执行 `npm start` 启动应用
 5. 访问 `http://localhost:3000`
-6. 后台管理 `http://127.0.0.1:3000/manage/`  
+6. 后台管理 `http://127.0.0.1:3000/manage/`
+
     ```
     # 目前后台没有管理员账户，请使用下面命令添加管理员账户(admin/123456)
     $ mongo # 进入 mongo shell界面
@@ -31,4 +32,4 @@ wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：h
 
 ## 贡献代码
 
-wdshare-site 还处于不断的开发中，欢迎大家参与进来，提交bug, 给出建议甚至贡献代码。wdshare开发群QQ：116706714
+wdshare-site 还处于不断的开发中，欢迎大家参与进来，提交bug, 给出建议甚至贡献代码。

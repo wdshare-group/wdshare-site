@@ -17,7 +17,7 @@ wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：h
 ```
 $ mongo 
 $ > use wdshare  
-$ > db.manage_users.save({username:'test01', password:'7c4a8d09ca3762af61e59520943dc26494f8941b'});
+$ > db.manage_users.save({username:'admin', password:'7c4a8d09ca3762af61e59520943dc26494f8941b'});
 ```
 
 **注意** 
@@ -32,4 +32,4 @@ $ > db.manage_users.save({username:'test01', password:'7c4a8d09ca3762af61e595209
 
 ## 贡献代码
 
-wdshare-site 还处于不断的开发中，欢迎大家参与进来，提交bug, 给出建议甚至贡献代码。
+wdshare-site 还处于不断的开发中，欢迎大家参与进来，提交bug、建议和贡献代码。

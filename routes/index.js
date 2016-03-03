@@ -1,364 +1,278 @@
 var express = require('express');
-var util = require('util');
-var mongo = require('mongodb');
-var acCon = require('../model/index.js');
 var router = express.Router();
-var ObjectId = mongo.ObjectID;
+var async = require('async');
 
 /**
- * path:  /active
- * 显示所有活动
+ * 获取公告
+ * 
+ * @param {fuction} callback 
  */
-router.get('/', function(req, res) {
-    var affiche = false,
-        active = false,
-        users = false,
-        article = false,
-        articleHOT = false;
-    // 读取活动
-    activeModel.getSort({
-        key: "Active",
-        body:{},// 筛选内容
-        pages: {page:1, pagesize:8},// 分页信息
-        occupation: "aAddDate"// 排序字段
-    }, function (err, data) {
-        var channelCount = 0,
-            joinCount = 0,
-            allCount,
-            channelItem;
-        if (err) {
-            res.send("服务器错误，请重试！");
-            return;
-        }
+var getAffiches = function(callback) {
+  archiveModel.getOne({
+    key: "Article_crumb",
+    body: {
+      url: "affiche"
+    }
+  }, function(err, data) {
+    callback(err, data);
+  })
+}
 
-        if (data) {
-            for ( var i=0; i<data.length; i++ ) {
-                (function(i) {
-                    // 获取分类信息
-                    activeModel.getOne({
-                        key: "Active_channel",
-                        body: {
-                            _id: data[i].aClass
-                        }
-                    }, function (err, channelData) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-
-                        if (channelData && channelData.name) {
-                            data[i].channel = channelData.name;
-                            channelCount++;
-                            gosend();
-                            return;
-                        }
-                        res.send("未知错误，请重试！");
-                    });
-
-                    // 获取报名信息
-                    activeModel.getAll({
-                        key: "Active_join",
-                        body: {
-                            aid: data[i]._id
-                        }
-                    }, function (err, joins) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-
-                        if (joins) {
-                            data[i].joins = joins.length;
-                            joinCount++
-                            gosend();
-                            return;
-                        }
-                        res.send("未知错误，请重试！");
-                    });
-                })(i);
-            }
-
-            // 获取总数【用于分页】
-            activeModel.getAll({
-                key: "Active",
-                body: {}
-            }, function (err, data) {
-                if (err) {
-                    res.send("服务器错误，请重试！");
-                    return;
-                }
-
-                if (data) {
-                    allCount = data.length;
-                    gosend();
-                    return;
-                }
-
-                res.send("未知错误，请重试！");
-            });
-
-            // 获取分类信息，列表页显示分类
-            activeModel.getAll({
-                key: "Active_channel"
-            }, function (err, data) {
-                if (err) {
-                    res.send("服务器错误，请重试！");
-                    return;
-                }
-
-                if (data) {
-                    channelItem = data;
-                    gosend();
-                    return;
-                }
-
-                res.send("未知错误，请重试！");
-            });
-
-            return;
-        }
-
-        res.send("未知错误，请重试！");
-
-        // 所有数据都获取完成后执行返回
-        function gosend() {
-           if ( channelCount == data.length && joinCount == data.length && allCount >= 0 && channelItem ) {
-                active = {
-                    title: "精彩活动",
-                    result: data,
-                    channel: channelItem
-                };
-                foo();
-           }
-        };
-    });
-
-    // 读取users
-    usersModel.getSort({
-        key: "User",
-        body:{isActive:true, lock:false},// 筛选内容
-        pages: {page:1, pagesize:8},// 分页信息
-        occupation: "regTime"// 排序字段
-    }, function (err, data) {
-        var articleCount = 0,
-            userInfoCount = 0,
-            allCount;
-        if (err) {
-            res.send("服务器错误，请重试！");
-            return;
-        }
-
-        if (data) {
-            for ( var i=0; i<data.length; i++ ) {
-                (function(i) {
-                    // 获取文章数
-                    archiveModel.getAll({
-                        key: "Archive",
-                        body: {
-                            userId: data[i]._id,
-                            audit: true
-                        }
-                    }, function (err, article) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-
-                        if (article) {
-                            data[i].article = article.length;
-                            articleCount++
-                            gosend();
-                            return;
-                        }
-                        res.send("未知错误，请重试！");
-                    });
-
-                    // 获取用户详细信息
-                    usersInfosModel.getOne({
-                        key: "User_info",
-                        body: {
-                            userid: data[i]._id
-                        }
-                    }, function (err, userInfo) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-                        
-                        data[i].userInfo = userInfo || {};
-                        userInfoCount++;
-                        gosend();
-                        return;
-                    });
-                })(i);
-            }
-
-            // 获取总数
-            usersModel.getAll({
-                key: "User",
-                body: {isActive:true, lock:false}
-            }, function (err, data) {
-                if (err) {
-                    res.send("服务器错误，请重试！");
-                    return;
-                }
-
-                if (data) {
-                    allCount = data.length;
-                    gosend();
-                    return;
-                }
-
-                res.send("未知错误，请重试！");
-            });
-
-            return;
-        }
-
-        res.send("未知错误，请重试！");
-
-        // 所有数据都获取完成后执行返回
-        function gosend() {
-           if ( articleCount == data.length && userInfoCount == data.length && allCount >= 0 ) {
-                users = {
-                    title: "会员信息",
-                    result: data,
-                    allCount: allCount
-                };
-                foo();
-           }
-        };
-    });
-
-    // 读取公告
-    archiveModel.getOne({
-        key: "Article_crumb",
-        body: {
-            url: "affiche"
-        }
-    }, function (err, data) {
-        if (data && data.url) {
-            affiche = data;
-            foo();
-        } else {
-            affiche = "error";
-            foo();
-        }
-    });
-
-    // 读取头条文章
-    getArchivesList(req, res, {type:1, audit:true, diyType:{'$regex':/1/i}}, function(data) {
-        articleHOT = data;
-        foo();
-    });
-    // 读取文章【不包含头条】
-    getArchivesList(req, res, {type:1, audit:true, diyType:{'$regex':/^((?!1).)+$|^$/}}, function(data) {
-        article = data;
-        foo();
-    });
-
-    function foo() {
-        if ( active !== false && affiche !== false && users !== false && articleHOT !== false && article !== false ) {
-            console.log(articleHOT.length);
-            console.log(article.length);
-
-            var allArticle = articleHOT.length > 0 ? articleHOT.concat(article) : article;
-            res.render('index', {
-                title: '官网首页',
-                active: active,
-                affiche: affiche,
-                article: allArticle,
-                users: users
-            });
-        }
-    };
-});
 
 /**
- * 获取列表内容
- * @param  {Object} o 限制条件
- * @param  {Function} callback 回调函数
- * @return
+ * 获取最新的活动列表，默认为最新8个
+ * 
+ * @param {integer} num
+ * @param {fuction} callback 
  */
-function getArchivesList(req, res, o, callback) {
-    archiveModel.getSort({
-        key: "Archive",
-        body:o,// 仅读取文章类型的档案
-        pages:{page:1, pagesize:10},// 分页信息
-        occupation: "addDate"// 排序字段
-    }, function (err, data) {
-        var channelCount = 0,
-            userCount = 0;
-        if (err) {
-            res.send("服务器错误，请重试！");
-            return;
-        }
-        
-        if (data && data.length > 0) {
-            for ( var i=0; i<data.length; i++ ) {
-                (function(i) {
-                    // 获取分类信息
-                    archiveModel.getOne({
-                        key: "Article_channel",
-                        body: {
-                            _id: data[i].channelId
-                        }
-                    }, function (err, channelData) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-
-                        if (channelData && channelData.name) {
-                            // console.log(channelData.name);
-                            data[i].channel = channelData.name;
-                            data[i].channelUrl = channelData.url;
-                            channelCount++;
-                            gosend();
-                            return;
-                        }
-                        res.send("未知错误，请重试！");
-                    });
-
-                    // 获取会员信息
-                    usersModel.getOne({
-                        key: "User",
-                        body: {
-                            _id: data[i].userId
-                        }
-                    }, function (err, userData) {
-                        if (err) {
-                            res.send("服务器错误，请重试！");
-                            return;
-                        }
-
-                        if (userData) {
-                            data[i].user = userData.username;
-                            data[i].userId = userData._id;
-                        } else {
-                            data[i].user = "";
-                            data[i].userId = "";
-                        }
-                        userCount++;
-                        gosend();
-                        return;
-                    });
-                })(i);
-            }
-            return;
-        } else {
-            callback([]);
-        }
-
-        // 所有数据都获取完成后执行返回
-        function gosend() {
-           if ( channelCount == data.length && userCount == data.length ) {
-                callback(data);
-           }
-        };
-    });
+function getActivesList(num, callback) {
+  num = num || 8;
+  activeModel.getSort({
+    key: "Active",
+    body: {},
+    pages: { page: 1, pagesize: num },
+    occupation: "aAddDate"
+  }, function(err, data) {
+    callback(err, data);
+  })
 };
 
 
+/**
+ * 获取"精彩文章"列表，包含了文章的作者和分类信息，默认为10篇
+ * 
+ * @param {integer} num
+ * @param {fuction} callback 
+ */
+
+function getAchivesList(num, callback) {
+  num = num || 10;
+  getAchives(num, function(err, data) {
+    async.map(data, function(item, callback) {
+        fixAchives(item, function(err, result) {
+          var userInfo = result[0] || {};
+          var articleInfo = result[1] || {};
+          item.user = userInfo.username || "";
+          item.userId = userInfo._id || "";
+          item.channel = articleInfo.name || "";
+          item.channelUrl = articleInfo.url || "";
+          callback(err, item);
+        });
+      },
+      function(err, result) {
+        callback(err, result);
+      });
+  })
+}
+
+/**
+ * 获取文章列表，不包含了文章的作者和分类信息，默认为10篇，获取规则如下：
+ * 1. 获取最新10篇头条文章
+ * 2. 热门文章不够10篇，则取剩下最新文章补齐10篇
+ * 
+ * @param {integer} num
+ * @param {fuction} callback 
+ */
+function getAchives(num, callback) {
+  async.waterfall([
+    function(callback) {
+      // 获取头条文章
+      archiveModel.getSort({
+        key: "Archive",
+        body: { type: 1, audit: true, diyType: { '$regex': /1/i } },
+        pages: { page: 1, pagesize: num },
+        occupation: "addDate"
+      }, function(err, data) {
+        callback(err, data);
+      })
+    },
+    function(data01, callback) {
+      // 如果头条文章不够10篇，获取最新的其他文章
+      if (data01.lenght >= 10) {
+        callback(null, data);
+      } else {
+        var len = num - data01.length
+        archiveModel.getSort({
+          key: "Archive",
+          body: { type: 1, audit: true, diyType: { '$regex': /^((?!1).)+$|^$/ } },
+          pages: { page: 1, pagesize: len },
+          occupation: "addDate"
+        }, function(err, data02) {
+          callback(err, data01.concat(data02));
+        })
+      }
+    }
+  ], function(err, result) {
+    callback(err, result);
+  });
+}
+
+/**
+ * 对获取的"文章"添加作者和分类信息
+ * 
+ * @param {Object} item  文章对象
+ * @param {fuction} callback 
+ */
+function fixAchives(item, callback) {
+  async.parallel([
+    function(callback) {
+      // 获取文章的作者信息
+      usersModel.getOne({
+        key: "User",
+        body: {
+          _id: item.userId
+        }
+      }, function(err, userData) {
+        callback(err, userData);
+      })
+    },
+    function(callback) {
+      // 获取文章的类比信息
+      archiveModel.getOne({
+        key: "Article_channel",
+        body: {
+          _id: item.channelId
+        }
+      }, function(err, channelData) {
+        callback(err, channelData);
+      })
+    }
+  ], function(err, result) {
+    callback(err, result);
+  });
+}
+
+/**
+ * 获取最新加入的会员，默认为最新8个
+ * 
+ * @param {Object} num  
+ * @param {fuction} callback 
+ */
+function getUsersList(num, callback) {
+  num = num || 8;
+  usersModel.getSort({
+    key: "User",
+    body: { isActive: true, lock: false },
+    pages: { page: 1, pagesize: num },
+    occupation: "regTime"
+  }, function(err, data) {
+    async.map(data, function(item, callback) {
+        fixUsers(item, function(err, result) {
+          var userInfo = result[0] || {};
+          var article = result[1] || [];
+          item.userInfo = userInfo || {};
+          item.article = article.length;
+          callback(err, item);
+        });
+      },
+      function(err, result) {
+        callback(err, result);
+      });
+  })
+}
+
+
+/**
+ * 对获取的"会员"添加详细信息和文章数
+ * 
+ * @param {Object} item 会员对象
+ * @param {fuction} callback 
+ */
+function fixUsers(item, callback) {
+  async.parallel([
+    function(callback) {
+      // 获取会员的详细信息
+      usersInfosModel.getOne({
+        key: "User_info",
+        body: {
+          userid: item._id
+        }
+      }, function(err, userInfo) {
+        callback(err, userInfo);
+      })
+    },
+    function(callback) {
+      // 获取会员的文章信息
+      archiveModel.getOne({
+        key: "Archive",
+        body: {
+          _id: item._id,
+          audit: true
+        }
+      }, function(err, article) {
+        callback(err, article);
+      })
+    }
+  ], function(err, result) {
+    callback(err, result);
+  });
+}
+
+/**
+ * 获取会员总数
+ * 
+ * @param {fuction} callback 
+ */
+var getUserSum = function(callback) {
+  usersModel.count({}, {
+    key: "User"
+  }, function(err, result) {
+    callback(err, result);
+  })
+}
+
+/**
+ * 获取所有数据后触发回调
+ * 
+ * @param {fuction} callback 
+ */
+function getData(callback) {
+  async.parallel({
+    affiche: function(callback) {
+      getAffiches(callback);
+    },
+    actives: function(callback) {
+      getActivesList(8, callback);
+    },
+    achives: function(callback) {
+      getAchivesList(10, callback);
+    },
+    users: function(callback) {
+      getUsersList(7, callback);
+    },
+    userSum: function(callback) {
+      getUserSum(callback);
+    }
+  }, function(err, result) {
+    callback(err, result);
+  });
+}
+
+/**
+ * 首页路由处理
+ */
+router.get('/', function(req, res) {
+  getData(function(err, result) {
+    if (err) {
+      res.send("未知错误，请重试！");
+    }
+    // 封装数据，兼容旧版本
+    var data = {
+      title: '官网首页',
+      affiche: result.affiche,
+      active: {
+        title: '精彩活动',
+        result: result.actives
+      },
+      article: result.achives,
+      users: {
+        title: '会员信息',
+        result: result.users,
+        allCount: result.userSum
+      }
+    };
+    res.render('index', data);
+  })
+});
 
 module.exports = router;

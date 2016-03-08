@@ -238,7 +238,7 @@ function getData(callback) {
       getAchivesList(10, callback);
     },
     users: function(callback) {
-      getUsersList(7, callback);
+      getUsersList(8, callback);
     },
     userSum: function(callback) {
       getUserSum(callback);

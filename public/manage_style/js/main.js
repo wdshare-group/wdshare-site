@@ -15,7 +15,8 @@ requirejs.config({
     shim: {
         datepicker: ['jquery'],
         moment: ['jquery']
-    }
+    },
+    waitSeconds: 60
 });
 
 
@@ -547,6 +548,9 @@ ArticleCrumbs.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -654,6 +658,9 @@ ArticleChannels.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -760,6 +767,9 @@ ActiveChannels.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -874,6 +884,9 @@ Tags.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -1014,6 +1027,9 @@ Donation.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -1130,6 +1146,9 @@ ManageUser.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -1389,6 +1408,9 @@ Article.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }
@@ -2136,6 +2158,9 @@ Comment.del = function() {
                     "lock":true,
                     "showButtons":true,
                     "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
                     "onComplete": function() {
                        window.location.reload();
                     }

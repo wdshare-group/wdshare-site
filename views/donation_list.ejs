@@ -49,7 +49,7 @@
     <div class="article-list-con" style="min-height:100px;">
       <a name="list"></a>
       <div class="article-tab-title">
-        <em class="right">共 <%=item_sum%> 条记录&nbsp;&nbsp;&nbsp;&nbsp;合计 <%=goldsum%> 元</em>
+        <em class="right">共 <%=item_sum%> 条记录&nbsp;&nbsp;&nbsp;&nbsp;合计 <%=parseInt(goldsum)%> 元</em>
         <a href="/donation#list" <%if(title=="所有捐赠"){%>class="current"<%}%>>所有捐赠</a>
         <a href="/donation/gaoji#list" <%if(title=="高级群捐赠"){%>class="current"<%}%>>高级群捐赠</a>
         <a href="/donation/zhongji#list" <%if(title=="中级群捐赠"){%>class="current"<%}%>>中级群捐赠</a>

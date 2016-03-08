@@ -2,7 +2,7 @@
 
 ## 介绍
 
-wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：http://www.wdshare.org/ ，主要包括活动，文章等模块，技术上后端使用了 node , express, mongodb 等技术。wdshare开发群QQ：116706714
+wdshare-site 是西安前端交流会(wdshare)官网的源码，在线地址：http://www.wdshare.org/ ，主要包括活动，文章等模块，技术上后端使用了 node , express, mongodb 等技术。wdshare开发群QQ：149907893
 
 ## 安装部署
 

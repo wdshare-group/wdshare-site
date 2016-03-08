@@ -57,13 +57,13 @@
               <tr>
                 <th width="6%">Name</th>
                 <th width="10%" class="text-align-left">Mail</th>
-                <th width="12%">COM</th>
-                <th width="12%">WWW</th>
-                <th>Content</th>
+                <th width="9%">COM</th>
+                <th width="5%">WWW</th>
+                <th width="30%">Content</th>
                 <th width="5%">Party</th>
                 <th width="9%">Time</th>
                 <th width="8%">Code</th>
-                <th width="6%">MailSend</th>
+                <th width="5%">MailSend</th>
                 <th width="13%">Manage</th>
               </tr>
             </thead>
@@ -75,7 +75,7 @@
                 <td class="text-align-left"><%= join.com %></td>
                 <td class="text-align-left no-a-style">
                   <% if ( join.web ) { %>
-                  <a href="<%= join.web %>" title="<%= join.web %>" target="_blank" class="join-blog"><%= join.web %></a>
+                  <a href="<%= join.web %>" title="<%= join.web %>" target="_blank" class="join-blog">访问</a>
                   <% } %>
                 </td>
                 <td class="text-align-left"><%= join.content %></td>

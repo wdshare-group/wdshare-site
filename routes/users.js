@@ -171,6 +171,10 @@ router.route('/editInfo').get(function (req, res) {
         if (data) {
             userdata = data;
         }
+        if ( !data.isActive ) {
+            res.redirect("/user/activeAccount/");
+            return false; 
+        }
         // 再查info
         usersInfosModel.getOne({
             key: "User_info",
@@ -527,6 +531,9 @@ router.route('/editInfo').get(function (req, res) {
                     } else {
                         user_flag = true;
                         pageSend();
+                        
+                        // 更新session中的昵称
+                        req.session.user.username = nickname;
                     }
                 });
             } else {

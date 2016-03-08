@@ -22,14 +22,17 @@
 <% if ( active ) { %>
 <div class="activity ">
   <div class="maxWidth module">
-    <h2 class="module-title">精彩活动</h2>
+    <h2 class="module-title">
+      <div class="module-but"><a href="/about" class="no-but red">什么是WDShare？</a></div>
+      精彩活动
+    </h2>
     <div class="activity-con">
       <% active.result.forEach(function(active){ %>
       <a href="/active/<%= active._id %>" class="activity-item">
         <h3 class="activity-title"><em><%= active.aName %></em></h3>
         <div class="activity-type">
           <span class="activity-date">时间：<%= active.aTime %></span>
-          <span class="activity-click">赞：<%= active.aClick ? active.aClick : 0 %></span>
+          <span class="activity-click">点击：<%= active.aClick ? active.aClick : 0 %></span>
           <!-- <span class="activity-comment">评论：15</span> -->
         </div>
         <% if ( active.aStatus == 1 ) { %>

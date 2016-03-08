@@ -12,7 +12,8 @@ requirejs.config({
         autosize: './autosize.min'// textarea自动调整大小
     },
     shim: {
-    }
+    },
+    waitSeconds: 60
 });
 
 
@@ -368,6 +369,11 @@ if ( document.getElementById("js-comment") ) {
 require(["jquery", "dialog"], function($, Dialog) {
     openActive();
     pageSide();
+
+    // 让页面中的自定义方法也可以执行
+    if ( typeof pageInit == "function" ) {
+        pageInit();
+    }
 });
 
 

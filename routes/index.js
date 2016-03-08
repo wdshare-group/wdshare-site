@@ -209,12 +209,12 @@ function fixUsers(item, callback) {
 }
 
 /**
- * 获取会员总数
+ * 获取会员总数，已激活并且未锁定的
  * 
  * @param {fuction} callback 
  */
 var getUserSum = function(callback) {
-  usersModel.count({}, {
+  usersModel.count({isActive:true, lock:false}, {
     key: "User"
   }, function(err, result) {
     callback(err, result);

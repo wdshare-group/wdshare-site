@@ -6,6 +6,7 @@
 <meta name="keywords" content="<%= activeInfo.aName %>" />
 <meta name="description" content="<%= activeInfo.aName %>" />
 <% include ../../etc/htmlhead.ejs %>
+<link href="/static/plugin/fancybox/jquery.fancybox.css" rel="stylesheet" />
 <%
   var name = '',
       com = '',
@@ -83,6 +84,8 @@
     </div>
   </div>
 </div>
+
+<input id="init-fancybox" type="hidden"/>
 
 <% if ( activeInfo.aStatus == 1 ) { %>
 <div class="active-join-bg" id="js-active-join">

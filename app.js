@@ -137,6 +137,7 @@ var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 var manage_member = require('./manage/routes/member');
 var manage_comment = require('./manage/routes/comment');
 var manage_donation = require('./manage/routes/donation');
+var active_join_get_mail = require('./manage/routes/activeJoinGetMail');
 
 // 后台首页
 app.use('/manage/', manage);
@@ -152,7 +153,8 @@ app.use('/manage/member', manage_member);
 app.use('/manage/comment', manage_comment);
 // 捐赠管理
 app.use('/manage/donation', manage_donation);
-
+// 活动报名邮件提取工具
+app.use('/manage/activeJoinGetMail', active_join_get_mail);
 
 // ueditor相关
 var ueditor = require('ueditor-nodejs');

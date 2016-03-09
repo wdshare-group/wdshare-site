@@ -2204,11 +2204,17 @@ function domready() {
     Comment.init();
 
     calendarInit();
+
 };
 
 
 
 require(["jquery", "dialog", "moment", "datepicker"], function($, Dialog) {
     domready();
+    
+    // 让页面中的自定义方法也可以执行
+    if ( typeof pageInit === "function" ) {
+        pageInit();
+    }
 });
 

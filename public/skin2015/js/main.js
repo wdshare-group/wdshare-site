@@ -371,7 +371,7 @@ require(["jquery", "dialog"], function($, Dialog) {
     pageSide();
 
     // 让页面中的自定义方法也可以执行
-    if ( typeof pageInit == "function" ) {
+    if ( typeof pageInit === "function" ) {
         pageInit();
     }
 });

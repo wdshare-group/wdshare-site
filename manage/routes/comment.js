@@ -51,6 +51,7 @@ function getCommentList(req, res, o, pages, mod) {
                 res.render(mod, {
                     title: "所有评论",
                     result: [],
+                    today: 0,
                     pages: _page
                 });
                 return false;

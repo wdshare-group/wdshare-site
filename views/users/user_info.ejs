@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>修改个人信息 - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+<script>
+	var oldNickname = "<%=member.username%>";
+</script>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
+</head>
+<%
+	var name = "";
+	var who = "我";
+	if ( member.email != member.username ) {
+		name = member.username;
+	}
+%>
+<script type="text/javascript">
+	userTag = "<%=info.tag%>";
+</script>
+<body>
+<% include ../etc/head.ejs %>
+
+<% include etc/user_head.ejs %>
+
+<div id="js-myhome" style="display:none;"></div>
+<div class="edit-body">
+	<form id="js-edit-form" name="edit-form" method="post" action="">
+	<dl>
+		<dt>昵称：</dt>
+		<dd><input type="text" name="nickname" placeholder="请输入昵称" class="in-text" value="<%=name%>" /><span>可用于帐号登录</span></dd>
+	</dl>
+
+	<h2><strong>基本信息 <em>完善吧，好处多多</em></strong></h2>
+
+	<dl>
+		<dt>我的签名：</dt>
+		<dd><textarea name="mood" placeholder="请输入签名"><%= !info.mood ? "" : info.mood %></textarea></dd>
+	</dl>
+	<dl>
+		<dt>性别：</dt>
+		<dd>
+			<label><input type="radio" name="sex" value="1" <% if (info.sex === 1) { %>checked="checked"<% } %><% if (!info.sex) { %>checked="checked"<% } %> /> 男</label>
+			<label><input type="radio" name="sex" value="2" <% if (info.sex === 2) { %>checked="checked"<% } %> /> 女</label>
+			<label><input type="radio" name="sex" value="3" <% if (info.sex === 3) { %>checked="checked"<% } %> /> 保密</label>
+		</dd>
+	</dl>
+	<dl>
+		<dt>真实姓名：</dt>
+		<dd><input type="text" name="realname" placeholder="请输入真实姓名" class="in-text" value="<%= !info.realname? "" : info.realname %>" /><span>可用活动报名，不会外泄</span></dd>
+	</dl>
+	<dl id="js-articleadd-tag" style="margin-top:5px;">
+      <dt>技能标签：</dt>
+      <input type="hidden" name="tag" id="js-hidden-tag" value="<%= !info.tag ? "" : info.tag %>" />
+      <dd class="content-tegs">
+        <div class="content-tegs-show" id="js-content-tegs-show"></div>
+        <input type="text" class="in-text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+      </dd>
+      <div class="content-tegs-list">
+        <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+        <i id="js-content-tegs-resetList">换一批</i>
+      </div>
+    </dl>
+	<dl>
+		<dt>求职状态：</dt>
+		<dd>
+			<select name="jobstate">
+		    <option value="0">请选择</option>
+		    <option value="1" <% if (info.jobstate === 1) { %>selected<% } %>>求职中</option>
+		    <option value="2" <% if (info.jobstate === 2) { %>selected<% } %>>已就业</option>
+		    <option value="3" <% if (info.jobstate === 3) { %>selected<% } %>>学生</option>
+		  </select>
+		</dd>
+	</dl>
+	<div id="com-input">
+		<dl>
+			<dt>公司名称：</dt>
+			<dd><input type="text" name="com" placeholder="请输入公司名称" class="in-text" value="<%= !info.com ? "" : info.com %>" /></dd>
+		</dl>
+		<dl>
+			<dt>职位名称：</dt>
+			<dd><input type="text" name="jobs" placeholder="请输入职位名称" class="in-text" value="<%= !info.jobs ? "" : info.jobs %>" /></dd>
+		</dl>
+	</div>
+	<div id="students-input">
+	<dl>
+		<dt>学校名称：</dt>
+		<dd><input type="text" name="school" placeholder="请输入学校名称" class="in-text" value="<%= !info.school ? "" : info.school %>" /></dd>
+	</dl>
+	</div>
+
+	<h2><strong>创收的机会 <em>我看好你哦</em></strong></h2>
+	<dl>
+		<dt>是否兼职：</dt>
+		<dd>
+			<label><input type="radio" name="isPartTime" value="1" <% if (info.isPartTime === true) { %>checked="checked"<% } %> /> 可以</label>
+			<label><input type="radio" name="isPartTime" value="2" <% if ( !info.isPartTime || info.isPartTime === false) { %>checked="checked"<% } %> /> 暂时不考虑</label> <span>创收与你的项目案例息息相关</span>
+		</dd>
+	</dl>
+
+	<h2><strong>联系方式 <em>至少填写一样</em></strong></h2>
+	<dl>
+		<dt>手机：</dt>
+		<dd><input type="number" name="phone" placeholder="请输入手机" class="in-text" value="<%= !info.phone ? "" : info.phone %>" /></dd>
+	</dl>
+	<dl>
+		<dt>QQ号：</dt>
+		<dd><input type="text" name="qq" placeholder="请输入QQ号" class="in-text" value="<%= !info.qq ? "" : info.qq %>" /></dd>
+	</dl>
+	<dl>
+		<dt>微信号：</dt>
+		<dd><input type="text" name="wechat" placeholder="请输入微信号" class="in-text" value="<%= !info.wechat ? "" : info.wechat %>" /></dd>
+	</dl>
+
+	<h2><strong>提升个人魅力</strong></h2>
+	<dl>
+		<dt>个人网站：</dt>
+		<dd><input type="text" name="www" placeholder="请输入网址" class="in-text" value="<% if (!info.www) { %>http://<% } else { %><%=info.www%><% } %>" /></dd>
+	</dl>
+	<dl>
+		<dt>微博地址：</dt>
+		<dd><input type="text" name="weibo" placeholder="请输入微博地址" class="in-text" value="<% if (!info.weibo) { %>http://<% } else { %><%=info.weibo%><% } %>" /></dd>
+	</dl>
+	<dl>
+		<dt>Github：</dt>
+		<dd><input type="text" name="github" placeholder="请输入Github地址" class="in-text" value="<% if (!info.github) { %>http://<% } else { %><%=info.github%><% } %>" /></dd>
+	</dl>
+	<dl>
+		<dt>个人介绍：</dt>
+		<dd><textarea name="introduction" class="text-content"><%= !info.introduction ? "" : info.introduction %></textarea></dd>
+	</dl>
+	<div class="edit-but"><input type="submit" name="submitbutton" value="保存" /></div>
+	</form>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

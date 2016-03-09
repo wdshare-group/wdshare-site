@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-会员管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">
+      <a href="/manage/member">所有会员</a>
+      <a href="/manage/member/notactive">未激活会员</a>
+      <a href="/manage/member/lock">被锁定会员</a>
+      <a href="/manage/member/active">活跃会员</a>
+      <a href="/manage/member/vip">VIP会员</a>
+    </h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%= title %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <%= item_sum %> 名</h3>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Face</th>
+                <th>Name</th>
+                <th>锁定原因</th>
+                <th>Date</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(member){ %>
+              <tr>
+                <td><img style="width:30px; height:30px; border-radius:30px" src="/user/face/<%= member._id %>" /></td>
+                <td style="text-align:left;">
+                  <%= member.username %>
+                  <% if ( member.lock ) { %><span style="color:#c00;">锁</span><% } %>
+                </td>
+                <td><%= member.lockMessage %></td>
+                <td><%= member.lockTime ? moment(member.lockTime).format('YYYY-MM-DD HH:mm:ss') : "" %></td>
+                <td>
+                  <a href="/manage/member/edit/<%= member._id %>">修改解锁</a>
+                  <!--
+                  <% if ( member.lock ) { %>
+                    <a href="#" data-id="<%= member._id %>" class="js-managemember-unlock">解锁</a>
+                  <% } else { %>
+                    <a href="#" data-id="<%= member._id %>" class="js-managemember-lock">锁定</a>
+                  <% } %>-->
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

@@ -2,20 +2,48 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>WDShare管理中心</title>
+<title>WDShare管理中心-活动列表</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
 </head>
 
 <body>
 <% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
 <div class="manage">
   <% include ../etc/left.ejs %>
   <div class="manage-right">
-    <h1 class="manage-title">活动管理</h1>
+    <h1 class="manage-title">
+      <a href="/manage/active/">所有活动</a>
+      <a href="/manage/active/ongoing">进行中的</a>
+      <a href="/manage/active/over">已结束的</a>
+      <% channel.forEach(function(item){ %>
+      <a href="/manage/active/channellist/<%= item.url %>"><%= item.name %></a>
+      <% }) %>
+    </h1>
     <div class="manage-module">
       <div class="manage-module-head">
-        <h3 class="manage-module-title">活动列表</h3>
+        <h3 class="manage-module-title"><%= title %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共有 <%= item_sum %> 条</h3>
         <div class="manage-tool">
           <a href="/manage/active/create" class="green">添加活动</a>
         </div>
@@ -37,13 +65,13 @@
             <tbody>
               <% result.forEach(function(active){ %>
               <tr>
-                <td><% if ( active.aClass == 0 ) { %>
-                分享活动
-                <% } else if ( active.aClass == 1 ) { %>
-                前端培训
-                <% } else if ( active.aClass == 2 ) { %>
-                娱乐活动
-                <% } %></td>
+                <td>
+                <% channel.forEach(function(channel){ %>
+                  <%if (channel._id == active.aClass) {%>
+                  <%= channel.name%>
+                  <% } %>
+                <% }) %>
+                </td>
                 <td class="text-align-left no-a-style"><a href="/manage/active/update/<%= active._id %>"><%= active.aName %></a></td>
                 <td><% if ( active.aStatus == 1 ) { %>
                 <span class="font-green">开启</span>
@@ -56,14 +84,57 @@
                 <% } %></td>
                 <td><% if ( active.aClick ) { %>
                   <%= active.aClick %><% } else { %>0<% } %></td>
-                <td><a href="/manage/active/join/<%= active._id %>"><%= joinLength[active._id] %></a></td>
-                <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
+                <td><a href="/manage/active/join/<%= active._id %>"><%= active.joins %></a></td>
+                <td><%= moment(active.aAddDate).format('YYYY-MM-DD HH:mm:ss') %></td>
                 <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/update/<%= active._id %>">修改</a><a href="#" data-id="<%= active._id %>" class="js-active-delete" style="display:none;">删除</a></td>
               </tr>
               <% }) %>
             </tbody>
           </table>
         </div>
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
       </div>
     </div>
     

@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-标签管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title"><a href="/manage/tags">所有标签</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/manage/tags/article">文章标签</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/manage/tags/member">会员标签</a></h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%=title%> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>共有<%=item_sum%>个标签</em></h3>
+        <div class="manage-tool">
+          <a href="/manage/tag/create" class="green">添加标签</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>权重</th>
+                <th>来源</th>
+                <th>Date</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(tag){ %>
+              <tr>
+                <td><%= tag.name %></td>
+                <td><%= tag.level %></td>
+                <td><% if ( !tag.model ) { %>&nbsp;<% } else if ( tag.model === "article" ) { %>文章<% } else if ( tag.model === "project" ) { %>项目<% } else if ( tag.model === "job" ) { %>招聘<% } else if ( tag.model === "member" ) { %>会员<%}%></td>
+                <td><%= moment(tag.editDate).format('YYYY-MM-DD HH:mm:ss') %></td>
+                <td><a href="/manage/tag/edit/<%= tag._id %>">修改</a><a href="#" data-id="<%= tag._id %>" class="js-tag-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

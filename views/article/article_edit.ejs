@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>修改文章 -- WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="article crumbs-article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-left">
+        <h1 class="article-title">修改文章</h1>
+      </div>
+    </div>
+    <div class="add-article">
+      <% if ( typeof error == "string" ) { %>
+      <p style="min-height:400px; text-align:center; font-size:16px; padding-top:50px;"><%= error %></p>
+      <% } else { %>
+      <form id="js-article-create-form">
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>文章标题：</strong><input type="text" name="title" style="width:500px;"  value="<%=result.title%>" /></label>
+          <label style="display:inline-block; margin-left:40px;">跳转：<input type="checkbox" name="linkType" id="js-linkType" style="width:auto; height:auto;" <%if (result.linkUrl) {%>checked="checked"<%}%> /></label>
+        </div>
+        <div class="addActive-form-item" id="js-linkUrl-box" style="display:<%if (!result.linkUrl) {%>display:none;<%}%>;">
+          <label><strong>跳转URL：</strong><input type="text" name="linkUrl" style="width:500px;" value="<%= result.linkUrl ? result.linkUrl : 'http://'%>" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label>
+            <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
+            <select name="channelId">
+              <% channels.forEach(function(channel){ %>
+              <option value="<%= channel._id%>" <%if (channel._id == result.channelId) {%>selected<%}%>><%= channel.name%></option>
+              <% }) %>
+            </select>
+          </label>
+        </div>
+        
+        <div class="addActive-form-item">
+          <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" value="<%=result.source%>" /></label>
+          <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="<%= result.sourceUrl ? result.sourceUrl : 'http://'%>" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong>
+        </div>
+        <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%=result.content%></textarea></div>
+
+        <div class="addActive-form-item" id="js-articleadd-tag">
+          <strong>TAG：</strong>
+          <input type="hidden" name="tag" id="js-hidden-tag" value="<%=result.tag%>" />
+          <div class="content-tegs">
+            <div class="content-tegs-show" id="js-content-tegs-show"></div>
+            <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+          </div>
+          <div class="content-tegs-list">
+            <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+            <i id="js-content-tegs-resetList">换一批</i>
+          </div>
+        </div>
+
+        <!-- <div class="addActive-form-item">
+          <label><strong>关键字：</strong><input type="text" name="keywords" value="<%=result.keywords%>" /><span>显示在meta标签的keywords</span></label>
+        </div> -->
+        <div class="addActive-form-item">
+          <label><strong>摘要描述：</strong>
+          <textarea name="description" cols="30" rows="5"><%=result.description%></textarea><span>显示在meta标签的description</span></label>
+        </div>
+
+        <% if (user.vip && user.vip.indexOf("article_send") >= 0) {%>
+        <div class="addActive-form-item addActive-form-radio" id="js-articleadd-description">
+          <strong>是否审核：</strong>
+          <div class="addActive-form-item-right">
+            <label><input type="radio" name="audit" value="1" <%if (result.audit) {%>checked="checked"<%}%> /> 是</label>
+            <label><input type="radio" name="audit" <%if (!result.audit) {%>checked="checked"<%}%> /> 否 </label>
+            <span>未审核内容将不在前台显示</span>
+          </div>
+        </div>
+        <% } %>
+
+        <% if ( captcha && captcha === true ) { %>
+        <div class="addActive-form-item" style="margin-bottom:20px;">
+          <label><strong>验证码：</strong>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></label>
+        </div>
+        <% } %>
+
+        <div class="addActive-form-but">
+          <input class="green" name="submitbutton" type="submit" value="提交"/>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

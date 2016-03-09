@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-添加文章</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">文章</h1>
+    <div class="manage-module">
+      <form id="js-article-create-form">
+        <!-- <input type="hidden" name="id" value="" /> -->
+        <input type="hidden" name="audit" value="1" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">添加文章</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>文章标题：</strong><input type="text" name="title" style="width:500px;" /></label>
+              <label style="display:inline-block; margin-left:40px;">跳转：<input type="checkbox" name="linkType" id="js-linkType" style="width:auto; height:auto;" /></label>
+            </div>
+            <div class="manage-addActive-form-item" id="js-linkUrl-box" style="display:none;">
+              <label><strong>跳转URL：</strong><input type="text" name="linkUrl" style="width:500px;" value="http://" /></label>
+            </div>
+            <div class="manage-addActive-form-item" style="height:0; padding:0; overflow:hidden;">
+              <label><strong>缩略图：</strong><input type="text" name="cover" style="width:400px;" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
+                <select name="channelId">
+                  <option value="" selected>请选择栏目</option>
+                  <% result.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                  <% }) %>
+                </select></label>
+            </div>
+            <div class="manage-addActive-form-item" id="js-articleadd-tag">
+              <strong>TAG：</strong>
+              <input type="hidden" name="tag" id="js-hidden-tag" value="" />
+              <div class="content-tegs">
+                <div class="content-tegs-show" id="js-content-tegs-show"></div>
+                <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+              </div>
+              <div class="content-tegs-list">
+                <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+                <i id="js-content-tegs-resetList">换一批</i>
+              </div>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" /></label>
+              <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="http://" /></label>
+            </div>
+            
+            <div class="manage-addActive-form-item">
+              <label><strong>发布者邮箱：</strong><input type="text" name="email" /><span>必须是本站会员的邮箱</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong></label>
+            </div>
+            <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"></textarea></div>
+            
+
+            <div class="manage-addActive-form-note" onclick="document.getElementById('js-article-gaoji').style.display='block'"><em>高级配置</em></div>
+            
+            <div id="js-article-gaoji" style="display:none;">
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>自定义属性：</strong>
+                <label><input type="checkbox" name="diyType" value="1" /> 头条</label>
+                <label><input type="checkbox" name="diyType" value="2" /> 推荐</label>
+                <label><input type="checkbox" name="diyType" value="3" /> 加粗</label>
+              </div>
+              <!-- <div class="manage-addActive-form-item">
+                <label><strong>关键字：</strong><input type="text" name="keywords" /><span>显示在meta标签的keywords</span></label>
+              </div> -->
+              <div class="manage-addActive-form-item">
+                <label><strong>描述：</strong>
+                <textarea name="description" cols="30" rows="10"></textarea><span>显示在meta标签的description</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>标题颜色：</strong><input type="text" name="color" /><span>支持CSS语法，例如：#ff0000</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>使用模板：</strong><input type="text" name="tpl" /><span>内容模板，权重高于分类指定的模板</span></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>排序：</strong><input type="text" name="rank"  value="0" /></label>
+              </div>
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>置顶：</strong>
+                <label><input type="radio" name="sortup" value="1" /> 是</label>
+                <label><input type="radio" name="sortup" value="0" checked="checked" /> 否</label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>点击次数：</strong><input type="text" name="click" value="0" /></label>
+              </div>
+              <div class="manage-addActive-form-item">
+                <label><strong>点赞数：</strong><input type="text" name="zan" value="0" /></label>
+              </div>
+              <div class="manage-addActive-form-item manage-addActive-form-radio">
+                <strong>是否允许评论：</strong>
+                <label><input type="radio" name="isComment" value="1" checked="checked" /> 是</label>
+                <label><input type="radio" name="isComment" value="0" /> 否</label>
+              </div>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

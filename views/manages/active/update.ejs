@@ -2,9 +2,12 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>WDShare管理中心</title>
+<title>WDShare管理中心-修改活动</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 
 <body>
@@ -15,9 +18,9 @@
     <h1 class="manage-title">活动管理</h1>
     <div class="manage-module">
       <form id="js-create-form">
-        <input type="hidden" name="aId" value="<%= activeInfo._id %>" />
+        <input type="hidden" name="aId" value="<%= result._id %>" />
         <div class="manage-module-head">
-          <h3 class="manage-module-title">添加活动</h3>
+          <h3 class="manage-module-title">修改活动</h3>
           <div class="manage-tool">
             <input class="green" type="submit" value="提交"/>
             <input class="gray" type="reset" value="重置"/>
@@ -29,61 +32,71 @@
               <label>
                 <strong>活动分类：</strong>
                 <select name="aClass" >
-                  <option value="2" <%= activeInfo.aClass == '2'?'selected':'' %> >娱乐活动</option>
-                  <option value="1" <%= activeInfo.aClass == '1'?'selected':'' %> >前端培训</option>
-                  <option value="0" <%= activeInfo.aClass == '0'?'selected':'' %> >分享活动</option>
+                  <% channels.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>" <%if (channel._id == result.aClass) {%>selected<%}%>><%= channel.name%></option>
+                  <% }) %>
                 </select>
               </label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>活动名称：</strong><input type="text" name="aName" value="<%= activeInfo.aName %>" /><span>活动主题</span></label>
+              <label><strong>活动名称：</strong><input type="text" name="aName" value="<%= result.aName %>" /><span>活动主题</span></label>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>活动时间：</strong>
-              <input type="text" name="aTime" value="<%= activeInfo.aTime %>" /><span>案例：2014-7-26 14:00 -- 18:00</span></label>
+              <input type="text" name="aTime" value="<%= result.aTime %>" /><span>案例：2014-7-26 14:00 -- 18:00</span></label>
             </div>
             <!-- <div class="manage-addActive-form-item">
-              <label><strong>报名截止时间：</strong><input type="text" name="aJoinEndTime" value="<%= activeInfo.aJoinEndTime %>" /><span>暂不启用</span>
+              <label><strong>报名截止时间：</strong><input type="text" name="aJoinEndTime" value="<%= result.aJoinEndTime %>" /><span>暂不启用</span>
               </label>        
             </div> -->
             <div class="manage-addActive-form-item">
               <label><strong>地点：</strong>
-              <input type="text" name="aAddress" value="<%= activeInfo.aAddress %>" /><span>支持HTML</span></label>
+              <input type="text" name="aAddress" value="<%= result.aAddress %>" /><span>支持HTML</span></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>活动摘要：</strong><input type="text" name="aSummary" value="<%= activeInfo.aSummary %>" /><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
+              <label><strong>活动摘要：</strong><input type="text" name="aSummary" value="<%= result.aSummary %>" /><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>活动内容：</strong>
-              <textarea name="aContent" cols="30" rows="10"><%= activeInfo.aContent %></textarea><span>支持HTML</span></label>
+              <label><strong>活动内容：</strong></label>
             </div>
+            <div class="editor-box"><textarea name="aContent" id="editor" style="height:400px;"><%= result.aContent %></textarea></div>
             <div class="manage-addActive-form-item">
               <label><strong>活动状态：</strong>
               <select name="aStatus" >
-                <option value="0" <%= activeInfo.aStatus == '0'?'selected':'' %>>关闭</option>
-                <option value="1" <%= activeInfo.aStatus == '1'?'selected':'' %>>开启</option>
-                <option value="2" <%= activeInfo.aStatus == '2'?'selected':'' %>>暂停报名</option>
-                <option value="3" <%= activeInfo.aStatus == '3'?'selected':'' %>>未开始报名</option>
+                <option value="0" <%= result.aStatus == '0'?'selected':'' %>>关闭</option>
+                <option value="1" <%= result.aStatus == '1'?'selected':'' %>>开启</option>
+                <option value="2" <%= result.aStatus == '2'?'selected':'' %>>暂停报名</option>
+                <option value="3" <%= result.aStatus == '3'?'selected':'' %>>未开始报名</option>
               </select>
               </label>
             </div>
             <div class="manage-addActive-form-note"><em>高级配置</em></div>
             <div class="manage-addActive-form-item">
               <label><strong>邀请码前缀：</strong>
-              <input type="text" name="aCodebefor" value="<%= activeInfo.aCodebefor == undefined ? "" : activeInfo.aCodebefor %>" /><span>跟邀请码拼在一起</span></label>
+              <input type="text" name="aCodebefor" value="<%= result.aCodebefor == undefined ? "" : result.aCodebefor %>" /><span>跟邀请码拼在一起</span></label>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>备注：</strong>
-              <input type="text" name="aComment" value="<%= activeInfo.aComment %>" /><span>前台不显示，仅作为活动备注记录</span></label>
+              <input type="text" name="aComment" value="<%= result.aComment %>" /><span>前台不显示，仅作为活动备注记录</span></label>
             </div>
 
             <div class="manage-addActive-form-item">
               <label><strong>排序：</strong>
-              <input type="text" name="aSort" value="<%= activeInfo.aSort %>" /><span>默认为 0</span></label>
+              <input type="text" name="aSort" value="<%= result.aSort %>" /><span>默认为 0</span></label>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>模板：</strong>
-              <input type="text" name="aTpl" value="<%= activeInfo.aTpl == undefined ? "index" : activeInfo.aTpl %>" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
+              <input type="text" name="aTpl" value="<%= result.aTpl == undefined ? "index" : result.aTpl %>" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
+            </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>是否允许评论：</strong>
+              <label><input type="radio" name="isComment" value="1" <%if (result.isComment) {%>checked="checked"<%}%> /> 是</label>
+              <label><input type="radio" name="isComment" value="0" <%if (!result.isComment) {%>checked="checked"<%}%> /> 否</label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>邀请函模板：</strong>
+              <textarea name="aEmailTpl"><%= result.aEmailTpl == undefined ? "" : result.aEmailTpl %></textarea><br />
+              <span>邀请函发送模板，支持的标签有：{=title}--活动标题； {=name}--姓名； {=code}--邀请码； {=mail}--报名邮箱； {=id}--报名ID； {=time}--活动时间； {=address}--活动地址； {=blank}--&amp;nbsp;  {=signature}--全局邮件签名</span></label>
             </div>
 
             <div class="manage-addActive-form-item manage-form-but">
@@ -99,5 +112,9 @@
 </div>
 
 <% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
 </body>
 </html>

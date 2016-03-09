@@ -1,7 +1,9 @@
 var nodemailer = require("nodemailer"),
     config     = require("./config.js"),
     mail       = config.mail,
-    mails      = [];
+    mails      = [],
+    succeedCallback = function() {},
+    errorCallback = function() {};
 
 var smtpTransport = nodemailer.createTransport({
     service: mail.service,
@@ -12,10 +14,17 @@ var smtpTransport = nodemailer.createTransport({
 });
 
 
-function send(mail){
+function send(mail, succeed, error) {
     "use strict";
     mails.push(mail);
-}
+
+    if ( succeed ) {
+        succeedCallback = succeed;
+    }
+    if ( error ) {
+        errorCallback = error;
+    }
+};
 
 function getAndSend(){
     "use strict";
@@ -26,8 +35,10 @@ function getAndSend(){
             if(error){
                 console.log(error);
                 console.log("MailSendError");
+                errorCallback();
             }else{
                 console.log("Message sent!");
+                succeedCallback();
                 //console.log("Message sent: " + response.message);
             }
         });

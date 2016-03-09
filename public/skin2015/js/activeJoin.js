@@ -34,6 +34,7 @@ define(["jquery"], function(){
     Active.init = function() {
         if ( !document.getElementById("js-active-join") ) { return false };
         this.addEvent();
+        this.newActiveLookTrail();
     };
 
     Active.addEvent = function() {
@@ -56,14 +57,17 @@ define(["jquery"], function(){
         // 注册表单失去焦点事件
         var _form = $("#js-joinform"),
             mail = _form.find("input[name='mail']"),
-            name = _form.find("input[name='name']");
+            name = _form.find("input[name='name']"),
+            code = _form.find("input[name='code']");
         mail.blur(function() {
             Active.checkFormMail(this);
         });
         name.blur(function() {
             Active.checkFormName(this);
         });
-
+        code.blur(function() {
+            Active.checkFormCode(this);
+        });
     };
 
     /**
@@ -73,10 +77,16 @@ define(["jquery"], function(){
     Active.activeCheckForm = function() {
         var _form = $("#js-joinform"),
             mail = _form.find("input[name='mail']"),
-            name = _form.find("input[name='name']");
+            name = _form.find("input[name='name']"),
+            code = _form.find("input[name='code']");
         if ( !Active.checkFormMail(mail[0], true) ||  !Active.checkFormName(name[0], true) ) {
             return false;
         };
+        if ( code.length > 0 ) {
+            if ( !Active.checkFormCode(code[0], true) ) {
+                return false;
+            };  
+        }
         return true;
     };
 
@@ -109,6 +119,22 @@ define(["jquery"], function(){
         }
         return true;
     };
+    /**
+     * 检测表单验证码
+     * @return {[type]} [description]
+     */
+    Active.checkFormCode = function(name, flag) {
+        if ( !name.value ) {
+            showError(name, "请填写验证码", flag);
+            return false;
+        } else if ( name.value.length < 4 ) {
+            showError(name, "验证码为4个字符", flag);
+            return false;
+        } else {
+            showYes(name);
+        }
+        return true;
+    };
 
 
 
@@ -129,6 +155,10 @@ define(["jquery"], function(){
         formParam.com = _form.com.value;
         formParam.web = _form.web.value;
         formParam.chi = _form.chi.value;
+
+        if ( document.getElementById("activeJoin-code") ) {
+            formParam.code = _form.code.value;
+        }
 
         if (share == "1") {
             share_text = "分享师：YES";
@@ -183,12 +213,27 @@ define(["jquery"], function(){
                 }
 
                 // 提示成功
-                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn', onClose:function() {
-                    window.location.reload();
+                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'showButtons':true, 'cancelButton':false, 'animation':'animated bounceIn', onClose:function() {
+                    window.location = "/user/myactive";
                 }});
             } else {// 错误提示
                 // 提示成功
-                Dialog({'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>', 'lock':true, 'title':'活动报名', 'animation':'animated bounceIn'});
+                Dialog({
+                    'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>',
+                    'lock':true,
+                    'title':'活动报名',
+                    'animation':'animated bounceIn', 'showButtons':true, 'cancelButton':false,
+                    "onReady": function() {
+                        $(".D_close").focus();
+                    },
+                    "onComplete":function() {
+                        // 更新验证码
+                        $("#activeJoin-code").attr("src", $("#activeJoin-code").attr("src")+'?'+new Date().getTime());
+                        if ( data.reload ) {
+                            window.location.reload();
+                        }
+                    }
+                });
             };
 
             
@@ -200,7 +245,30 @@ define(["jquery"], function(){
         return false;
     };
 
+    /**
+     * 新活动查看轨迹记录
+     * @return
+     */
+    Active.newActiveLookTrail = function() {
+        if ( !document.getElementById("js-archives-model") || !document.getElementById("js-archives-id") || !activeStatus ) {
+            return false;
+        }
+        if ( document.getElementById("js-archives-model").value != "active" || activeStatus == 0 ) {
+            return false;
+        }
 
+        var activeid = document.getElementById("js-archives-id").value,
+            cookieActiveid = getCookie("WDS_newActiveLook");
+        if ( !cookieActiveid ) {
+            setCookie("WDS_newActiveLook", activeid, 1000*60*60*24*365);
+        } else {
+            if ( cookieActiveid.indexOf(activeid) >= 0 ) {
+                return;
+            }
+            setCookie("WDS_newActiveLook", cookieActiveid +","+activeid, 1000*60*60*24*365);
+        }
+
+    };
 
 
     return Active;

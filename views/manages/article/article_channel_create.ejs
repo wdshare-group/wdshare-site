@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-添加文章分类</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">文章分类</h1>
+    
+    <%
+      // 这一大坨代码为无限级分类，未完成，暂时用不着无限级
+      var channelData = [];// 转化成数组的数据
+      var mychannel;// 排列为无限级JSON的内容
+      var count = 0;
+      for ( key in result ) {
+        channelData.push(result[key]);
+      }
+      // 筛选信息
+      function channelScreening() {
+        var cache = {};// 本次筛选的结果
+        if ( channelData.length < 1 ) {
+          // 完成筛选
+          return false;
+        }
+        if ( !mychannel ) {
+          for ( var i=0; i<channelData.length; i++ ) {
+            if ( !channelData[i].parent ) {
+              cache[channelData[i]._id] = channelData[i];
+              // 删除数组操作
+            }
+          }
+          mychannel = cache;
+        }
+      }
+      channelScreening();
+    %>
+
+    <div class="manage-module">
+      <form id="js-articleChannels-create-form">
+        <!-- <input type="hidden" name="id" value="" /> -->
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">添加文章分类</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong>分类名称：</strong><input type="text" name="name" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>URL标识：</strong><input type="text" name="url"/><span>短链接标识，保存后不能修改，例如：http://www.wdshare.org/article/***</span></label>
+            </div>
+            <div class="manage-addActive-form-item" style="display:none;">
+              <label><strong>父类：</strong>
+                <select name="parent">
+                  <option value="" selected>顶级栏目</option>
+                  <% result.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                  <% }) %>
+                </select></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>使用模板：</strong><input type="text" name="end_tpl" /><span>该栏目终极页使用的模板，留空代表使用默认模板</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>关键字：</strong><input type="text" name="keywords" /><span>显示在meta标签的keywords</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>描述：</strong>
+              <textarea name="description" cols="30" rows="10"></textarea><span>显示在meta标签的description</span></label>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

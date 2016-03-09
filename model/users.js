@@ -4,11 +4,10 @@ var mongoose = require('mongoose'),
     dataBase = require("../server/config.js").db,
     Factory,
     db;
-
-mongoose.connect('mongodb://localhost/'+dataBase);
+    
 db           = mongoose.connection;
 
-// Çë²»ÒªÊ¹ÓÃÏÂÃæµÄ save Ö®ºóµÄ·½·¨£¬ÕâĞ©·½·¨ mongoosee ÓĞÔ­ÉúµÄ£¬¸üºÃÓÃ¡£
+// è¯·ä¸è¦ä½¿ç”¨ä¸‹é¢çš„ save ä¹‹åçš„æ–¹æ³•ï¼Œè¿™äº›æ–¹æ³• mongoosee æœ‰åŸç”Ÿçš„ï¼Œæ›´å¥½ç”¨ã€‚
 Users = function(){
     "use strict";
     this.Schema = Schema;
@@ -38,6 +37,8 @@ Users.prototype = {
             role:Number,
             password:String,
             age: Number,
+            lastLoginTime: Number,
+            lastLoginIp: String,
             regTime:Number,
             regIp : String,
             sex:Number,
@@ -46,7 +47,11 @@ Users.prototype = {
             isActive:Boolean,
             activeTime:Number,
             changeEmail:String,
-            changeTimes:Number
+            changeTimes:Number,
+            lock:Boolean,
+            lockTime:Number,
+            lockMessage:String,
+            vip:String
         });
         this.resetPassword = new this.Schema({
             email: {
@@ -87,6 +92,26 @@ Users.prototype = {
         "use strict";
         var condition = obj.body || {};
         this[obj.key].find(condition).exec(function(err,doc){
+            callback && callback(err,doc);
+        });
+    },
+    
+    /**
+     * Person
+      .find({ occupation: /host/ })
+      .where('name.last').equals('Ghost')
+      .where('age').gt(17).lt(66)
+      .where('likes').in(['vaporizing', 'talking'])
+      .limit(10)
+      .sort('-occupation')
+      .select('name occupation')
+      .exec(callback);
+     */
+    getSort : function(obj,callback){
+        "use strict";
+        var condition = obj.body || {},
+            start = (obj.pages.page - 1) * obj.pages.pagesize || 0;
+        this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
             callback && callback(err,doc);
         });
     },

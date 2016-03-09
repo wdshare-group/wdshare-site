@@ -5,7 +5,42 @@
 <title><%= activeInfo.aName %>-WDShare</title>
 <meta name="keywords" content="<%= activeInfo.aName %>" />
 <meta name="description" content="<%= activeInfo.aName %>" />
-<% include ../../module/htmlhead.ejs %>
+<% include ../../etc/htmlhead.ejs %>
+<%
+  var name = '',
+      com = '',
+      www = ''
+      email = '';
+  if(user && user.email) {
+    email = user.email;
+  }
+  if(user && user.email != user.username) {
+    name = user.username;
+  }
+  if(userInfo && userInfo.realname) {
+    name = userInfo.realname;
+  }
+  if(name == "undefined") {
+    name = '';
+  }
+
+  if(userInfo && userInfo.com) {
+    com = userInfo.com;
+  }
+  if(com == "undefined") {
+    com = '';
+  }
+
+  if(userInfo && userInfo.www && userInfo.www != "http://") {
+    www = userInfo.www;
+  }
+  if(www == "undefined") {
+    www = '';
+  }
+%>
+<script>
+  var activeStatus = <%=activeInfo.aStatus%>
+</script>
 <style type="text/css">
 .active-head {
   background: #3a74ad; /* Old browsers */
@@ -16,19 +51,22 @@
   background: -ms-linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* IE10+ */
   background: linear-gradient(45deg,  #3a74ad 0%,#3da0b5 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a74ad', endColorstr='#3da0b5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-
 }
+/*.active-head-but a { background:#ff6201;}
+.active-head-but a:hover { background:#51a351;}*/
 </style>
 </head>
 
 <body>
-<% include ../../module/head.ejs %>
+<% include ../../etc/head.ejs %>
 
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
 <div class="active-head">
   <div class="active-head-bg">
     <div class="active-head-con maxWidth">
       <div class="active-head-text">
-        <h1 class="active-title"><%= activeInfo.aName %> <a href="/active/update/<%= activeInfo._id %>">修改</a></h1>
+        <h1 class="active-title"><%= activeInfo.aName %></h1>
         <p class="active-time">时间：<%= activeInfo.aTime %></p>
         <p class="active-address">地址：<%- activeInfo.aAddress %></p>
       </div>
@@ -68,36 +106,38 @@
       <h3>我要报名</h3>
       <div class="active-join-con">
         <p>报名须知：本活动纯属公益。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</p>
+        <% if(!user){ %>
         <div class="active-login">
           登录后启用快捷报名
-          <a href="#" class="but but-blue but-login">登录</a><a href="#" class="but but-gray but-reg">注册</a>
+          <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
         </div>
+        <% } %>
         <form name="joinform" id="js-joinform" method="post"> 
           <input type="hidden" name="aid" value="<%= activeInfo._id %>">
           <dl>
             <dt>邮箱：</dt>
             <dd>
-              <input type="text" name="mail" placeholder="常用邮箱"> <em>请正确填写邮箱</em>
+              <input type="text" name="mail" placeholder="常用邮箱" value="<%=email%>"> <em>请正确填写邮箱</em>
               <span style="color:#666;">通过邮箱接收邀请函</span>
             </dd>
           </dl>
           <dl>
             <dt>姓名/昵称：</dt>
             <dd>
-              <input type="text" name="name" placeholder="尊姓大名"> <em>名称至少两个字符</em>
+              <input type="text" name="name" placeholder="尊姓大名" value="<%=name%>"> <em>名称至少两个字符</em>
             </dd>
           </dl>
           <dl>
             <dt>公司：</dt>
             <dd>
-              <input type="text" name="com" placeholder="就职公司">    
+              <input type="text" name="com" placeholder="就职公司" value="<%=com%>">    
               <span>选填</span>
             </dd>
           </dl>
           <dl>
             <dt>网站：</dt>
             <dd>
-              <input type="text" name="web" placeholder="个人或公司网站">    
+              <input type="text" name="web" placeholder="个人或公司网站" value="<%=www%>">    
               <span>选填</span>
             </dd>
           </dl>
@@ -141,6 +181,52 @@
 </div>
 <% } %>
 
+<% if ( configIsComment && activeInfo.isComment ) { %>
+  <div class="maxWidth active-comment">
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这个活动</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= activeInfo._id %>" />
+              <input type="hidden" name="model" value="active" />
+              <input type="hidden" name="title" value="<%= activeInfo.aName %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+  </div>
+<% } %>
+
 <script>
   /**
    * 报名表单检测， APIActiveFormCheck 方法存在则以该方法为表单检测
@@ -182,6 +268,6 @@
   };*/
 </script>
 
-<% include ../../module/foot.ejs %>
+<% include ../../etc/foot.ejs %>
 </body>
 </html>

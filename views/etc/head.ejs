@@ -1,0 +1,46 @@
+<div class="ie">没有IE9+、Chrome、Firefox等现代化浏览器，我都不好意思给你看！</div>
+
+<div class="header">
+  <div class="headCon maxWidth">
+    <div class="hd-logo"><a href="/"><img src="/static/skin2015/img/logo.png" /></a></div>
+    <ul class="hd-nav">
+      <li class="hd-nav-label">
+        <a href="/active/">线下活动</a>
+        <em class="count" id="js-openActive-count">-</em>
+        <em class="hd-nav-line"></em>
+      </li>
+      <li>
+        <a href="/article/">技术文章</a>
+      </li>
+      <!-- <li>
+        <a href="#">前端招聘</a>
+      </li> -->
+      <li class="hd-nav-hover">
+        <a href="javascript:void(0)">
+          实验室 <em class="icon-top-arrows"></em>
+        </a>
+        <div class="hd-nav-child">
+          <a href="/active/webdevschool">前端培训</a>
+          <!-- <a href="#">项目展示</a> -->
+          <a href="/team">技术小组</a>
+          <a href="/book">换书行动</a>
+        </div>
+      </li>
+      <li>
+        <a href="/donation">我要捐赠</a>
+      </li>
+      <% if(user && user.email){ %>
+      <li>
+        <a href="/user">我的主页</a>
+      </li>
+      <% } %>
+    </ul>
+    <div class="hd-login">
+      <% if(user && user.email){ %>
+      <% if(!user.isActive){ %><a href="/user/activeAccount/" class="but but-blue but-login" title="进入用户中心"><%=user.username%> <span>未激活</span></a><% }else{ %><a href="/user/" class="but but-blue but-login" title="进入用户中心"><%=user.username%></a><% } %><a href="/user/logout" class="but but-gray but-reg">退出</a>
+      <% }else{ %>
+      <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
+      <% } %>
+    </div>
+  </div>
+</div>

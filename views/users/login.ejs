@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare 用户登录</title>
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div id="js-passport" style="display:none;"></div>
+<div class="login-main">
+  <div class="login-main-bg">
+    <div class="login-inner">
+      <div class="login-title">
+        <h1>登录页面</h1>
+        <h3 class="login-subhead">输入信息登录到您的帐户</h3>
+        <h3 class="login-error"></h3>
+      </div>
+      <form id="js-loginForm" name="loginForm" method="post" action="">
+        <p class="login-input login-username"><input type="text" name="email" placeholder="输入您的邮箱" /></p>
+        <p class="login-input login-password"><input type="password" name="password" placeholder="输入您的密码" /></p>
+        <% if ( captcha && captcha === true ) { %>
+        <p class="login-input login-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></p>
+        <% } %>
+        <div class="login-but">
+          <input type="submit" name="submitbutton" value="登录" />
+        </div>
+        <p class="link"><a href="/user/forgotPassword">忘记密码？</a> <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册新帐号</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

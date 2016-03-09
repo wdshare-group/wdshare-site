@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+
+<html lang="en" class=" js no-touch csstransitions"><!--<![endif]--><head>
+		<meta charset="utf-8">
+		<title><%= activeInfo.aName %>-WDShare</title>
+		<meta name="keywords" content="<%= activeInfo.aName %>" />
+		<meta name="description" content="<%= activeInfo.aName %>" />
+		<!-- Mobile Meta -->
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+		<!-- Web Fonts -->
+<link href="/static/skin2015/css/animate.css" rel="stylesheet" />
+<link href="/static/skin2015/css/motion.css" rel="stylesheet" />
+<link href="/static/skin2015/css/style.css" rel="stylesheet" />
+		<!-- Bootstrap core CSS -->
+		<link href="/static/active_style/9/css/bootstrap.css" rel="stylesheet">
+		<!-- Worthy core CSS file -->
+		<link href="/static/active_style/9/css/style.css" rel="stylesheet">
+		<link href="/static/active_style/9/css/font-awesome.css" rel="stylesheet">
+		<link href="/static/skin2015/css/mydialog.css" rel="stylesheet" />
+
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+<link rel="apple-touch-icon" href="/static/apple-touch-icon-57x57.png" />
+<link rel="apple-touch-icon" sizes="72x72" href="/static/apple-touch-icon-72x72.png" />
+<link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png" />
+        <!-- JavaScript files placed at the end of the document so the pages load faster
+		================================================== -->
+	<%
+  var name = '',
+      com = '',
+      www = ''
+      email = '';
+  if(user && user.email) {
+    email = user.email;
+  }
+  if(user && user.email != user.username) {
+    name = user.username;
+  }
+  if(userInfo && userInfo.realname) {
+    name = userInfo.realname;
+  }
+  if(name == "undefined") {
+    name = '';
+  }
+
+  if(userInfo && userInfo.com) {
+    com = userInfo.com;
+  }
+  if(com == "undefined") {
+    com = '';
+  }
+
+  if(userInfo && userInfo.www && userInfo.www != "http://") {
+    www = userInfo.www;
+  }
+  if(www == "undefined") {
+    www = '';
+  }
+%>
+<script>
+  var activeStatus = <%=activeInfo.aStatus%>
+</script>
+<style type="text/css">
+	header.fixed { min-width:1000px;}
+	.mybanner img { display:block; width:100%;}
+	h2.D_title { padding:15px 0; }
+	.comment-item-face img,
+	.comment-form-user img { max-width:50px; }
+	.active-body { min-width:800px; }
+</style>
+	</head>
+
+	<body class="no-trans scroll-spy fixed-header-on" gtools_scp_screen_capture_injected="true" style="min-width:1000px; overflow-x:hidden;">
+	
+		<!-- scrollToTop -->
+		<!-- ================ -->
+		<div class="scrollToTop"><i class="icon-up-open-big"></i></div>
+
+		<!-- header start -->
+		<!-- ================ --> 
+		<header class="header fixed clearfix navbar navbar-fixed-top">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4">
+
+						<!-- header-left start -->
+						<!-- ================ -->
+						<div class="header-left clearfix">
+
+							<!-- logo -->
+							<div class="logo smooth-scroll">
+								<a href="http://www.wdshare.org"> <img id="logo" src="/static/active_style/9/images/logo.png" alt="Worthy"></a>
+							</div>
+
+						</div>
+						<!-- header-left end -->
+
+					</div>
+					<div class="col-md-8">
+
+						<!-- header-right start -->
+						<!-- ================ -->
+						<div class="header-right clearfix">
+
+							<!-- main-navigation start -->
+							<!-- ================ -->
+							<div class="main-navigation animated">
+
+								<!-- navbar start -->
+								<!-- ================ -->
+								<nav class="navbar navbar-default" role="navigation">
+									<div class="container-fluid">
+
+										<!-- Toggle get grouped for better mobile display -->
+										<div class="navbar-header">
+											<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+												<span class="sr-only">Toggle navigation</span>
+												<span class="icon-bar"></span>
+												<span class="icon-bar"></span>
+												<span class="icon-bar"></span>
+											</button>
+										</div>
+
+										<!-- Collect the nav links, forms, and other content for toggling -->
+										<div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+											<ul class="nav navbar-nav navbar-right">
+												<li class="active"><a href="http://www.wdshare.org/active/">线下活动</a></li>
+												<li class=""><a href="http://www.wdshare.org/article/">技术文章</a></li>
+												<li><a href="http://www.wdshare.org/book">换书行动</a></li>
+												<li><a href="http://www.wdshare.org/donation">我要捐赠</a></li>
+												
+											</ul>
+										</div>
+
+									</div>
+								</nav>
+								<!-- navbar end -->
+
+							</div>
+							<!-- main-navigation end -->
+
+						</div>
+						<!-- header-right end -->
+
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- header end -->
+
+		<!-- banner start -->
+		<!-- ================ -->
+		<div class="mybanner">
+			<img src="/static/active_style/9/images/banner.jpg" />
+			<div class="container mybanner-text">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2 object-non-visible animated object-visible fadeIn" data-animation-effect="fadeIn">
+						<h1 class="text-center"><span>WDShare</span></h1>
+						<h2 class="text-center" style="margin-bottom:10px;">【面向工程化的前端】 第9期 2016.03</h2>
+						<p class="lead text-center" style="margin-bottom:5px;">时间：2016-03-27 14:00 -- 18:00</p>
+						<p class="lead text-center" style="margin-bottom:5px;">地址：西安市 锦业一路 龙旗大厦8楼(识代运筹科技股份)</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<style>
+		.mybanner { background:#000; position:relative;}
+		.mybanner-text { position:absolute; bottom:0; left:0; width:100%; padding:0 0 40px; color:#fff;}
+		.mybanner-text h2 { color:#fff; }
+		</style>
+		<!-- banner end -->
+		
+		<!-- 活动内容 section start -->
+		<div class="section">
+			<div class="container object-non-visible animated object-visible fadeIn" data-animation-effect="fadeIn">
+				<h1 id="services" class="text-center title">活动内容</h1>
+				<div style="height:0; line-height:0; margin-top:-70px; text-align:right;">
+					<a href="#join" class="btn btn-success" style="border-radius:6px;">快速报名</a>
+				</div>
+				<div class="space"></div>
+				<div class="row">
+					<div class="col-sm-12 hdnr">
+						<div class="media ">
+							<div class="media-body ">
+								<h4 class="media-heading">13:30 ‐ 14:00</h4>
+								<p class="text-right">签到送拥抱 -- 借过书籍的朋友请把书还到签到处</p>
+							</div>
+							
+						</div>
+						<div class="media sh">
+							<div class="media-body ">
+								<h4 class="media-heading">14:00 ‐ 15:00【前后端分离模式探索】 </h4>
+								<p>风清扬：前端研发工程师，曾经的后端工程师，讲述自己研发的kisme前端自动化工具。</p>
+							</div>
+							
+						</div>
+						<div class="media">
+							<div class="media-body ">
+								<h4 class="media-heading">15:00 ‐ 15:15 休息十分钟 + 集体合影留念</h4>
+								<p></p>
+							</div>
+							
+						</div>
+						<div class="media sh">
+							<div class="media-body ">
+								<h4 class="media-heading">15:15 ‐ 16:00【带你认识和使用gulp】 </h4>
+								<p>Hurry：资深前端工程师</p>
+							</div>
+						
+						</div>
+						<div class="media ">
+							<div class="media-body ">
+								<h4 class="media-heading">16:00 ‐ 16:30【Vue.js 入门介绍】 </h4>
+								<p>杨军军：活跃于各大技术社区，低调的前端爱好者</p>
+							</div>
+							
+						</div>
+						<div class="media sh">
+							<div class="media-body ">
+								<h4 class="media-heading">16:30 ‐ 16:50 休息 + 换书行动 </h4>
+								<p>欢迎各位提供闲置书籍，欢迎各位借阅，同时还书要积极。</p>
+							</div>
+							
+						</div>
+						<div class="media ">
+							<div class="media-body ">
+								<h4 class="media-heading">16:50 ‐ 17:30【webpack基础应用】 </h4>
+								<p>六月：ThoughtWorks高级咨询师</p>
+							</div>
+							
+						</div>
+						<div class="media sh">
+							<div class="media-body ">
+								<h4 class="media-heading">17:30 ‐ 18:00环场介绍</h4>
+								<p></p>
+							</div>
+							
+						</div>
+						<div class="media ">
+							<div class="media-body ">
+								<h4 class="media-heading">18:00 ‐ 结束令人难忘的AA聚餐，欢乐多多，美女多多 </h4>
+								<p></p>
+							</div>
+							
+						</div>
+					</div>
+										
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- 工作人员 section start -->
+		<!-- ================ -->
+		<div class="section translucent-bg bg-image-2 pb-clear" style=" min-height: 300px; padding-top:40px;">
+			<div class="container">
+			
+				<h1 id="clients" class="text-center title-white title">工作人员</h1>
+				<div class="space"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="media testimonial">
+							<div class="media-left">
+								<img src="/static/active_style/9/images/testimonial-1.png" alt="">
+							</div>
+							<div class="media-body">
+								<h3 class="media-heading title-white "> F7(付琦)</h3>
+								<blockquote>
+									<footer>主持人</footer>
+								</blockquote>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="media testimonial">
+							<div class="media-left">
+								<img src="/static/active_style/9/images/testimonial-2.png" alt="">
+							</div>
+							<div class="media-body">
+								<h3 class="media-heading title-white">棍子</h3>
+								<blockquote>
+									<footer>讲师助手及设备调试 </footer>
+								</blockquote>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="media testimonial">
+							<div class="media-left">
+								<img src="/static/active_style/9/images/testimonial-3.png" alt="">
+							</div>
+							<div class="media-body">
+								<h3 class="media-heading title-white">小强、西安-霞</h3>
+								<blockquote>
+									
+									<footer>签到管理</footer>
+								</blockquote>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="media testimonial">
+							<div class="media-left">
+								<img src="/static/active_style/9/images/testimonial-2.png" alt="">
+							</div>
+							<div class="media-body">
+								<h3 class="media-heading title-white">后勤保障 缺人</h3>
+								<blockquote>
+									<footer>局座,局座,我们需要增援~</footer>
+								</blockquote>
+							</div>
+						</div>
+				</div>
+				
+			</div>
+		
+		   </div>
+		</div>
+		<!-- section end -->
+		
+		<!--  场地简介 section start -->
+		<!-- ================ -->
+		<div class="section">
+			<div class="container">
+				<h1 class="text-center title" id="portfolio">场地介绍</h1>
+				<div class="separator"></div>
+				<p class="lead text-center">
+				位置: 识代运筹信息科技股份公司</br> 
+				西安市锦业一路龙旗大厦8楼(西安饭庄南侧). 附近公交站 608路,709路,261路至绿地世纪城站,步行500米到达.</p>
+				<br>	
+							
+				<div class="row=">
+				
+					<div class="col-md-12">
+
+					    
+						<!-- portfolio items start -->
+						<div class="isotope-container row grid-space-20" >
+							<div class="col-sm-6 col-md-4 isotope-item web-design">
+								<div class="image-box">
+									<div class="overlay-container">
+										<img src="/static/active_style/9/images/portfolio-1.jpg" alt="">
+									</div>
+									<span style="display:block; text-align:center; border:1px solid #ccc; color:#999; padding:6px 0;">正门</span>
+								</div>
+								<!-- Modal -->
+								
+								<!-- Modal end -->
+							</div>
+
+							<div class="col-sm-6 col-md-4 isotope-item app-development" >
+								<div class="image-box">
+									<div class="overlay-container">
+										<img src="/static/active_style/9/images/portfolio-2.jpg" alt="">
+										
+									</div>
+									<span style="display:block; text-align:center; border:1px solid #ccc; color:#999; padding:6px 0;">分享区域</span>
+								</div>
+								<!-- Modal -->
+								
+								<!-- Modal end -->
+							</div>
+							
+							<div class="col-sm-6 col-md-4 isotope-item web-design" >
+								<div class="image-box">
+									<div class="overlay-container">
+										<img src="/static/active_style/9/images/portfolio-3.jpg" alt="">
+										
+									</div>
+									<span style="display:block; text-align:center; border:1px solid #ccc; color:#999; padding:6px 0;">活动区域</span>
+								</div>
+								
+							</div>
+							
+							<!-- <div class="col-sm-6 col-md-3 isotope-item site-building" >
+								<div class="image-box">
+									<div class="overlay-container">
+										<img src="/static/active_style/9/images/portfolio-3.jpg" alt="">
+										
+									</div>
+									<a class="btn btn-default btn-block" data-toggle="modal" data-target="#project-4">活动区域e</a>
+								</div>
+								
+							</div> -->
+							
+							
+
+						</div>
+						<!-- portfolio items end -->
+					
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		<!-- 赞助公司section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible animated object-visible fadeIn" data-animation-effect="fadeIn">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+					<span style="color:#000;font-size:20px">赞助公司介绍</span>
+						 <h1 id="about" class="title text-center" style="font-size:50px">识代<span>运</span>筹</h1>
+						<p class="lead text-center" style="font-size:30px;font-weight:800">Justifien,true,belief! </p>
+						<img src="/static/active_style/9/images/aboutus.jpg"/>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		
+		<% if ( activeInfo.aStatus == 1 ) { %>
+<div class="active-join-bg" id="js-active-join">
+  <div class="active-body">
+    <div class="active-join">
+      <a name="join"></a>
+      <h3>我要报名</h3>
+      <div class="active-join-con">
+        <p>报名须知：本活动纯属公益。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</p>
+        <% if(!user){ %>
+        <div class="active-login">
+          登录后启用快捷报名
+          <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
+        </div>
+        <% } %>
+        <form name="joinform" id="js-joinform" method="post"> 
+          <input type="hidden" name="aid" value="<%= activeInfo._id %>">
+          <dl>
+            <dt>邮箱：</dt>
+            <dd>
+              <input type="text" name="mail" placeholder="常用邮箱" value="<%=email%>"> <em>请正确填写邮箱</em>
+              <span style="color:#666;">通过邮箱接收邀请函</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>姓名/昵称：</dt>
+            <dd>
+              <input type="text" name="name" placeholder="尊姓大名" value="<%=name%>"> <em>名称至少两个字符</em>
+            </dd>
+          </dl>
+          <dl>
+            <dt>公司：</dt>
+            <dd>
+              <input type="text" name="com" placeholder="就职公司" value="<%=com%>">    
+              <span>选填</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>网站：</dt>
+            <dd>
+              <input type="text" name="web" placeholder="个人或公司网站" value="<%=www%>">    
+              <span>选填</span>
+            </dd>
+          </dl>
+          <dl>
+            <dt>分享前端知识：</dt>
+            <dd>
+              <label>
+                <input type="radio" name="w_share" value="1" style="width:auto; margin-right:5px;">有，下期我可以分享</label>
+              &nbsp;
+              <label> &nbsp; &nbsp; &nbsp;
+                <input type="radio" checked="checked" name="w_share" value="0" style="width:auto; margin-right:5px;">暂时没有</label>
+              <span>帮助大家学习</span>
+            </dd>
+          </dl>
+          <dl>
+            <input type="hidden" name="content">    
+            <dt>给主办方留言：</dt>
+            <dd>
+              <textarea name="guestbook"></textarea>
+              <span>选填</span>
+              <br>    
+              <em style="color:#f00;display:block; padding-left:0;">工作、学习困惑，感叹、吐槽、给我们提意见，该项填写更容易获取邀请函</em>
+            </dd>
+          </dl>
+          <dl>
+            <dt>您是否参与AA聚餐：</dt>
+            <dd>
+              <label><input type="radio" name="chi" value="1" style="width:auto; margin-right:5px;">是</label> &nbsp; &nbsp; &nbsp; &nbsp;
+              <label><input type="radio" name="chi" value="0" checked="checked" style="width:auto; margin-right:5px;">否</label>
+              <span style="color:#666;">聚餐是为了认识更多的朋友</span>
+            </dd>
+          </dl>
+          <% if ( activeJoinCaptcha && activeJoinCaptcha === true ) { %>
+          <dl>
+            <dt>验证码：</dt>
+            <dd>
+              <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="activeJoin-code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" style="display:inline-block;" /> <em>请填写验证码</em>
+            </dd>
+          </dl>
+          <% } %>
+          <dl>
+            <dd class="form-but">
+              <input type="submit" name="button" value="提交报名"></dd>
+          </dl>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
+<% if ( configIsComment && activeInfo.isComment ) { %>
+  <div class="maxWidth active-comment">
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这个活动</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= activeInfo._id %>" />
+              <input type="hidden" name="model" value="active" />
+              <input type="hidden" name="title" value="<%= activeInfo.aName %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+  </div>
+<% } %>
+
+
+<script>
+function pageInit() {
+	// Fixed header
+	//-----------------------------------------------
+	$(window).scroll(function() {
+		if (($(".header.fixed").length > 0)) { 
+			if(($(this).scrollTop() > 100) && ($(window).width() > 767)) {
+				$("body").addClass("fixed-header-on");
+			} else {
+				$("body").removeClass("fixed-header-on");
+			}
+		};
+	});
+
+		$(window).load(function() {
+			if (($(".header.fixed").length > 0)) { 
+				if(($(this).scrollTop() > 100) && ($(window).width() > 767)) {
+					$("body").addClass("fixed-header-on");
+				} else {
+					$("body").removeClass("fixed-header-on");
+				}
+			};
+		});
+	// require(["http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"], function() {
+ //    require(["/static/active_style/9/js/modernizr.js","/static/active_style/9/js/jquery.backstretch.min.js", "/static/active_style/9/js/jquery.appear.js", "/static/active_style/9/js/isotope.pkgd.min.js"], function() {
+ //    	require(["/static/active_style/9/js/custom.js"], function() {});
+	// 	});
+	// });
+}
+</script>
+		
+<% include ../../etc/foot.ejs %>
+</body>
+</html>

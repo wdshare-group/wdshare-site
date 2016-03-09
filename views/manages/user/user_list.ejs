@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-管理员</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">管理员</h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">管理员列表</h3>
+        <div class="manage-tool">
+          <a href="/manage/addManage" class="green">添加管理员</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>权限</th>
+                <th>Lock</th>
+                <th>LastLogin</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(user){ %>
+              <tr>
+                <td><%= user.username %></td>
+                <td><%= user.rank === 0 ? "超级管理" : "普通管理" %></td>
+                <td><% if (user.lock) { %><span title="锁定时间：<%= moment(user.lockTime).format('YYYY-MM-DD HH:mm:ss') %>；锁定原因：<%= user.lockMessage %>">已锁定</span><% } %></td>
+                <td>
+                  <%= user.lastLoginTime ? moment(user.lastLoginTime).format('YYYY-MM-DD HH:mm:ss') : "" %>
+                </td>
+                <td><a href="/manage/editManage/<%= user._id %>">修改</a><a href="#" data-id="<%= user._id %>" class="js-manageUsers-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

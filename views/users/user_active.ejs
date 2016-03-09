@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%=member.username%>参与的活动 - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
+<%
+var who = "他";
+if (typeof info != "undefined" && info.sex == 2) {
+	who = "她";
+}
+if (user && user._id == member._id) {
+	who = "我";
+}
+%>
+
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<% include etc/user_head.ejs %>
+
+<div id="js-myhome" style="display:none;"></div>
+<div class="maxWidth module">
+	<div class="user-article">
+
+	<% if ( result.length < 1 ) { %>
+		<p style="padding:50px 0 0; text-align:center; font-size:16px;">该用户未参与任何活动，请前去参与本站 <a href="/active" style="font-weight:bold; color:#4183c4;">线下活动</a> 报名参与</p>
+	<% } else { %>
+    <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
+  <% } %>
+
+	<% result.forEach(function(active){ %>
+	<div class="user-article-item">
+		<h4>
+			<a href="/active/<%= active.activeId %>" title="<%= active.activeName %>"><%= active.activeName %></a>
+      <% if ( active.activeStatus > 0 ) { %><span style="font-size:12px; color:#f00; padding-left:20px;">进行中...</span><% } %>
+		</h4>
+		<p>
+			<% if ( active.activeChannel === "0" ) { %>
+			<span class="user-article-channel">[分享活动]</span>
+			<% } %>
+			<% if ( active.activeChannel === "1" ) { %>
+			<span class="user-article-channel">[前端培训]</span>
+			<% } %>
+			<% if ( active.activeChannel === "2" ) { %>
+			<span class="user-article-channel">[娱乐活动]</span>
+			<% } %>
+    		<span class="user-article-date">时间：<%= active.time %></span>
+		</p>
+		<% if ( active.state == 2 ) { %>
+    <span class="user-article-edit">已发送邀请函</span>
+    <% } else if ( active.state == 3 ) { %>
+		<span class="user-article-edit">已确认参加</span>
+		<% } else { %>
+		<span class="user-article-edit">仅报名</span>
+		<% } %>
+	</div>
+	<% }) %>
+
+  <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+	</div>
+
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

@@ -36,16 +36,15 @@
               </tr>
             </thead>
             <tbody>
-              <% result.forEach(function(active){ %>
-              <% if ( active.aStatus != 0 ) { %>
+              <% avtive.result.forEach(function(active){ %>
               <tr>
-                <td><% if ( active.aClass == 0 ) { %>
-                分享活动
-                <% } else if ( active.aClass == 1 ) { %>
-                前端培训
-                <% } else if ( active.aClass == 2 ) { %>
-                娱乐活动
-                <% } %></td>
+                <td>
+                  <% avtive.channel.forEach(function(channel){ %>
+                    <%if (channel._id == active.aClass) {%>
+                    <%= channel.name%>
+                    <% } %>
+                  <% }) %>
+                </td>
                 <td class="text-align-left no-a-style"><a href="/manage/active/update/<%= active._id %>"><%= active.aName %></a></td>
                 <td><% if ( active.aStatus == 1 ) { %>
                 <span class="font-green">开启</span>
@@ -58,11 +57,89 @@
                 <% } %></td>
                 <td><% if ( active.aClick ) { %>
                   <%= active.aClick %><% } else { %>0<% } %></td>
-                <td><a href="/manage/active/join/<%= active._id %>"><%= joinLength[active._id] %></a></td>
-                <td><%= moment(active.aAddDate).format('YYYY-MM-DD hh:mm:ss') %></td>
+                <td><a href="/manage/active/join/<%= active._id %>"><%= active.joins %></a></td>
+                <td><%= moment(active.aAddDate).format('YYYY-MM-DD HH:mm:ss') %></td>
                 <td><a href="/active/<%= active._id %>" target="_blank">预览</a><a href="/manage/active/update/<%= active._id %>">修改</a><a href="#" data-id="<%= active._id %>" class="js-active-delete" style="display:none;">删除</a></td>
               </tr>
-              <% } %>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title">精彩文章</h3>
+        <div class="manage-tool">
+          <a href="/manage/article" class="green">所有文章</a>
+          <a href="/manage/article/create" class="green">添加文章</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th width="80">Date</th>
+                <th width="80">栏目</th>
+                <th width="60">Click</th>
+                <th width="50">点赞</th>
+                <th width="100">作者</th>
+                <th width="200">Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% article.result.forEach(function(article){ %>
+              <%
+                var tou = false,
+                    hot = false,
+                    _strong = false,
+                    types = [];
+                if ( article.diyType ) {
+                  types = article.diyType.split(",");
+                }
+                for ( var i=0; i<types.length; i++ ) {
+                  if ( parseInt(types[i]) === 1 ) {
+                    tou = true;
+                  }
+                  if ( parseInt(types[i]) === 2 ) {
+                    hot = true;
+                  }
+                  if ( parseInt(types[i]) === 3 ) {
+                    _strong = true;
+                  }
+                }
+              %>
+              <tr>
+                <td style="text-align:left;">
+                  <span style="<% if ( article.color ) { %>color:<%= article.color %>;<% } %> font-weight:<%= _strong ? "bold" : "normal" %>;"><%= article.title %></span>
+                  
+                  <% if ( article.cover ) { %><span title="缩略图">[图]</span><% } %>
+                  <% if ( article.linkUrl ) { %><span title="跳转链接">[跳]</span><% } %>
+
+                  <% if ( tou ) { %><span title="头条">[头]</span><% } %>
+                  <% if ( hot ) { %><span title="推荐">[推]</span><% } %>
+                  
+                  <% if ( article.sortup ) { %><span title="置顶">[顶]</span><% } %>
+                </td>
+                <td><%= moment(article.editDate).format('YYYY-MM-DD') %></td>
+                <td><%= article.channel %></td>
+                <td><%= article.click %></td>
+                <td><%= article.zan %></td>
+                <td>
+                  <% if ( !article.user ) { %>
+                  该用户被删除
+                  <% } else { %>
+                  <%= article.user %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if ( !article.audit && !article.rejected ) { %><a href="#" data-id="<%= article._id %>" data-mail="<%= article.usermail %>" data-name="<%= article.user %>" data-title="<%= article.title %>" class="js-article-audit" title="审核通过"><span style="color:#360;">[审核]</span></a><a href="#" data-id="<%= article._id %>" data-title="<%= article.title %>" data-mail="<%= article.usermail %>" data-name="<%= article.user %>" class="js-article-noaudit" title="驳回审核"><span style="color:#f00;">[驳回]</span></a> <br /><% } %>
+                  <% if ( !article.audit && article.rejected ) { %><%= moment(article.rejectedData).format('YYYY-MM-DD HH:mm:ss') %> 审核被驳回<br /><% } %>
+                  <a href="/article/<%= article._id %>" target="_blank">预览</a><a href="/manage/article/edit/<%= article._id %>">修改</a><a href="#" data-id="<%= article._id %>" class="js-article-delete">删除</a></td>
+              </tr>
               <% }) %>
             </tbody>
           </table>

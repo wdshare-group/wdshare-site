@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%=title%> - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<% if ( typeof regCode != "undefined" && regCode ) { %>
+<script>
+  var requestActiveCode = "<%=regCode%>";
+</script>
+<% } %>
+
+<div id="js-passport" style="display:none;"></div>
+<div class="login-main">
+  <div class="login-main-bg">
+    <div class="login-inner">
+      <div class="login-title">
+        <h1><%=title%></h1>
+      </div>
+      <div class="text-message"><%-content%></div>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

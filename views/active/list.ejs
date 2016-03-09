@@ -5,15 +5,36 @@
 <title>WDShare线下活动</title>
 <meta name="keywords" content="WDShare线下活动" />
 <meta name="description" content="WDShare线下活动" />
-<% include ../module/htmlhead.ejs %>
+<% include ../etc/htmlhead.ejs %>
 </head>
 
 <body>
-<% include ../module/head.ejs %>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
 
 <div class="activity activity-list">
   <div class="maxWidth module">
-    <h2 class="module-title">精彩活动</h2>
+    <h2 class="module-title"><%= title %></h2>
     <div class="activity-con">
       <% result.forEach(function(active){ %>
       <a href="/active/<%= active._id %>" class="activity-item">
@@ -35,9 +56,52 @@
       </a>
       <% }) %>
     </div>
+    <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
   </div>
 </div>
 
-<% include ../module/foot.ejs %>
+<% include ../etc/foot.ejs %>
 </body>
 </html>

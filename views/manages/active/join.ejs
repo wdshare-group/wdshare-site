@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>WDShare管理中心</title>
+<title>WDShare管理中心-<%= active.aName%>-报名列表</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
 </head>
@@ -13,13 +13,17 @@
   <% include ../etc/left.ejs %>
   <div class="manage-right">
     <%
+    var invite = 0;
     var noInvite = 0;
     var ok = 0;
     var no_ok = 0;
     var pingbi = 0;
     result.forEach(function(join){
-      if ( join.invite === 0 ) {
+      if ( join.state === 1 ) {
         noInvite++;
+      }
+      if ( join.state > 1 ) {
+        invite++;
       }
       if ( join.state === 2 ) {
         no_ok++;
@@ -30,10 +34,11 @@
       if ( join.state === 0 ) {
         pingbi++;
       }
+      
     })
     %>
     <h1 class="manage-title">报名管理</h1>
-    <p class="manage-join-note">报名总数：<%= result.length %> &nbsp;&nbsp;&nbsp;&nbsp; 未邀请：<%= noInvite %> &nbsp;&nbsp;&nbsp;&nbsp; 确认：<%= ok %> &nbsp;&nbsp;&nbsp;&nbsp; 未确认：<%= no_ok %> &nbsp;&nbsp;&nbsp;&nbsp; 屏蔽：<%= pingbi %></p>
+    <p class="manage-join-note"><b>报名总数：<%= result.length %></b> &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 屏蔽：<%= pingbi %> &nbsp;&nbsp;&nbsp;&nbsp; 未邀请：<%= noInvite %> &nbsp;&nbsp;&nbsp;&nbsp; 已邀请：<%= invite %> &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; 确认：<%= ok %> &nbsp;&nbsp;&nbsp;&nbsp; 未确认：<%= no_ok %></p>
     <div class="manage-module">
       <div class="manage-module-head">
         <h3 class="manage-module-title"><%= active.aName%></h3>
@@ -41,7 +46,7 @@
           <a href="/manage/active/" class="green">返回活动列表</a>
           <a href="/manage/active/update/<%= active._id %>" class="green">修改活动</a>
           <a href="#" data-id="<%= active._id %>" id="js-join-createcode" class="red">生成Code</a>
-          <a href="#" class="red">群发邀请</a>
+          <a href="#" data-id="<%= active._id %>" class="red" id="js-join-batchInvite">群发邀请</a>
           <a href="/manage/active/joinprint/<%= active._id %>" target="_blank">打印</a>
         </div>
       </div>
@@ -52,12 +57,13 @@
               <tr>
                 <th width="6%">Name</th>
                 <th width="10%" class="text-align-left">Mail</th>
-                <th width="12%">COM</th>
-                <th width="12%">WWW</th>
-                <th>Content</th>
+                <th width="9%">COM</th>
+                <th width="5%">WWW</th>
+                <th width="30%">Content</th>
                 <th width="5%">Party</th>
                 <th width="9%">Time</th>
-                <th width="6%">Code</th>
+                <th width="8%">Code</th>
+                <th width="5%">MailSend</th>
                 <th width="13%">Manage</th>
               </tr>
             </thead>
@@ -69,16 +75,22 @@
                 <td class="text-align-left"><%= join.com %></td>
                 <td class="text-align-left no-a-style">
                   <% if ( join.web ) { %>
-                  <a href="<%= join.web %>" title="<%= join.web %>" target="_blank" class="join-blog"><%= join.web %></a>
+                  <a href="<%= join.web %>" title="<%= join.web %>" target="_blank" class="join-blog">访问</a>
                   <% } %>
                 </td>
                 <td class="text-align-left"><%= join.content %></td>
                 <td><% if ( join.chi === "1" ) { %>是<% } else { %>否<% } %></td>
-                <td><%= moment(join.addDate).format('YYYY-MM-DD hh:mm:ss') %></td>
+                <td><%= moment(join.addDate).format('YYYY-MM-DD HH:mm:ss') %></td>
                 <td><% if ( join.code ) { %>
                   <%= active.aCodebefor %><%= join.code %>
                   <% } else { %>
                   -
+                  <% } %>
+                </td>
+                <td class="no-a-style"><% if ( join.joinMailState ) { %>
+                  <img src="/static/manage_style/img/mailsent-succeed.png" width="26" title="报名邮件发送成功" />
+                  <% } else { %>
+                  <a href="#" class="js-join-reMailSent" data-aid="<%= active._id%>" data-mail="<%= join.mail %>" data-name="<%= join.name %>" data-active-name="<%= active.aName%>" data-active-time="<%= active.aTime%>" data-active-address="<%= active.aAddress%>"><img src="/static/manage_style/img/mailsent-error.png" width="26" title="报名邮件发送失败，点击重新发送" /></a>
                   <% } %>
                 </td>
                 <td data-id="<%= join._id%>">
@@ -93,14 +105,14 @@
                   <a href="#" class="red">生成Code</a>
                   <% } %>-->
                   <% if ( join.code && join.state === 1 ) { %>
-                  <a href="#" class="green">发邀请</a>
+                  <a href="#" class="green js-join-sendInvite" title="邮件的形式发送邀请函，邮件模板在活动信息修改中调整">发邀请</a>
                   <% } %>
 
                   <% if ( join.state === 2 ) { %>
                   <span class="font-green">已邀请</span>
                   <% } %>
                   <% if ( join.state === 3 ) { %>
-                  <span class="font-gray">已确认</span>
+                  <span class="font-gray">用户确认</span>
                   <% } %>
                   <a href="#" class="js-join-del" style="display:none;">删除</a>
                 </td>

@@ -2,9 +2,12 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>WDShare管理中心</title>
+<title>WDShare管理中心-添加活动</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
 </head>
 
 <body>
@@ -29,9 +32,10 @@
               <label>
                 <strong>活动分类：</strong>
                 <select name="aClass">
-                  <option value="2">娱乐活动</option>
-                  <option value="1">前端培训</option>
-                  <option value="0" selected>分享活动</option>
+                  <option value="" selected>请选择活动分类</option>
+                  <% result.forEach(function(channel){ %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                  <% }) %>
                 </select>
               </label>
             </div>
@@ -54,9 +58,9 @@
               <label><strong>活动摘要：</strong><input type="text" name="aSummary"/><span>显示在活动内容页顶部的信息，可以不填写【将不显示任何内容】</span></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>活动内容：</strong>
-              <textarea name="aContent" cols="30" rows="10"></textarea><span>支持HTML</span></label>
+              <label><strong>活动内容：</strong></label>
             </div>
+            <div class="editor-box"><textarea name="aContent" id="editor" style="height:400px;"></textarea></div>
             <div class="manage-addActive-form-item">
               <label><strong>活动状态：</strong>
               <select name="aStatus">
@@ -85,6 +89,16 @@
               <label><strong>模板：</strong>
               <input type="text" name="aTpl" value="index" /><span>填写对应的ejs模板名称，该模板必须存在与/views/active/end 目录下时才有效【默认index】</span></label>
             </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>是否允许评论：</strong>
+              <label><input type="radio" name="isComment" value="1" checked="checked"> 是</label>
+              <label><input type="radio" name="isComment" value="0"> 否</label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>邀请函模板：</strong>
+              <textarea name="aEmailTpl"><div style="color:#333333;border:1px dashed #D8D8D8;margin:10px;"><h1 style="text-align:center;margin:20px 10px;padding:0 10px 20px;border-bottom:1px dashed #D8D8D8;">{=title} -- 前端交流会邀请函</h1><div style="font-size:14px;font-family:'Helvetica Neue', Helvetica Neue, Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', Arial;line-height:1.8em;padding:0 10px;"><p>尊敬的 {=name}：</p><p>我们诚挚的邀请您参会，期待与您在会场相见。</p><div style="background-color:#F2F2F2;padding:5px 20px;"><p>邀请码<span style="font-size:12px;">（请记录，以便快速入场）</span>：</p><p style="font-size:40px; color:#ff0000;">{=code}</p></div><p>{=blank}</p><p>请确认报名，如不能点击请浏览器打开<strong>【不确认将放弃本次报名】</strong>：<br /><a href="http://www.wdshare.org/active/joinconfirm/{=id}" target="_blank">http://www.wdshare.org/active/joinconfirm/{=id}</a></p><p>{=blank}</p><p>时间：<strong>{=time}</strong> {=blank}{=blank}{=blank} 13:30开始签到</p><p>地址：{=address}</p><p>内容：具体分享课题请查阅官网</p><p>联系人：<strong>【F7】18291826889</strong></p>{=signature}</div></div></textarea><br />
+              <span>邀请函发送模板，支持的标签有：{=title}--活动标题； {=name}--姓名； {=code}--邀请码； {=mail}--报名邮箱； {=id}--报名ID； {=time}--活动时间； {=address}--活动地址； {=blank}--&amp;nbsp;  {=signature}--全局邮件签名</span></label>
+            </div>
 
             <div class="manage-addActive-form-item manage-form-but">
               <input class="green" type="submit" value="提交"/>
@@ -99,5 +113,9 @@
 </div>
 
 <% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
 </body>
 </html>

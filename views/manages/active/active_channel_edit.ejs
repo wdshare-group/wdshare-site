@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-修改活动分类</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">活动分类</h1>
+    <div class="manage-module">
+      <form id="js-activeChannels-create-form">
+        <input type="hidden" name="aid" value="<%=result._id%>" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">修改活动分类</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong>分类名称：</strong><input type="text" name="name" value="<%=result.name%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>URL标识：</strong><%=result.url%></label>
+            </div>
+            <div class="manage-addActive-form-item" style="display:none;">
+              <label><strong>父类：</strong><select name="parent"><option value="" selected>顶级栏目</option></select></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>关键字：</strong><input type="text" name="keywords" value="<%=result.keywords%>" /><span>显示在meta标签的keywords</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>描述：</strong>
+              <textarea name="description" cols="30" rows="10"><%=result.description%></textarea></label>
+            </div>
+            
+            <div class="manage-addActive-form-item manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

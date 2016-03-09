@@ -5,23 +5,29 @@
 <title>WDShare 西安前端交流会</title>
 <meta name="keywords" content="WDShare,西安前端交流会" />
 <meta name="description" content="WDShare，W3C Developer Share 西安前端开发人员分享交流会" />
-<% include ./module/htmlhead.ejs %>
+<% include ./etc/htmlhead.ejs %>
 </head>
 
 <body>
-<% include ./module/head.ejs %>
+<% include ./etc/head.ejs %>
 
+<% if ( affiche && affiche != "error" && affiche.title.indexOf("关闭") < 0 ) { %>
 <div class="inform">
   <div class="maxWidth">
-    <div class="inform-con"><strong class="red">重要通知：</strong>官网正在改版，一系列规划实施中，以前的所有数据保存完整，过几天访问哈，给你一个惊喜......</div>
+    <div class="inform-con"><%-affiche.content%></div>
   </div>
 </div>
+<% } %>
 
+<% if ( active ) { %>
 <div class="activity ">
   <div class="maxWidth module">
-    <h2 class="module-title">精彩活动</h2>
+    <h2 class="module-title">
+      <div class="module-but"><a href="/about" class="no-but red">什么是WDShare？</a></div>
+      精彩活动
+    </h2>
     <div class="activity-con">
-      <% result.forEach(function(active){ %>      
+      <% active.result.forEach(function(active){ %>
       <a href="/active/<%= active._id %>" class="activity-item">
         <h3 class="activity-title"><em><%= active.aName %></em></h3>
         <div class="activity-type">
@@ -41,205 +47,129 @@
       </a>
       <% }) %>
     </div>
-    <div class="mudule-more"><a href="/active/" class="but but-blue">查看更多活动</a></div>
+    <div class="mudule-more"><a href="/active/" class="but but-blue">更多活动</a></div>
   </div>
 </div>
+<% } %>
 
-<div class="mamber">
+
+<div class="index-article">
   <div class="maxWidth module">
-    <h2 class="module-title">WDShare成员</h2>
-    <div class="mamber-con">
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
+    <h2 class="module-title">
+      <% if(user && user.email){ %>
+      <div class="module-but"><a href="/article/create">发布文章</a></div>
+      <% } %>
+      精彩文章
+    </h2>
+    <div class="article-list-con">
+      <% var articleCount = 0 %>
+      <% article.forEach(function(article){ %>
+      <% if ( articleCount < 10 ) { %>
+      <%
+        articleCount++;
+
+        var tou = false,
+            hot = false,
+            _strong = false,
+            types = [];
+        if ( article.diyType ) {
+          types = article.diyType.split(",");
+        }
+        for ( var i=0; i<types.length; i++ ) {
+          if ( parseInt(types[i]) === 1 ) {
+            tou = true;
+          }
+          if ( parseInt(types[i]) === 2 ) {
+            hot = true;
+          }
+          if ( parseInt(types[i]) === 3 ) {
+            _strong = true;
+          }
+        }
+      %>
+      <div class="article-item">
+        <% if ( !article.user ) { %>
+        <div class="article-item-user"><img src="/static/users/default-face.png" title="该用户消失了" /></a></div>
+        <% } else { %>
+        <div class="article-item-user"><a href="/user/<%= article.userId %>" title="发布者：<%= article.user %>"><img src="/user/face/<%= article.userId %>" /></a></div>
+        <% } %>
+        <div class="article-item-text">
+          <h3 class="article-item-title">
+            <a href="/article/<%= article._id %>" title="<%= article.title %>"<% if ( article.linkUrl ) { %> target="_blank"<% } %>><em style="<% if ( article.color ) { %>color:<%= article.color %>;<% } %> font-weight:<%= _strong ? "bold" : "normal" %>;"><%= article.title %></em><% if ( article.linkUrl ) { %><span class="link-url">[外链]</span><% } %></a>
           </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
+          <div class="article-item-type">
+            <span class="article-item-channel"><a href="/article/<%= article.channelUrl %>">[<%= article.channel %>]</a></span>
+            <span class="article-item-date">时间：<%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+            <span class="article-item-click">点击：<%= article.click ? article.click : 0 %></span>
+            <% if ( !article.linkUrl ) { %>
+            <span class="article-item-comment">赞：<%= article.zan ? article.zan : 0 %></span>
+            <% } %>
           </div>
         </div>
       </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
-      <div class="mamber-item">
-        <div class="mamber-face"><a href="#"><img src="http://tp4.sinaimg.cn/2406560131/50/5662536267/1" /></a></div>
-        <div class="mamber-text">
-          <h3 class="mamber-title">
-            <a href="#">上海-杰克</a>
-            <div class="mamber-label">
-              <a href="#">勋章<em></em></a>
-              <ul>
-                <li>群主</li>
-                <li>WDShare创始团队</li>
-                <li>官网贡献者</li>
-                <li>WDShare技术文章贡献者</li>
-              </ul>
-            </div>
-            <div class="mamber-label">
-              <a href="#">标签<em></em></a>
-              <ul>
-                <li>HTML5</li>
-                <li>CSS3</li>
-                <li>NodeJS</li>
-              </ul>
-            </div>
-          </h3>
-          <div class="mamber-type">
-            <span class="mamber-atricle">文章：3</span>
-            <span class="mamber-project">项目：5</span>
-            <span class="mamber-good">赞：4323</span>
-            <span class="mamber-job">橄榄枝：18</span>
-          </div>
-        </div>
-      </div>
+      <% } %>
+      <% }) %>
     </div>
-    <div class="mudule-more"><a href="#" class="but but-blue">查看所有成员</a></div>
+    <div class="mudule-more"><a href="/article/" class="but but-blue">更多文章</a></div>
   </div>
 </div>
 
-<% include ./module/foot.ejs %>
+
+<% if ( users && users != "error" ) { %>
+<div class="index-mamber">
+  <div class="maxWidth module">
+    <h2 class="module-title">
+      <% if(!user){ %>
+      <div class="module-but"><a href="/user/register">加入我们</a></div>
+      <% } %>
+      WDShare新进学员<span class="module-title-note">学员总数：<%= users.allCount %>位</span>
+    </h2>
+    <div class="mamber-con">
+      <% users.result.forEach(function(member){ %>
+      <div class="mamber-item">
+        <div class="mamber-face"><a href="/user/<%=member._id%>"><img src="/user/face/<%=member._id%>" /></a></div>
+        <div class="mamber-text">
+          <h3 class="mamber-title">
+            <a href="/user/<%=member._id%>"><%=member.username%></a>
+          </h3>
+          <div class="mamber-type">
+            <% if ( member.userInfo.tag ) { %>
+            <%
+            var tags = member.userInfo.tag;
+            tags = tags.split(",");
+            %>
+            <div class="mamber-label">
+              <a href="#" onclick="return false;">标签<em></em></a>
+              <ul>
+                <% tags.forEach(function(tag){ %>
+                <li><%= tag %></li>
+                <% }) %>
+              </ul>
+            </div>
+            <% } %>
+            <!-- <div class="mamber-label">
+              <a href="#">勋章<em></em></a>
+              <ul>
+                <li>群主</li>
+                <li>WDShare创始团队</li>
+                <li>官网贡献者</li>
+                <li>WDShare技术文章贡献者</li>
+              </ul>
+            </div> -->
+            <span class="mamber-atricle">文章：<%= member.article%></span>
+            <!-- <span class="mamber-project">项目：5</span> -->
+            <span class="mamber-good">赞：<%= member.userInfo.zan ? member.userInfo.zan : 0 %></span>
+            <span class="mamber-job">橄榄枝：<%= member.userInfo.offer ? member.userInfo.offer : 0 %></span>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="mudule-more"><a href="/user/all" class="but but-blue">更多学员</a></div>
+  </div>
+</div>
+<% } %>
+
+<% include ./etc/foot.ejs %>
 </body>
 </html>

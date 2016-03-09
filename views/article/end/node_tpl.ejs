@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= article.title %> - WDShare</title>
+<meta name="keywords" content="<%= article.keywords %>" />
+<meta name="description" content="<%= article.description %>" />
+<% include ../../etc/htmlhead.ejs %>
+
+<link href="/static/ueditor/third-party/SyntaxHighlighter/shCoreSublime.css" rel="stylesheet" />
+<script src="/static/ueditor/third-party/SyntaxHighlighter/shCore.js"></script>
+<script type="text/javascript">
+  /* ueditor 代码高亮 */
+  SyntaxHighlighter.all();
+</script>
+</head>
+
+<body>
+<% include ../../etc/head.ejs %>
+
+node测试模板，非正式模板
+
+<!-- 引入广告 -->
+<style>
+.gg-opactive { background:#fff; padding:30px 0 20px;}
+.gg-opactive-con { background:#f7f7f7; position:relative; padding:20px 0; line-height:180%; font-size:16px;}
+.gg-opactive-con h3,
+.gg-opactive-con p { padding:0 30px;}
+.gg-opactive-con h3 { font-size:20px; padding-bottom:10px; color:#333;}
+.gg-opactive-con p { color:#666;}
+.gg-opactive-con p a { color:#00f;}
+.gg-opactive-con p a:hover { color:#c00;}
+.gg-opactive-but { border:1px solid rgba(0,0,0,0.1); border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25); line-height:50px; display:block; background:#8dc153; color:#fff; font-size:20px; text-align:center; border-radius:15px; -webkit-border-radius:15px; -moz-border-radius:15px; -o-border-radius:15px; letter-spacing:0.1em; padding:0 20px; background:#5bb75b; position:absolute; top:50%; right:40px; margin-top:-25px;}
+.gg-opactive-but:hover { background:#51a351; color:#fff;}
+</style>
+<div class="gg-opactive">
+  <div class="gg-opactive-con maxWidth">
+    <h3><a href="#">WDShare【筹备中...】 第8期 2015.11</a></h3>
+    <p>时间：2015-11-29   14:00 -- 18:00</p>
+    <p>地址：西安市高新区锦业路1号绿地领海大厦B栋22层 爱易网络技术(总部)    <a href="http://j.map.baidu.com/no_7D" target="_blank">查看地图</a></p>
+    <a href="#" class="gg-opactive-but">点击报名</a>
+  </div>
+</div>
+<!-- 引入广告 End -->
+
+
+<input id="js-archives-id" type="hidden" value="<%= article._id %>" />
+<div class="article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-user"><a href="/user/<%= user._id %>" title="发布者：<%= user.username %>"><img src="/user/face/<%= user._id %>" /></a></div>
+      <div class="article-head-left">
+        <h1 class="article-title"><%= article.title %></h1>
+        <div class="article-type">
+          <span class="article-channel"><a href="/article/<%= channel.url %>">[<%= channel.name %>]</a></span>
+          <% if ( article.source ) { %>
+            <% if ( article.sourceUrl ) { %>
+              <span class="article-source">来源：<a href="<%= article.sourceUrl %>" target="_blank"><%= article.source %></a></span>
+            <% } else { %>
+              <span class="article-source">来源：<%= article.source %></span>
+              <% } %>
+          <% } %>
+          <span class="article-click">人气：<%= article.click %></span>
+          <span class="article-time"><%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+          <!-- <a href="#" class="article-collect">收藏</a> -->
+          <!-- <a href="#comment" class="article-top-comment-link"><em>Comment icon</em>432</a> -->
+        </div>
+      </div>
+      <div class="article-head-right">
+        <a href="#" class="article-top-zan">赞：<em><%= article.zan %></em></a>
+        <div class="shareto">
+          <div class="bdsharebuttonbox"><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣"></a></div>
+        </div>
+      </div>
+    </div>
+    <div id="js-description"><%= article.description %></div>
+    <div class="article-con" id="article-detail">
+      <%- article.content %>
+    </div>
+
+    <a href="#" class="article-like"><span>icon</span>喜欢(<em><%= article.zan %></em>)</a>
+    <% if ( article.tag ) { %>
+    <% var tags = article.tag.split(",") %>
+    <div class="article-tag" id="js-article-tag">标签：<% tags.forEach(function(tag){ %><a href="/tag/<%= tag %>" target="_blank"><%= tag %></a><% }) %></div>
+    <% } %>
+  </div>
+</div>
+
+<% include ../../etc/foot.ejs %>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%=member.username%>发布的文章 - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
+<%
+var who = "他";
+if (typeof info != "undefined" && info.sex == 2) {
+	who = "她";
+}
+if (user && user._id == member._id) {
+	who = "我";
+}
+%>
+
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+
+<% include etc/user_head.ejs %>
+
+<div id="js-myhome" style="display:none;"></div>
+<div class="maxWidth module">
+	<div class="user-article">
+	<% if (user && user._id == member._id) { %>
+	<div style="font-size:16px; padding-bottom:30px; overflow:hidden;">
+		<div class="module-but"><a href="/article/create">发布新文章</a></div>
+		要想删除已发表的文章，请联系管理员。邮箱：manage@wdshare.org
+	</div>
+	<% } %>
+
+	<% if ( result.length < 1 ) { %>
+		<p style="padding:50px 0 0; text-align:center; font-size:16px;">没有发布任何文章</p>
+	<% } else { %>
+    <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
+  <% } %>
+
+	<% result.forEach(function(article){ %>
+		<%
+        var tou = false,
+            hot = false,
+            _strong = false,
+            types = [];
+        if ( article.diyType ) {
+          types = article.diyType.split(",");
+        }
+        for ( var i=0; i<types.length; i++ ) {
+          if ( parseInt(types[i]) === 1 ) {
+            tou = true;
+          }
+          if ( parseInt(types[i]) === 2 ) {
+            hot = true;
+          }
+          if ( parseInt(types[i]) === 3 ) {
+            _strong = true;
+          }
+        }
+      %>
+    <% if ( article.audit || (user && user._id == member._id) ) { %>
+		<div class="user-article-item">
+			<h4>
+				<a href="/article/<%= article._id %>" title="<%= article.title %>"<% if ( article.linkUrl ) { %> target="_blank"<% } %>><em style="<% if ( article.color ) { %>color:<%= article.color %>;<% } %> font-weight:<%= _strong ? "bold" : "normal" %>;"><%= article.title %></em><% if ( article.linkUrl ) { %><span class="link-url">[外链]</span><% } %></a><% if ( !article.audit && !article.rejected ) { %><span style="font-weight:bold; padding-left:30px; color:#f00;">审核中...</span><% } %>
+        <% if ( article.rejected ) { %><span style="font-weight:bold; padding-left:30px; color:#c00; font-size:14px;">被驳回，理由：<%=article.rejected%>， 时间：<%= moment(article.rejectedData).format('YYYY-MM-DD HH:mm:ss') %></span><% } %>
+			</h4>
+			<p>
+				<span class="user-article-channel"><a href="/article/<%= article.channelUrl %>">[<%= article.channel %>]</a></span>
+        <span class="user-article-date">时间：<%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+        <span class="user-article-click">点击：<%= article.click ? article.click : 0 %></span>
+        <% if ( !article.linkUrl ) { %>
+        <span class="user-article-comment">赞：<%= article.zan ? article.zan : 0 %></span>
+        <% } %>
+			</p>
+			<% if (user && user._id == member._id) { %>
+			<a href="/article/edit/<%= article._id %>" class="user-article-edit">修改</a>
+			<% } %>
+		</div>
+		<% } %>
+	<% }) %>
+
+  <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+	</div>
+
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

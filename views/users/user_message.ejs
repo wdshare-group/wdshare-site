@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%=member.username%>的留言 - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
+<%
+var who = "他";
+if (typeof info != "undefined" && info.sex == 2) {
+	who = "她";
+}
+if (user && user._id == member._id) {
+	who = "我";
+}
+%>
+
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<% include etc/user_head.ejs %>
+
+<div id="js-myhome" style="display:none;"></div>
+<div class="maxWidth module">
+	<div class="user-message">
+    <input id="js-archives-id" type="hidden" value="<%= member._id %>" />
+    <input id="js-archives-model" type="hidden" value="message" />
+    <% if ( configIsComment ) { %>
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+
+      <h1>给 <%=member.username%> 留言：</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= member._id %>" />
+              <input type="hidden" name="model" value="message" />
+              <input type="hidden" name="title" value="<%= member.username %>" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入留言内容，遵纪守法就是好公民！"></textarea>
+                  <div class="user-message-privacy">
+                    <label><input type="radio" name="privacy" value="0" checked="checked" />公开</label>
+                    <label title="只有发布者和接收者能看到"><input type="radio" name="privacy" value="1" /><span>私密消息</span></label>
+                  </div>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发送留言。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发送留言！
+          </div>
+        <% } %>
+      </div>
+    </div>
+    <!--  Comment End  -->
+    <% } %>
+	</div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

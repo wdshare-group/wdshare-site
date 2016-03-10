@@ -477,13 +477,13 @@ router.route('/editInfo').get(function (req, res) {
 
 
     // 检测是否有http://
-    if ( www.indexOf("http://") < 0 ) {
+    if ( www.indexOf("http://") < 0 && www.indexOf("https://") < 0 ) {
         www = "http://" + www;
     }
-    if ( weibo.indexOf("http://") < 0 ) {
+    if ( weibo.indexOf("http://") < 0 && weibo.indexOf("https://") < 0 ) {
         weibo = "http://" + weibo;
     }
-    if ( github.indexOf("http://") < 0 ) {
+    if ( github.indexOf("http://") < 0 && github.indexOf("https://") < 0 ) {
         github = "http://" + github;
     }
 

@@ -4,7 +4,7 @@ var later = require('later');
 
 later.date.localTime();
 var sched = later.parse.text('at 1:11 am');
-// var sched = later.parse.recur().every(2).second();
+// var sched = later.parse.recur().every(2).second(); // 每两秒发送一次，测试使用
 
 var mailAddress = ['ggiiss@qq.com', "106324307@qq.com"];
 // var mailAddress = ['ggiiss@qq.com'];

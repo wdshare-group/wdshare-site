@@ -9,6 +9,7 @@ requirejs.config({
             './jquery-1.11.1.min'
         ],
         dialog: './dialog.3.1.min',
+        fancybox: './jquery.fancybox',
         autosize: './autosize.min'// textarea自动调整大小
     },
     shim: {
@@ -364,6 +365,13 @@ if ( document.getElementById("js-comment") ) {
     });
 }
 
+
+/**
+ * 图片预览
+ */
+if(document.getElementById('init-fancybox')){
+    require(["initfancybox"]);
+}
 
 // 公共方法初始化
 require(["jquery", "dialog"], function($, Dialog) {

@@ -7,6 +7,6 @@ define(['jquery','fancybox'],function($){
      */
     var selector = $('.active-con a');
     selector.length && selector.each(function(index,obj){
-        if(/(.jpg|.png|.gif|.jpeg)$/.test(obj.href)) $(obj).fancybox();
+        if(/(.jpg|.png|.gif|.jpeg)$/ig.test(obj.href)) $(obj).fancybox();
     });
 });

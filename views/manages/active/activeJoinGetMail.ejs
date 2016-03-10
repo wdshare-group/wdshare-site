@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-获取报名邮件工具</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">获取报名邮件工具</h1>
+    <div class="manage-module">
+      <form id="js-activeJoinGetMail-form" method="post" action="/manage/activeJoinGetMail">
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">获取邮件列表</h3>
+          <div class="manage-tool">
+            <input class="green" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong>活动id：</strong><input type="text" name="activid"/><span>请在前台url中查看活动id，id为空代表获取所有邮件</span></label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div id="js-mails-count">共获取 <%=result.length%> 条信息 <span style="padding-left:30px; color:#f00;"><%=message%></span></div>
+    <br />
+    <textarea id="js-mails-list" style="width:80%; height:500px;"><%=result%></textarea>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

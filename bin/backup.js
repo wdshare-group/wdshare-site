@@ -3,7 +3,8 @@ var nodemailer = require('nodemailer');
 var later = require('later');
 
 later.date.localTime();
-var sched = later.parse.text('at 1:11 am');
+// var sched = later.parse.text('at 1:11 am');
+var sched = later.parse.recur().every(2).second();
 
 var mailAddress = ['ggiiss@qq.com', "106324307@qq.com"];
 // var mailAddress = ['ggiiss@qq.com'];
@@ -19,16 +20,20 @@ var tarFilename = 'wdshare-bak-' + backupTime + '.tar.gz';
 // /var/www/bak/mongodb/wdshare-bak-201512111037.tar.gz
 var tarFilepath = backupPath + tarFilename;
 
+// 生成 yyyymmddhhmmsss 格式的时间
 function getTime(){
   var now = new Date();
-  var min = now.getMinutes();
   var output = [];
-  min = min <= 9 ? '0' + min: min;
   output.push(now.getFullYear());
   output.push(now.getMonth() + 1);
   output.push(now.getDate());
   output.push(now.getHours());
-  output.push(min);
+  output.push(now.getMinutes());
+  output.push(now.getSeconds());
+  
+  output = output.map(function(item){
+    return Number(item) > 9 ? item : '0' + item;
+  })
   return  output.join('');
 }
 
@@ -41,10 +46,8 @@ function generateNames(){
 
 // 生成备份文件 /var/www/bak/mongodb/201512111037'
 function createBack(callback){
-  var createCMD = 'mongodump --host 127.0.0.1 --port 27017 -db wdshare -o ' + backupPath + backupTime +' 2>/dev/null';
+  var createCMD = 'mongodump --host 127.0.0.1 --port 27017 -d wdshare -o ' + backupPath + backupTime;
   cp.exec(createCMD,{}, function(err, stdout, stderr){
-      // console.log('stdout: ' + stdout);
-      // console.log('stderr: ' + stderr);
     callback(err);
   })   
 }
@@ -56,10 +59,7 @@ function backup(err, callback){
     throw err;
   }
   var tarCMD = 'tar czf ' + tarFilepath + ' ' + backupFolder;
-  console.log(tarCMD);
   cp.exec(tarCMD,{}, function(err, stdout, stderr){
-      // console.log('stdout: ' + stdout);
-      // console.log('stderr: ' + stderr);
     callback(err);
   })    
 }

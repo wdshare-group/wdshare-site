@@ -187,7 +187,7 @@ define(["jquery"], function(){
         param = formParam();
         
         // 为链接添加http://头
-        if ( param.web && param.web.indexOf("http://") < 0 ) {
+        if ( param.web && param.web.indexOf("http://") < 0 && param.web.indexOf("https://") < 0 ) {
             param.web = "http://" + param.web;
         }
 

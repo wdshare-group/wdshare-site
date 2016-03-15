@@ -116,7 +116,7 @@ body { background:#f7f7f7;}
 
 .foot-sns-note { display:none; position:absolute; border:1px solid #ccc; background:#fff; border-radius:5px;}
 .foot-sns a:hover .foot-sns-note { display:block;}
-.foot-sns-qq .foot-sns-note { top:-55px; left:-226px; width:480px; line-height:40px;}
+.foot-sns-qq .foot-sns-note { top:-55px; left:-230px; width:490px; line-height:40px;}
 .foot-sns-weibo .foot-sns-note { top:-55px; left:-86px; width:200px; line-height:40px;}
 .foot-sns-weixin .foot-sns-note { top:-205px; left:-86px; width:200px; line-height:25px; padding:10px 0 5px;}
 .foot-sns-weixin .foot-sns-note img { width:150px; height:150px; display:block; margin:auto;}

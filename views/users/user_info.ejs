@@ -33,9 +33,13 @@ var sex = <%=info.sex%>;
 <div id="js-myhome" style="display:none;"></div>
 <div class="edit-body">
 	<form id="js-edit-form" name="edit-form" method="post" action="">
+	<dl style="padding-bottom:20px;">
+		<dt>您的邮箱：</dt>
+		<dd><%=user.email%><span>邮箱不可更换，用于帐号登录</span></dd>
+	</dl>
 	<dl>
 		<dt>昵称：</dt>
-		<dd><input type="text" name="nickname" placeholder="请输入昵称" class="in-text" value="<%=name%>" /><span>可用于帐号登录</span></dd>
+		<dd><input type="text" name="nickname" placeholder="请输入昵称" class="in-text" value="<%=name%>" /><!-- <span>可用于帐号登录</span> --></dd>
 	</dl>
 
 	<h2><strong>基本信息 <em>完善吧，好处多多</em></strong></h2>

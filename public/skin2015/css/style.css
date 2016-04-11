@@ -4,7 +4,8 @@
 */
 /*  Reset  */
 html,body,div,span,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,cite,code,del,em,img,q,small,strong,sub,sup,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend { margin:0; padding:0; border:0; font-size:100%;}
-body { background:#fff; color:#000; font:14px "Microsoft YaHei"; text-align:left;}
+body { background:#fff; color:#000; font:14px 'Microsoft YaHei', sans-serif; text-align:left;}
+/*body { background:#fff; color:#000; font:14px 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; text-align:left;}*//* osx good */
 ol,ul { list-style:none;}
 cite,em,strong,th,h1,h2,h3,h4,h5,h6 { font-style:normal; font-weight:normal;}
 input,textarea,select,button,td { font-size:100%;}
@@ -353,13 +354,18 @@ a.article-top-comment-link { color:#ff8400;}
 .article .shareto .bds_renren { background-image:url("../img/share-renren.png");}
 .article .shareto .bds_renren:hover { background-color:#046cd0;}
 
-.article-con { font-size:14px; line-height:180%; padding-bottom:30px; color:#333;}
+.article-con { font-size:16px; line-height:180%; padding-bottom:30px; color:#333;}
+.article-con img { max-width:100% !important;}
+
+.article-con ul { list-style:disc; padding-left:2em;}
+.article-con ol { list-style:decimal; padding-left:2em;}
+
 .article-con strong { font-weight:bold;}
 .article-con p { padding:10px 0;}
 .article-con h3,
 .article-con h4,
 .article-con h5,
-.article-con h6 { font-size:16px; font-weight:bold; line-height:1.8em; border-left:4px solid #4183c4; padding:0 0 0 20px; margin:30px 0 15px; color:#333;}
+.article-con h6 { font-size:18px; font-weight:bold; line-height:1.8em; border-left:4px solid #4183c4; padding:0 0 0 20px; margin:30px 0 15px; color:#333;}
 .article-con h3 { font-weight:bold;}
 .article-con h5 { font-size:18px; padding-top:15px;}
 .article-con h6 { font-size:16px; padding-top:15px;}
@@ -373,8 +379,9 @@ a.article-top-comment-link { color:#ff8400;}
 .article-con table { border-collapse:collapse;}
 .article-con th,
 .article-con td { border:1px solid #ddd; padding:10px;}
-.article-con code { display:inline-block; border:1px solid #ccc; background:#ebebeb; padding:0 10px; border-radius:5px;}
-
+/*.article-con code { display:inline-block; border:1px solid #ccc; background:#ebebeb; padding:0 10px; border-radius:5px;}*/
+.article-con code { display:inline-block; background:#f7f7f7; padding:0 8px; line-height:1.6em; color:#e96900; border-radius:5px;}
+.article-con pre { background:#272822; padding:5px 10px; color:#f8f8f2; line-height:1.4em; border:1px solid #ccc; border-radius:4px;}
 
 
 /**/
@@ -564,7 +571,7 @@ a.article-top-comment-link { color:#ff8400;}
 .content-tegs .in-text { border-radius:8px 0 0 8px; padding:5px 5px 6px; border-right:0;}
 dd.content-tegs { float:none;}
 dd.content-tegs .content-tegs-show { line-height:30px; max-width:290px;}
-dd.content-tegs .content-tegs-show a { margin-top:-4px;}
+dd.content-tegs .content-tegs-show a { margin-top:-3px;}
 dl .content-tegs-list { margin-left:111px;}
 .edit-body dd span { padding-left:20px; font-size:14px; color:#999;}
 .edit-body dd textarea { width:400px; line-height:16px; border:1px solid #ccc; border-radius:8px; padding:7px 5px; background-color:#f2f2f2; font-size:14px; line-height:20px;}
@@ -647,7 +654,7 @@ dl .content-tegs-list { margin-left:111px;}
 .content-tegs-show p { padding:0 10px;}
 .content-tegs-show a { color:#000; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin-right:3px; font-size:14px; vertical-align:middle;}
 .content-tegs-show a:hover { background:#ddd;}
-.content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle;}
+.content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle; display:inline-block; margin-top:-2px;}
 .content-tegs input { border-radius:5px 0 0 5px; border-right:0;}
 .content-tegs i,
 .content-tegs-list i { background:#007cc2; color:#fff; border:0; font:400 1em/32px "Microsoft YaHei"; height:32px; padding:0 10px; border-radius:0 5px 5px 0; cursor:pointer; display:inline-block; font-style:normal;}

@@ -99,7 +99,7 @@
           </h3>
           <div class="article-item-type">
             <span class="article-item-channel"><a href="/article/<%= article.channelUrl %>">[<%= article.channel %>]</a></span>
-            <span class="article-item-date">时间：<%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+            <span class="article-item-date" title="<%= moment(article.editDate).format('YYYY-MM-DD HH:mm:ss') %>">时间：<%= moment(article.editDate).format('YYYY-MM-DD') %></span>
             <span class="article-item-click">点击：<%= article.click ? article.click : 0 %></span>
             <% if ( !article.linkUrl ) { %>
             <span class="article-item-comment">赞：<%= article.zan ? article.zan : 0 %></span>

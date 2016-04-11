@@ -808,7 +808,7 @@ router.get('/:id', function(req, res) {
             if ( !article.linkUrl ) {// 没有外链时返回文章信息
                 if ( req.session.addCommentIsShowCaptcha && req.session.addCommentIsShowCaptcha >= config.isShowCaptcha ) {// 显示验证码
                     res.render('article/end/'+tpl, {
-                        title: "文章终极页",
+                        title: article.title,
                         article: article,
                         member: mamber,
                         channel: channel,
@@ -819,7 +819,7 @@ router.get('/:id', function(req, res) {
                     // 不显示验证码时需要清空验证码session
                     req.session.captcha = null;
                     res.render('article/end/'+tpl, {
-                        title: "文章终极页",
+                        title: article.title,
                         article: article,
                         member: mamber,
                         channel: channel,

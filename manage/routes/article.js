@@ -80,7 +80,7 @@ function getList(req, res, o, pages, mod, channelName) {
         key: "Archive",
         body:o,// 仅读取文章类型的档案
         pages: pages,// 分页信息
-        occupation: "addDate"// 排序字段
+        occupation: {"sortup":-1, "rank":-1, "addDate":-1}// 排序字段：置顶、排序、添加时间
     }, function (err, data) {
         var channelCount = 0,
             userCount = 0,
@@ -580,15 +580,14 @@ router.post('/audit', function(req, res) {
     var id = req.body.id,
         name = req.body.name,
         mail = req.body.mail,
-        title = req.body.title;
+        title = req.body.title,
+        model;
 
-    archiveModel.update({
-            _id: id
-        }, {
+    // 先获取该纪录的信息，主要是type，用于判断模型
+    archiveModel.getOne({// 读取文章信息
         key: "Archive",
         body: {
-            audit: true,
-            rejected: ""
+            _id: id
         }
     }, function (err, data) {
         if (err) {
@@ -600,36 +599,68 @@ router.post('/audit', function(req, res) {
             return;
         }
 
-        if (data) {
-            // 除管理员外发送邮件通知
-            if ( mail != "manage@wdshare.org" ) {
-                var _html = '亲爱的，'+ name +'：<br /><br />';
-                _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;恭喜！<br /><br />';
-                _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的文章<b>《'+ title +'》</b>已通过审核，可以向朋友推荐你的文章了。<br /><br />'
-                _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;网址：<a href="'+ config.url + '/article/'+ id +'">'+ config.url + '/article/'+ id +'</a><br />';
-                _html += config.mailSignature;
-                sendMail({
-                    from: config.mail.sendMail,
-                    to: mail,
-                    subject: 'WDShare 文章审核成功通知',
-                    html: _html
-                });
+        model = data.type;
+        auditUodate();
+    });
+    function auditUodate() {
+        var modelURL;
+        if ( model == 1 ) {
+            modelURL = "article";
+        } else if ( model == 2 ) {
+            modelURL = "project";
+        } else if ( model == 3 ) {
+            modelURL = "jobs";
+        }
+        archiveModel.update({
+                _id: id
+            }, {
+            key: "Archive",
+            body: {
+                audit: true,
+                rejected: ""
             }
+        }, function (err, data) {
+            if (err) {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "服务器错误，请重试！"
+                });
+                return;
+            }
+
+            if (data) {
+                // 除管理员外发送邮件通知
+                if ( mail != "manage@wdshare.org" ) {
+                    var _html = '亲爱的，'+ name +'：<br /><br />';
+                    _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;恭喜！<br /><br />';
+                    _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;你在WDShare发布的<b>《'+ title +'》</b>已通过审核，可以向朋友推荐如下网址了。<br /><br />'
+                    _html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;网址：<a href="'+ config.url + '/'+ modelURL +'/'+ id +'">'+ config.url + '/'+ modelURL +'/'+ id +'</a><br />';
+                    _html += config.mailSignature;
+                    
+                    sendMail({
+                        from: config.mail.sendMail,
+                        to: mail,
+                        subject: 'WDShare 审核成功通知',
+                        html: _html
+                    });
+                }
+                res.send({
+                    status: 200,
+                    code: 1,
+                    message: "审核成功！"
+                });
+                return;
+            }
+
             res.send({
                 status: 200,
-                code: 1,
-                message: "审核成功！"
+                code: 0,
+                message: "未知错误，请重试！"
             });
-            return;
-        }
 
-        res.send({
-            status: 200,
-            code: 0,
-            message: "未知错误，请重试！"
         });
-
-    });
+    };
 });
 
 /**

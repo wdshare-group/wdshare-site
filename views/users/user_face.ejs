@@ -20,16 +20,22 @@ var sex = <%=info.sex%>;
 <% include etc/user_head.ejs %>
 
 <div id="js-myhome" style="display:none;"></div>
-<div class="edit-body">
-  <div class="select-face-file-node">请选择大于或等于 128×128 的<strong>正方形</strong>图片作为头像上传</div>
-  <div class="select-face-file" id="js-select-face-file">
-  	<span>选择图片</span>
-  	<input type="file" name="upfile" id="js-upface-but" />
-  </div>
 
-  <div class="upface-preview-loading" id="js-upface-preview-loading">正在生成预览图...</div>
-  <div class="upface-preview" id="js-upface-preview"></div>
-  <div class="upface-submit" id="js-upface-submit"><a href="#">上传头像</a></div>
+<div class="myhome-main maxWidth">
+  <% include etc/user_left.ejs %>
+  <div class="myhome-right">
+  	<div class="edit-body">
+	  <div class="select-face-file-node">请选择大于或等于 128×128 的<strong>正方形</strong>图片作为头像上传</div>
+	  <div class="select-face-file" id="js-select-face-file">
+	  	<span>选择图片</span>
+	  	<input type="file" name="upfile" id="js-upface-but" />
+	  </div>
+
+	  <div class="upface-preview-loading" id="js-upface-preview-loading">正在生成预览图...</div>
+	  <div class="upface-preview" id="js-upface-preview"></div>
+	  <div class="upface-submit" id="js-upface-submit"><a href="#">上传头像</a></div>
+	</div>
+  </div>
 </div>
 
 <% include ../etc/foot.ejs %>

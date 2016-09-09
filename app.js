@@ -16,6 +16,8 @@ var captcha = require('./routes/captcha');// 验证码
 var comment = require('./routes/comment');
 var tags = require('./routes/tags');
 var donation = require('./routes/donation');
+var jobs = require('./routes/job');
+var companys = require('./routes/company');
 
 var app = express();
 
@@ -40,6 +42,9 @@ var tagModel     = new Tags_mode();
 // 捐赠数据模型
 var Donation_mode     = require('./model/donation.js');
 var donationModel     = new Donation_mode();
+// 招聘相关数据模型
+var Jobs     = require('./model/jobs.js');
+var jobModel     = new Jobs();
 // 后台数据模型
 var Manage_mode     = require('./manage/model/manage.js');
 var manageModel     = new Manage_mode();
@@ -66,6 +71,7 @@ global.manageModel = manageModel;
 global.commentModel = commentModel;
 global.tagModel = tagModel;
 global.donationModel = donationModel;
+global.jobModel = jobModel;
 
 
 global.siteDir = __dirname;
@@ -93,7 +99,7 @@ app.use('/static/',express.static(path.join(__dirname, 'public')));
 
 app.use(function(req,res,next){
     "use strict";
-    res.locals.user = req.session.user;
+    res.locals.user = req.session.user;//为了ejs模版中引用才存储的
     res.locals.manageuser = req.session.manageuser;
     res.locals.captcha = req.session.captcha;// 验证码
     next();
@@ -116,6 +122,10 @@ app.use('/comment/', comment);
 app.use('/tags/', tags);
 // 捐赠
 app.use('/donation/', donation);
+// 招聘
+app.use('/jobs/', jobs);
+// 招聘企业
+app.use('/companys/', companys);
 
 
 /**
@@ -137,6 +147,7 @@ var manage_articleCrumbs = require('./manage/routes/articleCrumbs');
 var manage_member = require('./manage/routes/member');
 var manage_comment = require('./manage/routes/comment');
 var manage_donation = require('./manage/routes/donation');
+var manage_job = require('./manage/routes/job');
 var active_join_get_mail = require('./manage/routes/activeJoinGetMail');
 
 // 后台首页
@@ -153,6 +164,8 @@ app.use('/manage/member', manage_member);
 app.use('/manage/comment', manage_comment);
 // 捐赠管理
 app.use('/manage/donation', manage_donation);
+// 招聘管理
+app.use('/manage/jobs', manage_job);
 // 活动报名邮件提取工具
 app.use('/manage/activeJoinGetMail', active_join_get_mail);
 

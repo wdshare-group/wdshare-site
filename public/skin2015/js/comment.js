@@ -15,106 +15,121 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
             if ( typeof data == "string" ) {
                 data = $.parseJSON(data);
             }
-            if ( data.code !== 1 ) {// 返回错误信息
-                $("#js-comment-list").hide();
-            } else {
-                $("#js-comment-list").html("");
-                data.data = data.data.reverse();
-                $(data.data).each(function(i) {
-                    var _date = this.addDate,
-                        interval = this.nowDate - _date,
-                        dataString = "刚刚",
-                        count,
-                        formatDate = new Date(_date),
-                        textDate,
-                        _html = '';
-                    // 分钟级别
-                    if ( interval > 1000*60*5 ) {
-                        count = Math.floor(interval/(1000*60));
-                        dataString = count + "分钟前";
-                    }
-                    if ( interval > 1000*60*30 ) {
-                        dataString = "半小时前";
-                    }
-                    if ( interval > 1000*60*60 ) {
-                        count = Math.floor(interval/(1000*60*60));
-                        dataString = count + "小时前";
-                    }
-                    if ( interval > 1000*60*60*24 ) {
-                        count = Math.floor(interval/(1000*60*60*24));
-                        dataString = count + "天前";
-                    }
-                    if ( interval > 1000*60*60*24*365 ) {
-                        count = Math.floor(interval/(1000*60*60*24*365));
-                        dataString = count + "年前";
-                    }
-
-                    textDate = formatDate.getFullYear() +"-"+ (formatDate.getMonth()+1) +"-"+ formatDate.getDate() +" "+ formatDate.getHours() +":"+ formatDate.getMinutes() +":"+ formatDate.getSeconds();
-                    if ( this.privacy ) {
-                        _html += '<div class="comment-item" data-id="'+this._id+'" data-privacy="true">';
-                    } else {
-                        _html += '<div class="comment-item" data-id="'+this._id+'">';
-                    }
-                    _html += '    <div class="comment-item-face"><a href="/user/'+this.userid+'"><img src="/user/face/'+this.userid+'" title="'+this.username+'" /></a></div>';
-                    _html += '    <div class="comment-item-text">';
-                    _html += '        <div class="comment-item-head">';
-                    _html += '            <a href="/user/face/'+this.userid+'" class="comment-item-name">'+this.username+'</a>';
-                    _html += '            <span class="comment-item-date" title="'+textDate+'">'+dataString+' 说：</span>';
-                    if ( this.system && this.system != "Windows" ) {
-                        _html += '            <span class="comment-item-system">来自 '+this.system+'</span>';
-                    }
-                    if ( this.privacy ) {
-                        _html += '            <span class="comment-item-privacy" title="只有发送人和接收人可以看见">私密消息</span>';
-                    }
-                    _html += '        </div>';
-                    _html += '        <div class="comment-item-body">'+this.content+'</div>';
-                    _html += '        <div class="comment-item-foot">';
-                    _html += '            <a href="#" class="comment-item-zan" data-id="'+this._id+'">赞(<span>'+this.zan+'</span>)</a>';
-                    if ( !this.quote && document.getElementById("js-comment-form") ) {
-                        _html += '            <a href="#" class="comment-item-reply" data-id="'+this._id+'">回复此楼</a>';
-                    }
-                    if ( this.quote && document.getElementById("js-comment-form") ) {
-                        _html += '            <a href="#" class="comment-item-replyChild" data-id="'+this._id+'">回复</a>';
-                    }
-                    if ( this.master ) {
-                        _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">删除</a>';
-                    }
-                    if ( this.manageMaster ) {
-                        _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">管理员删除</a>';
-                    }
-                    _html += '        </div>';
-                    _html += '    </div>';
-                    _html += '</div>';
-
-                    if ( !this.quote ) {
-                        // $("#js-comment-list").append(_html);// 这两个插入方式可用来排序
-                        $("#js-comment-list").prepend(_html);
-                    } else {
-                        // 不存在子列表父节点是创建
-                        if ( $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-childList").length < 1 ) {
-                            $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-foot").after("<div class='comment-item-childList'></div>");
-                        }
-                        // 插入子评论
-                        $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-childList").prepend(_html);
-                    }
-                });
-                
-                if ( param.model == "message" ) {
-                    $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条留言</div>');
-                } else {
-                    $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条评论</div>');
-                }
-                $(".js-comment-count").html(data.data.length);
-
-                if ( data.data.length == 0 ) {
-                    $("#js-comment-list").html("哎呦，我将成为第一个评论的人！");
-                }
-
-                if ( data.data.length == 0 && param.model == "message" ) {
-                    $("#js-comment-list").html("很荣幸，您将成为第一个留言的人！");
-                }
-            }
+            setCommentList(data, param);
         });
+    };
+
+    /**
+     * 写入
+     * @return
+     */
+    function setCommentList(data, param) {
+        if ( data.code !== 1 ) {// 返回错误信息
+            $("#js-comment-list").hide();
+        } else {
+            $("#js-comment-list").html("");
+            data.data = data.data.reverse();
+            $(data.data).each(function(i) {
+                var _date = this.addDate,
+                    interval = this.nowDate - _date,
+                    dataString = "刚刚",
+                    count,
+                    formatDate = new Date(_date),
+                    textDate,
+                    _html = '';
+                // 分钟级别
+                if ( interval > 1000*60*5 ) {
+                    count = Math.floor(interval/(1000*60));
+                    dataString = count + "分钟前";
+                }
+                if ( interval > 1000*60*30 ) {
+                    dataString = "半小时前";
+                }
+                if ( interval > 1000*60*60 ) {
+                    count = Math.floor(interval/(1000*60*60));
+                    dataString = count + "小时前";
+                }
+                if ( interval > 1000*60*60*24 ) {
+                    count = Math.floor(interval/(1000*60*60*24));
+                    dataString = count + "天前";
+                }
+                if ( interval > 1000*60*60*24*365 ) {
+                    count = Math.floor(interval/(1000*60*60*24*365));
+                    dataString = count + "年前";
+                }
+
+                textDate = formatDate.getFullYear() +"-"+ (formatDate.getMonth()+1) +"-"+ formatDate.getDate() +" "+ formatDate.getHours() +":"+ formatDate.getMinutes() +":"+ formatDate.getSeconds();
+                if ( this.privacy ) {
+                    _html += '<div class="comment-item" data-id="'+this._id+'" data-privacy="true">';
+                } else {
+                    _html += '<div class="comment-item" data-id="'+this._id+'">';
+                }
+                _html += '    <div class="comment-item-face"><a href="/user/'+this.userid+'"><img src="/user/face/'+this.userid+'" title="'+this.username+'" /></a></div>';
+                _html += '    <div class="comment-item-text">';
+                _html += '        <div class="comment-item-head">';
+                _html += '            <a href="/user/face/'+this.userid+'" class="comment-item-name">'+this.username+'</a>';
+                _html += '            <span class="comment-item-date" title="'+textDate+'">'+dataString+' 说：</span>';
+                if ( param.id.indexOf(",") > 0 ) {
+                    _html += '            <span class="comment-item-title">职位：<a href="/jobs/'+ this.archivesid +'" target="_blank">'+ this.title +"</a></span>";
+                }
+                if ( this.system && this.system != "Windows" ) {
+                    _html += '            <span class="comment-item-system">来自 '+this.system+'</span>';
+                }
+                if ( this.privacy ) {
+                    _html += '            <span class="comment-item-privacy" title="只有发送人和接收人可以看见">私密消息</span>';
+                }
+                _html += '        </div>';
+                _html += '        <div class="comment-item-body">'+this.content+'</div>';
+                _html += '        <div class="comment-item-foot">';
+                _html += '            <a href="#" class="comment-item-zan" data-id="'+this._id+'">赞(<span>'+this.zan+'</span>)</a>';
+                if ( !this.quote && document.getElementById("js-comment-form") ) {
+                    _html += '            <a href="#" class="comment-item-reply" data-id="'+this._id+'">回复此楼</a>';
+                }
+                if ( this.quote && document.getElementById("js-comment-form") ) {
+                    _html += '            <a href="#" class="comment-item-replyChild" data-id="'+this._id+'">回复</a>';
+                }
+                if ( this.master ) {
+                    _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">删除</a>';
+                }
+                if ( this.manageMaster ) {
+                    _html += '            <a href="#" class="comment-item-del" data-id="'+this._id+'">管理员删除</a>';
+                }
+                _html += '        </div>';
+                _html += '    </div>';
+                _html += '</div>';
+
+                if ( !this.quote ) {
+                    // $("#js-comment-list").append(_html);// 这两个插入方式可用来排序
+                    $("#js-comment-list").prepend(_html);
+                } else {
+                    // 不存在子列表父节点是创建
+                    if ( $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-childList").length < 1 ) {
+                        $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-foot").after("<div class='comment-item-childList'></div>");
+                    }
+                    // 插入子评论
+                    $("#js-comment-list div[data-id='"+this.quote+"'] .comment-item-childList").prepend(_html);
+                }
+            });
+
+            $(".js-comment-count").html(data.data.length);
+            
+            if ( param.model == "message" ) {
+                $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条留言</div>');
+            } else {
+                $("#js-comment-list").prepend('<div class="comment-count">共有'+data.data.length+'条评论</div>');
+            }
+            
+            if ( data.data.length == 0 ) {
+                $("#js-comment-list").html("哎呦，我将成为第一个评论的人！");
+            }
+            if ( data.data.length == 0 && param.model == "message" ) {
+                $("#js-comment-list").html("很荣幸，您将成为第一个留言的人！");
+            }
+            if ( data.data.length == 0 && param.id.indexOf(",") > 0 ) {
+                $("#js-comment-list").html("");
+                $("#js-comment").hide();
+            }
+        }
     };
 
     /**

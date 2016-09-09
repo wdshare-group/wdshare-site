@@ -2173,6 +2173,625 @@ Comment.del = function() {
 };
 
 
+/**
+ * 招聘分类管理
+ * @return
+ */
+var JobChannels = {};
+JobChannels.init = function() {
+    this.create();
+    this.del();
+};
+
+/**
+ * 创建招聘分类
+ * @return
+ */
+JobChannels.create = function() {
+    if ( !document.getElementById("js-jobChannels-create-form") ) { return false };
+    
+    $('#js-jobChannels-create-form').submit(function() {
+        var _form = this;
+        if ( _form.parent.value == 0 ) {
+            alert("请选择归属！");
+            _form.parent.focus();
+            return false;
+        }
+
+        if ( !_form.name.value ) {
+            alert("分类名称必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        
+        if ( !_form.order.value ) {
+            alert("排序必须填写！");
+            _form.order.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/jobs/channel/create",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/jobs/channel";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+/**
+ * 删除招聘分类
+ * @return
+ */
+JobChannels.del = function() {
+    $(".js-jobChannels-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这个分类？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/jobs/channel/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+
+/**
+ * 招聘分类管理
+ * @return
+ */
+var Job = {};
+Job.init = function() {
+    this.comdel();
+    this.applyDel();
+    this.addevent();
+    this.submit();
+};
+/**
+ * 删除招聘企业
+ * @return
+ */
+Job.comdel = function() {
+    $(".js-job-com-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这条企业信息？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/jobs/companys/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+/**
+ * 删除求职纪录
+ * @return
+ */
+Job.applyDel = function() {
+    $(".js-apply-delete").click(function() {
+        var id = $(this).attr("data-id");
+        if( confirm("确定要删除这条求职纪录？") ) {
+            request(id);
+        };
+        return false;
+    });
+
+    function request(id) {
+        $.get("/manage/jobs/jobapply/del/"+id, function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onReady": function(that) {
+                        $(that.content).find(".D_submit").focus();
+                    },
+                    "onComplete": function() {
+                       window.location.reload();
+                    }
+                });
+            } else {// 失败
+                alert(data.message);
+            }
+        });
+    };
+};
+
+/**
+ * 招聘相关事件
+ * @return
+ */
+Job.addevent = function() {
+    if ( document.getElementById("js-company-info-form") ) {
+        // 公司领域最多选择三个
+        var realms = $('#js-company-info-form input[name="realm"]');
+        realms.click(function() {
+            var checkedRealms = 0;
+            realms.each(function() {
+                if ( this.checked ) {
+                    checkedRealms++;
+                }
+            });
+            if ( checkedRealms > 3 ) {
+                $(this).removeAttr("checked")[0].checked = false;
+                alert("公司领域最多选择三个！");
+            }
+        });
+    }
+
+    // 注册点击下线
+    $(".js-job-cancel").click(function() {
+        var id = $(this).attr("data-id");
+        if ( confirm("确定要将此招聘下线？") ) {
+            action();
+        };
+        function action() {
+            $.get("/manage/jobs/cancel/"+id, function(data) {
+                var data;
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                }
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 操作成功
+                    window.location.reload();
+                } else {// 操作失败
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        }
+                    });
+                }
+            });
+        }
+        
+        return false;
+    });
+
+    // 注册点击上线
+    $(".js-job-online").click(function() {
+        var id = $(this).attr("data-id");
+        if ( confirm("确定要将此招聘上线？") ) {
+            action();
+        };
+        function action() {
+            $.get("/manage/jobs/online/"+id, function(data) {
+                var data;
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                }
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 操作成功
+                    window.location.reload();
+                } else {// 操作失败
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        }
+                    });
+                }
+            });
+        }
+        
+        return false;
+    });
+};
+
+Job.submit = function() {
+    $('#js-company-info-form').submit(function() {
+        var _form = this;
+        if ( !_form.name.value ) {
+            alert("公司名称必须填写！");
+            _form.name.focus();
+            return false;
+        }
+        if ( _form.name.value.length > 20 ) {
+            alert("公司名称最多20个字！");
+            _form.name.focus();
+            return false;
+        }
+
+        if ( _form.intro.value && _form.intro.value.length > 50 ) {
+            alert("一句话简介最多50个字！");
+            _form.intro.focus();
+            return false;
+        }
+        
+        var realms = 0;
+        $(_form).find("input[name='realm']").each(function() {
+            if ( this.checked ) {
+                realms++;
+            }
+        });
+        if ( realms === 0 ) {
+            alert("请选择公司领域");
+            _form.realm[0].focus();
+            return false;
+        }
+        if ( realms > 3 ) {
+            alert("公司领域最多选择三项！");
+            _form.realm[0].focus();
+            return false;
+        }
+
+        if ( !_form.scale.value ) {
+            alert("请选择公司规模！");
+            _form.scale.focus();
+            return false;
+        }
+
+        if ( !_form.seedtime.value ) {
+            alert("请选择发展阶段！");
+            _form.seedtime.focus();
+            return false;
+        }
+
+        if ( !_form.address.value ) {
+            alert("请填写公司地址！");
+            _form.address.focus();
+            return false;
+        }
+        if ( _form.address.value.length > 50 ) {
+            alert("公司地址最多50个字！");
+            _form.address.focus();
+            return false;
+        }
+
+        // if ( _form.www && _form.www.value.indexOf("http") < 0 ) {
+        //     alert("公司主页必须以http开头！");
+        //     _form.www.focus();
+        //     return false;
+        // }
+
+        if ( !_form.contactName.value ) {
+            alert("请填写联系人！");
+            _form.contactName.focus();
+            return false;
+        }
+
+        if ( _form.contactName.value.length > 10 ) {
+            alert("联系人名字最多10个字！");
+            _form.contactName.focus();
+            return false;
+        }
+
+        if ( !_form.tel.value ) {
+            alert("请填写联系电话！");
+            _form.tel.focus();
+            return false;
+        }
+        if ( _form.tel.value.length > 15 ) {
+            alert("联系电话最多15个字！");
+            _form.tel.focus();
+            return false;
+        }
+
+        if ( !_form.mail.value ) {
+            alert("请填写联系邮箱！");
+            _form.mail.focus();
+            return false;
+        }
+
+        if ( !chackMail(_form.mail.value) ) {
+            alert("请填写正确的邮箱！");
+            _form.mail.focus();
+            return false;
+        }
+
+        if ( !_form.content.value ) {
+            alert("公司简介必须填写！");
+            _form.content.focus();
+            return false;
+        }
+        if ( _form.content.value.length > 5000 ) {
+            alert("公司简介太多了，删减一点吧！");
+            _form.content.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/jobs/companys/submit",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        },
+                        "onComplete": function() {
+                            if ( data.editLogo ) {
+                                showEditorLogo();
+                            } else {
+                                window.location = "/manage/jobs/companys";
+                            }
+                        }
+                    });
+                } else {// 失败
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        },
+                        "onComplete": function() {
+                            if ( data.reload ) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        return false;
+    });
+
+    $('#js-job-edit-form').submit(function() {
+        var _form = this;
+        if ( !_form.channelId.value ) {
+            alert("请选择招聘岗位！");
+            _form.channelId.focus();
+            return false;
+        }
+
+        if ( !_form.title.value ) {
+            alert("请填写招聘标题！");
+            _form.title.focus();
+            return false;
+        }
+        if ( _form.title.value.length > 30 ) {
+            alert("招聘标题最多30个字！");
+            _form.title.focus();
+            return false;
+        }
+
+        if ( !_form.allure.value ) {
+            alert("请填写职位诱惑！");
+            _form.allure.focus();
+            return false;
+        }
+        if ( _form.allure.value.length > 30 ) {
+            alert("职位诱惑最多30个字！");
+            _form.allure.focus();
+            return false;
+        }
+
+        if ( isNaN(parseInt(_form.jobbase.value)) ) {
+            alert("请填写岗位现有人数！");
+            _form.jobbase.focus();
+            return false;
+        }
+        if ( isNaN(parseInt(_form.jobmax.value)) ) {
+            alert("请填写岗位扩充到多少人！");
+            _form.jobmax.focus();
+            return false;
+        }
+        if ( parseInt(_form.jobmax.value) <= parseInt(_form.jobbase.value) ) {
+            alert("扩充人数要比现有人数多！");
+            _form.jobmax.focus();
+            return false;
+        }
+
+        if ( _form.address.value && _form.address.value.length > 50 ) {
+            alert("工作地址最多50个字！");
+            _form.address.focus();
+            return false;
+        }
+
+        if ( isNaN(parseInt(_form.salaryStart.value)) ) {
+            alert("请填写薪资范围起始值！");
+            _form.salaryStart.focus();
+            return false;
+        }
+        if ( isNaN(parseInt(_form.salaryEnd.value)) ) {
+            alert("请填写薪资范围最大值！");
+            _form.salaryEnd.focus();
+            return false;
+        }
+        if ( parseInt(_form.salaryEnd.value) <= parseInt(_form.salaryStart.value) ) {
+            alert("薪资最大值要比起始值大！");
+            _form.salaryEnd.focus();
+            return false;
+        }
+        if ( parseInt(_form.salaryEnd.value) > parseInt(_form.salaryStart.value)*2 ) {
+            alert("薪资范围跨度不能太大！");
+            _form.salaryEnd.focus();
+            return false;
+        }
+
+        if ( _form.contactName.value && _form.contactName.value.length > 10 ) {
+            alert("联系人名字最多10个字！");
+            _form.contactName.focus();
+            return false;
+        }
+
+        if ( _form.tel.value && _form.tel.value.length > 15 ) {
+            alert("联系电话最多15个字！");
+            _form.tel.focus();
+            return false;
+        }
+
+        if ( _form.mail.value && !chackMail(_form.mail.value) ) {
+            alert("请填写正确的邮箱！");
+            _form.mail.focus();
+            return false;
+        }
+
+        if ( !_form.email.value ) {
+            alert("请填写发布者邮箱！");
+            _form.email.focus();
+            return false;
+        }
+        if ( !chackMail(_form.email.value) ) {
+            alert("请填写正确的发布者邮箱！");
+            _form.email.focus();
+            return false;
+        }
+
+        if ( !_form.content.value ) {
+            alert("职位描述必须填写！");
+            _form.content.focus();
+            return false;
+        }
+        if ( _form.content.value.length > 5000 ) {
+            alert("职位描述太多了，删减一点吧！");
+            _form.content.focus();
+            return false;
+        }
+
+        var formData = $(_form).serialize();
+        $(_form).find("input[type='submit']").val("稍等...").attr("disabled", true);
+        $.ajax({
+            method: "POST",
+            url: "/manage/jobs/edit",
+            data: formData,
+            success:function( data ) {
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                };
+
+                $(_form).find("input[type='submit']").val("提交").attr("disabled", false);
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onComplete": function() {
+                           window.location = "/manage/jobs";
+                        }
+                    });
+                } else {// 失败
+                    alert(data.message);
+                }
+            }
+        });
+        return false;
+    });
+};
+
+
+
 function calendarInit() {
     var calendar = $('.js-calendar').datepicker().on('changeDate', function(ev) {
           calendar.hide();
@@ -2205,6 +2824,8 @@ function domready() {
 
     calendarInit();
 
+    JobChannels.init();
+    Job.init();
 };
 
 

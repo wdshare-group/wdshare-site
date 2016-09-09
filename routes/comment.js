@@ -108,10 +108,16 @@ function idToMail(items, callback) {
 router.get('/get', function(req, res) {
     var id = req.query.id,
         model = req.query.model;
+    if ( id.indexOf(",") > 0 ) {
+        id = id.split(",");
+    } else {
+        id = [id];
+    }
+    
     commentModel.getSort({
         key: "Comment",
         body: {
-            typeid: id,
+            typeid: {'$in':id},
             model:model
         },
         pages:{page:1, pagesize:1000},
@@ -157,6 +163,7 @@ router.get('/get', function(req, res) {
             _item.userid = data[i].userid;
             _item.username = data[i].username;
             _item.title = data[i].title;
+            _item.archivesid = data[i].typeid;
             _item.content = data[i].content;
             _item.quote = data[i].quote;
             _item.system = data[i].system;
@@ -798,7 +805,7 @@ router.post('/add', function(req, res) {
                                 } else {
                                     str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + req.session.user.username +" 对 【"+ title + "】"+str01+"：<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + content;
                                 }
-                                str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + userMessageLink + model + "/" + typeid + '">' + config.url + "/" + userMessageLink + model + "/" + typeid + '</a>';
+                                str += '<br /><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 内容链接：<a href="' + config.url + "/" + userMessageLink + (model=="job" ? "jobs":model) + "/" + typeid + '">' + config.url + "/" + userMessageLink + (model=="job" ? "jobs":model) + "/" + typeid + '</a>';
                                 sendMail({
                                     from: config.mail.sendMail,
                                     to: mails[i],

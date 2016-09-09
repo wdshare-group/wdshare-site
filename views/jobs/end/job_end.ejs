@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= job.title %> - WDShare</title>
+<meta name="keywords" content="<%= job.tag %>" />
+<meta name="description" content="<%= job.allure %>" />
+<% include ../../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../../etc/head.ejs %>
+
+<% include ../../etc/article-head-ad.ejs %>
+
+
+<input id="js-archives-id" type="hidden" value="<%= job._id %>" />
+<input id="js-archives-model" type="hidden" value="job" />
+<div class="article-title" style="display:none;"><%= job.title %></div>
+<div id="js-description"><%= job.allure %></div>
+
+<div class="article job-end">
+  <div class="maxWidth module">
+    <% if ( !job.audit ) { %>
+    <div class="inform" style="padding:0 0 40px;">
+      <p class="inform-con" style="padding:20px"><strong class="red">注意：</strong>该招聘暂未审核，审核后才会出现在官网！</p>
+    </div>
+    <% } %>
+    <div class="job-end-right">
+      <div class="job-end-companyHead">
+        <a href="/companys/<%= company._id %>"><img src="/user/comlogo/<%= company._id %>"></a>
+        <a href="/companys/<%= company._id %>"><%= company.name %></a>
+        <% if ( company.intro ) { %>
+        <p><%= company.intro %></p>
+        <% } %>
+      </div>
+      <div class="job-end-companyType">
+        <p><strong>领域</strong><%= company.realmName %></p>
+        <p><strong>规模</strong><%= company.scaleName %></p>
+        <p><strong>发展阶段</strong><%= company.seedtimeName %></p>
+        <% if ( company.www ) { %>
+        <p><strong>公司主页</strong><a href="<%= company.www %>" target="_blank"><%= company.www %></a></p>
+        <% } %>
+      </div>
+
+      <div class="job-end-address">
+        <h3>工作地址</h3>
+        <p id="js-job-address"><%= job.address %></p>
+        <div class="job-end-map" id="js-job-address-map">
+          <iframe src="/static/ueditor/dialogs/map/show.html#center=<%= job.mapLng ? job.mapLng : 108.953439 %>,<%= job.mapLat ? job.mapLat : 34.265672 %>&amp;zoom=<%= job.mapZoom ? job.mapZoom : 10 %>&amp;width=318&amp;height=298&amp;markers=<%= job.mapLng %>,<%= job.mapLat %>&amp;markerStyles=l,A" frameborder="0" width="320" height="300"></iframe>
+        </div>
+      </div>
+
+      <div class="job-end-tag">
+        <h3>TAG</h3>
+        <p><% company.tag.split(",").forEach(function(tag){ %>
+            <span><%= tag%></span>
+            <% }) %></p>
+      </div>
+    </div>
+    <div class="job-end-left">
+      <div class="job-end-head">
+        <h1><%= job.title %></h1>
+        <div class="article-head-right">
+          <div class="shareto">
+            <div class="bdsharebuttonbox"><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣"></a></div>
+          </div>
+        </div>
+        <div class="job-end-type">
+          <em class="orang"><%= job.salaryStart %>K-<%= job.salaryEnd %>K</em>
+          <em><%= job.cityName %></em>
+          <em>经验<%= job.workingLifeName %></em>
+          <em><% if ( job.diplomaName == "无限制" ) { %>学历<%}%><%= job.diplomaName %></em>
+          <em><%= job.jobTypeName %></em>
+          <em>现有<%= job.jobbase %>人，扩充至<%= job.jobmax %>人</em>
+        </div>
+        <div class="job-end-allure">职位诱惑：<%= job.allure %></div>
+        <div class="job-end-count">
+          <em><a href="/jobs/<%= channel._id %>">[<%= channel.name %>]</a></em>
+          <em><%= moment(job.editDate).format('YYYY-MM-DD HH:mm:ss') %></em>
+          <em><a href="#comment" class="article-top-comment-link">评论：<span class="js-comment-count">-</span></a></em>
+        </div>
+      </div>
+      <div class="article-con" id="article-detail">
+        <h3>职位描述：</h3><br />
+        <%- job.content %>
+      </div>
+
+      <div class="job-end-contact">
+        <div class="module-but"><a href="#" id="js-sentResumes">投递简历</a></div>
+        <% if ( member.username ) { %>
+          <dl class="job-end-manage">
+            <dt>
+              <a href="/user/<%= member._id %>" title="发布者：<%= member.username %>"><img src="/user/face/<%= member._id %>" /></a>
+            </dt>
+            <dd>
+              <em><a href="/user/<%= member._id %>"><%= member.username %></a></em>
+              <span>职位发布者</span>
+            </dd>
+          </dl>
+        <% } %>
+      </div>
+    </div>
+
+
+
+    <% if ( configIsComment && job.isComment ) { %>
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这篇文章</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= job._id %>" />
+              <input type="hidden" name="model" value="job" />
+              <input type="hidden" name="title" value="<%= job.title %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+    <% } %>
+  </div>
+</div>
+
+<% include ../../etc/foot.ejs %>
+</body>
+</html>

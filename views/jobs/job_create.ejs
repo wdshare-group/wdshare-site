@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>添加招聘到WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="article crumbs-article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-left">
+        <h1 class="article-title">发布招聘信息</h1>
+      </div>
+    </div>
+    <div class="add-article">
+      <% if ( typeof error == "string" ) { %>
+      <p style="min-height:400px; text-align:center; font-size:16px; padding-top:50px;"><%= error %></p>
+      <% } else if ( !company.audit ) { %>
+      <p style="min-height:400px; text-align:center; font-size:16px; padding-top:50px;">您的企业信息未审核，请联系管理员审核后再发布招聘！<br />管理员邮箱：manage@wdshare.org</p>
+      <% } else { %>
+      <form id="js-job-create-form">
+        <input type="hidden" name="aid" value="" />
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>招聘岗位：</strong>
+            <select name="channelId">
+              <option value="" selected>请选择岗位</option>
+              <% channels.forEach(function(channel){ %>
+              <option value="<%= channel._id%>"><%= channel.name%></option>
+              <% }) %>
+            </select></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>招聘标题：</strong><input type="text" name="title" style="width:60%;" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>职位诱惑：</strong><input type="text" name="allure" style="width:60%;" /></label>
+        </div>
+
+        <div class="addActive-form-item" id="js-articleadd-source">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>该岗位现有：</strong><input type="number" name="jobbase" style="width:60px;" /> 人</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;将扩充到： 
+          <label><input type="number" name="jobmax" style="width:60px;" /> 人</label>
+        </div>
+        
+        <div class="addActive-form-item">
+          <label><strong>工作年限：</strong>
+            <select name="workingLife">
+              <% workingLife.forEach(function(wl){ %>
+              <option value="<%= wl._id%>"><%= wl.name%></option>
+              <% }) %>
+            </select></label>
+        </div>
+        <div class="addActive-form-item addActive-form-radio">
+          <strong>学历：</strong>
+          <% var i=0; diploma.forEach(function(item){ %>
+            <% if ( i === 0 ) { %>
+            <label><input type="radio" name="diploma" value="<%=item._id%>" checked="checked" /><%=item.name%></label>
+            <% } else { %>
+            <label><input type="radio" name="diploma" value="<%=item._id%>" /><%=item.name%></label>
+            <% } %>
+          <% i++;}) %>
+        </div>
+        <div class="addActive-form-item addActive-form-radio">
+          <strong>职位属性：</strong>
+          <% var i=0; jobType.forEach(function(item){ %>
+            <% if ( i === 0 ) { %>
+            <label><input type="radio" name="jobType" value="<%=item._id%>" checked="checked" /><%=item.name%></label>
+            <% } else { %>
+            <label><input type="radio" name="jobType" value="<%=item._id%>" /><%=item.name%></label>
+            <% } %>
+
+          <% i++;}) %>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong>城市：</strong>
+            <select name="city">
+              <% city.forEach(function(ct){ %>
+              <option value="<%= ct._id%>" <%if (ct._id == company.city) {%>selected<%}%>><%= ct.name%></option>
+              <% }) %>
+            </select></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong>工作地址：</strong><input type="text" name="address" style="width:60%;" value="<%=company.address%>" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <input type="hidden" name="mapLng" value="<%=company.mapLng%>" />
+          <input type="hidden" name="mapLat" value="<%=company.mapLat%>" />
+          <input type="hidden" name="mapZoom" value="<%=company.mapZoom%>" />
+          <script src="http://api.map.baidu.com/api?v=1.1&services=true"></script>
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>显示地图：</strong>
+          <div class="job-set-map" id="js-job-set-map">
+            城市：<input id="setmap-city" type="text" value="<% city.forEach(function(ct){ %><%if (ct._id == company.city) {%><%= ct.name%><%}%><% }) %>" />
+            地址：<input id="setmap-address" type="text" value="<%=company.address%>" />
+            <input id="setmap-search" type="button" value="搜索" />
+            <div id="setmap-con"></div>
+          </div>
+        </div>
+        
+        <div class="addActive-form-item" id="js-articleadd-source">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>薪资范围：</strong><input type="number" name="salaryStart" style="width:60px;" /> K</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;到 
+          <label style="margin-left:30px;"><input type="number" name="salaryEnd" style="width:60px;" /> K</label>
+          <span>1K代表人民币：1000元</span>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong>联系人：</strong><input type="text" name="contactName" style="width:60%;" value="<%=company.contactName%>" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong>联系电话：</strong><input type="text" name="tel" style="width:60%;" value="<%=company.tel%>" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <label><strong>联系邮箱：</strong><input type="text" name="mail" style="width:60%;" value="<%=company.mail%>" /></label>
+        </div>
+
+        <div class="addActive-form-item" id="js-articleadd-content">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>职位描述：</strong>
+        </div>
+        <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"></textarea></div>
+
+        <% if (user.vip && user.vip.indexOf("job_send") >= 0) {%>
+        <div class="addActive-form-item addActive-form-radio" id="js-articleadd-description">
+          <strong>是否审核：</strong>
+          <div class="addActive-form-item-right">
+            <label><input type="radio" name="audit" value="1" checked="checked"> 是</label>
+            <label><input type="radio" name="audit" value="0"> 否 </label>
+            <span>未审核内容将不在前台显示</span>
+          </div>
+        </div>
+        <% } %>
+
+        <% if ( captcha && captcha === true ) { %>
+        <div class="addActive-form-item" style="margin-bottom:20px;">
+          <label><strong>验证码：</strong>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></label>
+        </div>
+        <% } %>
+
+        <div class="addActive-form-but">
+          <input class="green" name="submitbutton" type="submit" value="提交"/>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

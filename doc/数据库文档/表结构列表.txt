@@ -12,4 +12,9 @@ article_crumbs // 文章单页面内容
 comments // 评论
 donations // 捐赠
 
+// 招聘类
+companies // 公司名录
+job_channels // 招聘分类管理
+sent_resumes // 简历投递记录
+
 manage_users // 管理员

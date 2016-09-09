@@ -213,14 +213,15 @@ define(["jquery"], function(){
                 }
 
                 // 提示成功
-                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'showButtons':true, 'cancelButton':false, 'animation':'animated bounceIn', onClose:function() {
-                    window.location = "/user/myactive";
+                Dialog({'msg':'<div class="dialog-jion-alert">'+ text +'<br />复制网址邀请您的朋友一起参与本次活动。</div>', 'lock':true, 'title':'活动报名', 'showButtons':true, 'cancelButton':false, 'animation':'animated bounceIn', onComplete:function() {
+                    window.location = "#comment";
                 }});
             } else {// 错误提示
                 // 提示成功
                 Dialog({
                     'msg':'<div class="dialog-jion-alert">'+ data.msg +'</div>',
                     'lock':true,
+                    'lockClose':false,
                     'title':'活动报名',
                     'animation':'animated bounceIn', 'showButtons':true, 'cancelButton':false,
                     "onReady": function() {

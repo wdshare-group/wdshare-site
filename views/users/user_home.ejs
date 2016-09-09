@@ -29,163 +29,169 @@ if (user && user._id == member._id) {
 <% include etc/user_head.ejs %>
 
 <div id="js-myhome" style="display:none;"></div>
-<div class="edit-body">
-	<p style="font-size:16px; text-align:center; color:#666;">您可以通过<a href="/user/message/<%=member._id%>">留言</a>的方式联系该会员，系统会通过邮件实时传达您的信息。<br /><br /></p>
-	
-	<% if ( typeof info != "undefined") { %>
-		<%
-			if ( !info.mood || info.mood == "undefined"  ) {
-				info.mood = "";
-			}
-			if ( !info.sex ) {
-				info.sex = 1;
-			}
-			if ( !info.realname || info.realname == "undefined" ) {
-				info.realname = "";
-			}
-			if ( !info.tag || info.tag == "undefined" ) {
-				info.tag = "";
-			}
-			if ( !info.jobstate ) {
-				info.jobstate = 0;
-			}
-			if ( !info.com || info.com == "undefined" ) {
-				info.com = "";
-			}
-			if ( !info.tag || info.tag == "undefined" ) {
-				info.tag = "";
-			}
-			if ( !info.jobs || info.jobs == "undefined" ) {
-				info.jobs = "";
-			}
-			if ( !info.school || info.school == "undefined" ) {
-				info.school = "";
-			}
-			if ( !info.isPartTime ) {
-				info.isPartTime = false;
-			}
-			if ( !info.phone || info.phone == "undefined" ) {
-				info.phone = "";
-			}
-			if ( !info.qq || info.qq == "undefined" ) {
-				info.qq = "";
-			}
-			if ( !info.wechat || info.wechat == "undefined" ) {
-				info.wechat = "";
-			}
-			if ( !info.www || info.www == "undefined" ) {
-				info.www = "";
-			}
-			if ( !info.weibo || info.weibo == "undefined" ) {
-				info.weibo = "";
-			}
-			if ( !info.github || info.github == "undefined" ) {
-				info.github = "";
-			}
-			if ( !info.introduction || info.introduction == "undefined" ) {
-				info.introduction = "";
-			}
-		%>
-		<script>
-			var userTag = '<%=info.tag%>';
-		</script>
+<div class="myhome-main maxWidth">
+	<% include etc/user_left.ejs %>
+	<div class="myhome-right">
+		<div class="edit-body">
+			<p style="font-size:16px; text-align:center; color:#666;">您可以通过<a href="/user/message/<%=member._id%>">留言</a>的方式联系该会员，系统会通过邮件实时传达您的信息。<br /><br /></p>
+			
+			<% if ( typeof info != "undefined") { %>
+				<%
+					if ( !info.mood || info.mood == "undefined"  ) {
+						info.mood = "";
+					}
+					if ( !info.sex ) {
+						info.sex = 1;
+					}
+					if ( !info.realname || info.realname == "undefined" ) {
+						info.realname = "";
+					}
+					if ( !info.tag || info.tag == "undefined" ) {
+						info.tag = "";
+					}
+					if ( !info.jobstate ) {
+						info.jobstate = 0;
+					}
+					if ( !info.com || info.com == "undefined" ) {
+						info.com = "";
+					}
+					if ( !info.tag || info.tag == "undefined" ) {
+						info.tag = "";
+					}
+					if ( !info.jobs || info.jobs == "undefined" ) {
+						info.jobs = "";
+					}
+					if ( !info.school || info.school == "undefined" ) {
+						info.school = "";
+					}
+					if ( !info.isPartTime ) {
+						info.isPartTime = false;
+					}
+					if ( !info.phone || info.phone == "undefined" ) {
+						info.phone = "";
+					}
+					if ( !info.qq || info.qq == "undefined" ) {
+						info.qq = "";
+					}
+					if ( !info.wechat || info.wechat == "undefined" ) {
+						info.wechat = "";
+					}
+					if ( !info.www || info.www == "undefined" ) {
+						info.www = "";
+					}
+					if ( !info.weibo || info.weibo == "undefined" ) {
+						info.weibo = "";
+					}
+					if ( !info.github || info.github == "undefined" ) {
+						info.github = "";
+					}
+					if ( !info.introduction || info.introduction == "undefined" ) {
+						info.introduction = "";
+					}
+				%>
+				<script>
+					var userTag = '<%=info.tag%>';
+				</script>
 
-		<h2><strong>基本信息</strong></h2>
-		<% if (info.mood) { %>
-		<dl>
-			<dt><%=who%>的签名：</dt>
-			<dd><%=info.mood%></dd>
-		</dl>
-		<% } %>
-		<dl>
-			<dt>性别：</dt>
-			<dd>
-				<% if (info.sex === 1) { %>男<% } %>
-				<% if (info.sex === 2) { %>女<% } %>
-				<% if (info.sex === 3) { %>保密<% } %>
-			</dd>
-		</dl>
-		<% if (info.tag) { %>
-		<dl>
-			<dt>技能标签：</dt>
-			<dd><%=info.tag%></dd>
-		</dl>
-		<% } %>
-		<% if (info.jobstate > 0) { %>
-		<dl>
-			<dt>求职状态：</dt>
-			<dd>
-				<% if (info.jobstate === 1) { %>求职中<% } %>
-				<% if (info.jobstate === 2) { %>已就业<% } %>
-				<% if (info.jobstate === 3) { %>学生<% } %>
-			</dd>
-		</dl>
-		<% } %>
-		
-		<% if (info.com) { %>
-		<dl>
-			<dt>公司名称：</dt>
-			<dd><%=info.com%></dd>
-		</dl>
-		<% } %>
+				<h2><strong>基本信息</strong></h2>
+				<% if (info.mood) { %>
+				<dl>
+					<dt><%=who%>的签名：</dt>
+					<dd><%=info.mood%></dd>
+				</dl>
+				<% } %>
+				<dl>
+					<dt>性别：</dt>
+					<dd>
+						<% if (info.sex === 1) { %>男<% } %>
+						<% if (info.sex === 2) { %>女<% } %>
+						<% if (info.sex === 3) { %>保密<% } %>
+					</dd>
+				</dl>
+				<% if (info.tag) { %>
+				<dl>
+					<dt>技能标签：</dt>
+					<dd><%=info.tag%></dd>
+				</dl>
+				<% } %>
+				<% if (info.jobstate > 0) { %>
+				<dl>
+					<dt>求职状态：</dt>
+					<dd>
+						<% if (info.jobstate === 1) { %>求职中<% } %>
+						<% if (info.jobstate === 2) { %>已就业<% } %>
+						<% if (info.jobstate === 3) { %>学生<% } %>
+					</dd>
+				</dl>
+				<% } %>
+				
+				<% if (info.com) { %>
+				<dl>
+					<dt>公司名称：</dt>
+					<dd><%=info.com%></dd>
+				</dl>
+				<% } %>
 
-		<% if (info.jobs) { %>
-		<dl>
-			<dt>职位名称：</dt>
-			<dd><%=info.jobs%></dd>
-		</dl>
-		<% } %>
-		
-		<% if (info.school) { %>
-		<dl>
-			<dt>学校名称：</dt>
-			<dd><%=info.school%></dd>
-		</dl>
-		<% } %>
+				<% if (info.jobs) { %>
+				<dl>
+					<dt>职位名称：</dt>
+					<dd><%=info.jobs%></dd>
+				</dl>
+				<% } %>
+				
+				<% if (info.school) { %>
+				<dl>
+					<dt>学校名称：</dt>
+					<dd><%=info.school%></dd>
+				</dl>
+				<% } %>
 
-		<h2><strong>创收的机会 <em>我看好你哦</em></strong></h2>
-		<dl>
-			<dt>是否兼职：</dt>
-			<dd>
-				<% if (info.isPartTime === true) { %>可以<% } %>
-				<% if (!info.isPartTime) { %>暂时不考虑<% } %>
-			</dd>
-		</dl>
+				<h2><strong>创收的机会 <em>我看好你哦</em></strong></h2>
+				<dl>
+					<dt>是否兼职：</dt>
+					<dd>
+						<% if (info.isPartTime === true) { %>可以<% } %>
+						<% if (!info.isPartTime) { %>暂时不考虑<% } %>
+					</dd>
+				</dl>
 
-		<% if ( (info.www && info.www != "http://") || (info.weibo && info.weibo != "http://") || (info.github && info.github != "http://") || info.introduction ) { %>
-		<h2><strong>提升个人魅力</strong></h2>
-		<% } %>
-		<% if (info.www && info.www != "http://") { %>
-		<dl>
-			<dt>个人网站：</dt>
-			<dd><a href="<%=info.www%>" target="_blank"><%=info.www%></a></dd>
-		</dl>
-		<% } %>
+				<% if ( (info.www && info.www != "http://") || (info.weibo && info.weibo != "http://") || (info.github && info.github != "http://") || info.introduction ) { %>
+				<h2><strong>提升个人魅力</strong></h2>
+				<% } %>
+				<% if (info.www && info.www != "http://") { %>
+				<dl>
+					<dt>个人网站：</dt>
+					<dd><a href="<%=info.www%>" target="_blank"><%=info.www%></a></dd>
+				</dl>
+				<% } %>
 
-		<% if (info.weibo && info.weibo != "http://") { %>
-		<dl>
-			<dt>微博地址：</dt>
-			<dd><a href="<%=info.weibo%>" target="_blank"><%=info.weibo%></a></dd>
-		</dl>
-		<% } %>
+				<% if (info.weibo && info.weibo != "http://") { %>
+				<dl>
+					<dt>微博地址：</dt>
+					<dd><a href="<%=info.weibo%>" target="_blank"><%=info.weibo%></a></dd>
+				</dl>
+				<% } %>
 
-		<% if (info.github && info.github != "http://") { %>
-		<dl>
-			<dt>Github：</dt>
-			<dd><a href="<%=info.github%>" target="_blank"><%=info.github%></a></dd>
-		</dl>
-		<% } %>
+				<% if (info.github && info.github != "http://") { %>
+				<dl>
+					<dt>Github：</dt>
+					<dd><a href="<%=info.github%>" target="_blank"><%=info.github%></a></dd>
+				</dl>
+				<% } %>
 
-		<% if (info.introduction) { %>
-		<dl>
-			<dt>个人介绍：</dt>
-			<dd><%=info.introduction%></dd>
-		</dl>
-		<% } %>
-	<% } else { %>
-	<p style="text-align:center; padding:30px 0;">该会员没有留下任何信息</p>
-	<% } %>
+				<% if (info.introduction) { %>
+				<dl>
+					<dt>个人介绍：</dt>
+					<dd><%=info.introduction%></dd>
+				</dl>
+				<% } %>
+			<% } else { %>
+			<p style="text-align:center; padding:30px 0;">该会员没有留下任何信息</p>
+			<% } %>
+		</div>
+	</div>
 </div>
+
 
 <% include ../etc/foot.ejs %>
 </body>

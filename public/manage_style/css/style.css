@@ -181,6 +181,9 @@ body .manage-form-but input { line-height:40px; height:40px; font-size:16px; let
 .content-tegs-list a:hover { background:#ddd;}
 .content-tegs-list a em { padding-right:6px;}
 
+.form-companys-realm { margin-left:130px; }
+.form-companys-realm label { display:inline-block; padding-right:0; width:110px; white-space:nowrap;}
+.form-companys-realm input { vertical-align:middle; margin:-3px 5px 0 0;}
 
 
 /**/

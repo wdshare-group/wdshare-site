@@ -149,6 +149,86 @@ function getUsersList(req, res, o, pages, mod) {
     });
 };
 
+// 获取用户信息接口
+router.route('/get').get(function (req, res) {
+    if (!req.session.user) {
+        res.send({
+            status: 200,
+            code: 0,
+            member: {},
+            info:{}
+        });
+        return false;
+    }
+
+    var id = req.session.user._id,
+        userdata;
+
+    // 先查users表的用户信息
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if ( !data ) {
+            res.send({
+                status: 200,
+                code: 0,
+                member: {},
+                info:{}
+            });
+            return false; 
+        } else {
+            userdata = {
+                username: data.username,
+                isActive: data.isActive
+            };
+        }
+        // 再查info
+        usersInfosModel.getOne({
+            key: "User_info",
+            body: {
+                userid: id
+            }
+        }, function (err, info) {
+            if (err || !info) {// 会员信息不存在
+                res.send({
+                    status: 200,
+                    code: 0,
+                    member: userdata,
+                    info:{}
+                });
+            } else {// 已存在
+                res.send({
+                    status: 200,
+                    code: 1,
+                    member: userdata,
+                    info: {
+                        sex: info.sex,
+                        realname: info.realname,
+                        jobstate: info.jobstate,
+                        com: info.com,
+                        jobs: info.jobs,
+                        school: info.school,
+                        isPartTime: info.isPartTime,
+                        www: info.www,
+                        qq: info.qq,
+                        wechat: info.wechat,
+                        weibo: info.weibo,
+                        github: info.github,
+                        phone: info.phone,
+                        zan: info.zan,
+                        offer: info.offer,
+                        mood: info.mood,
+                        tag: info.tag,
+                        introduction: info.introduction
+                    }
+                });
+            }
+        });
+    });
+});
 
 // 编辑用户资料  user_infos表操作
 router.route('/editInfo').get(function (req, res) {
@@ -516,6 +596,10 @@ router.route('/editInfo').get(function (req, res) {
             }
             
             if (data == null) {
+
+                // 更新session［放在这里第一次更新才能生效，正常保存不会有风险，除非下面这个保存失败才有风险］
+                req.session.user.username = nickname;
+                
                 usersModel.update({
                     _id: id
                 }, {
@@ -531,9 +615,6 @@ router.route('/editInfo').get(function (req, res) {
                     } else {
                         user_flag = true;
                         pageSend();
-                        
-                        // 更新session中的昵称
-                        req.session.user.username = nickname;
                     }
                 });
             } else {
@@ -869,6 +950,12 @@ router.route("/editFace").get(function (req, res) {
     });
 }).post(function (req, res) {
     "use strict";
+    // 未登录禁止上传
+    if (!req.session.user) {
+        res.json({state:"请登录后再上传！"});
+        return false;
+    }
+
     var busboy = new Busboy({ headers: req.headers });
     var staticPath = path.join(siteDir, 'public');
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
@@ -884,7 +971,7 @@ router.route("/editFace").get(function (req, res) {
                 'original': filename,
             }
             if (err) {
-                r.state = 'ERROR';
+                r.state = '图片上传失败！';
             } else r.state = 'SUCCESS';
             res.json(r);
         });
@@ -921,6 +1008,87 @@ router.route("/editFace").get(function (req, res) {
 
 
     // res.send({url:"/static/upload/560262144bb4b810197a28d9/2015_11_12_16_56_44_689_1000.jpg",original:"1.jpg",state:"SUCCESS"});
+});
+
+// 修改企业logo
+router.route("/editComlogo").post(function (req, res) {
+    "use strict";
+    // 未登录禁止上传
+    if (!req.session.user) {
+        res.json({state:"请登录后再上传！"});
+        return false;
+    }
+
+    var comID;
+
+    // 先获取企业id
+    jobModel.getOne({
+        key: "Companie",
+        body: {
+            manage: req.session.user._id
+        }
+    }, function (err, data) {
+        if (err || !data) {
+            res.json({state:"该会员无企业信息！"});
+        }
+        
+        comID = data._id;
+        updataLogo();
+    });
+
+    // 上传图片
+    function updataLogo() {
+        var busboy = new Busboy({ headers: req.headers });
+        var staticPath = path.join(siteDir, 'public');
+        busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+            var isReturn = false;
+            save(file, filename, req, function (err, url) {
+                //防止多次res.end()
+                if (isReturn) return;
+                isReturn = true;
+                //console.log(req.body);
+                var r = {
+                    'url': '/static' + url,
+                    //'title': req.body.pictitle,
+                    'original': filename,
+                }
+                if (err) {
+                    r.state = '图片上传失败！';
+                } else r.state = 'SUCCESS';
+                res.json(r);
+            });
+        });
+        req.pipe(busboy);
+
+
+        var save = function (file, filename, req, callback) {
+            var realName = "logo" + path.extname(filename);
+            var dPath = "/companys/" + comID + "/logo";
+            var saveTo = path.join(os.tmpDir(), realName);
+
+            file.pipe(fs.createWriteStream(saveTo));
+            file.on('end', function() {
+                var readPath = path.join(staticPath, dPath, realName);
+                fse.remove(path.join(staticPath, dPath), function(error) {// 先移动原有头像文件夹
+                    // console.log(saveTo);
+                    // console.log(readPath);
+                    
+                    fse.move(saveTo, readPath, function(err) {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            // 缩放图片【限制最大宽高】
+                            imageMagick(readPath).resize(128, 128).noProfile().write(readPath, function() {
+                                console.log("face upload ok!");
+                            });
+                            callback(null, dPath + '/' + realName);
+                        }
+                    });
+                });
+            });
+        };
+    };
+
 });
 
 
@@ -1459,6 +1627,441 @@ function getCommentList(req, res, o, pages, mod, member, info) {
 
 
 
+// 访问我的招聘【出现这个链接默认为会员访问自己发布的招聘】
+router.route('/myjob').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    // 跳转至用户中心页面
+    res.redirect("/user/myjob/"+req.session.user._id);
+});
+// 访问会员的招聘
+router.route('/myjob/:id').get(function (req, res) {
+    "use strict";
+    var id = req.params.id,
+        member;
+
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    var member,
+        info,
+        workingLife,
+        diploma,
+        jobType,
+        city,
+        companys;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, _member) {
+        if (err || !_member) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = _member;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, _info) {
+                if (err || !_info) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    info = _info;
+                    getJobChannelCon();
+                }
+            });
+        }
+    });
+
+    /**
+     * 获取招聘相关分类信息
+     */
+    function getJobChannelCon() {
+        getJobChannelData({parent:5}, function(_workingLife) {
+            getJobChannelData({parent:6}, function(_diploma) {
+                getJobChannelData({parent:7}, function(_jobType) {
+                    getJobChannelData({parent:8}, function(_city) {
+                        workingLife = _workingLife;
+                        diploma = _diploma;
+                        jobType = _jobType;
+                        city = _city;
+                        getCompanys()
+                    });
+                });
+            });
+        });
+    };
+
+    /**
+     * 获取本人关联企业信息
+     */
+    function getCompanys() {
+        jobModel.getOne({
+            key: "Companie",
+            body: {
+                manage: id
+            }
+        }, function (err, _companys) {
+            if (err || !_companys) {// 企业信息不存在
+                res.render('article/error', {
+                    title: "错误提示",
+                    msg: "该用户没有关联企业信息！"
+                });
+            } else {// 已存在
+                getJobChannelData({parent:2}, function(realm) {
+                    getJobChannelData({parent:3}, function(scale) {
+                        getJobChannelData({parent:4}, function(seedtime) {
+                            var realmData = [];
+                            // 转化企业领域为汉字
+                            for ( var x=0; x<realm.length; x++ ) {
+                                var thisid = realm[x]._id;
+                                if ( _companys.realm.indexOf(thisid) > -1 ) {
+                                    realmData.push(realm[x].name);
+                                }
+                            }
+                            _companys.realmName = realmData.join(" · ");
+                            // 转化企业规模为汉字
+                            for ( var j=0; j<scale.length; j++ ) {
+                                if ( scale[j]._id == _companys.scale ) {
+                                    _companys.scaleName = scale[j].name;
+                                }
+                            }
+                            // 转化发展阶段为汉字
+                            for ( var k=0; k<seedtime.length; k++ ) {
+                                if ( seedtime[k]._id == _companys.seedtime ) {
+                                    _companys.seedtimeName = seedtime[k].name;
+                                }
+                            }
+
+                            companys = _companys;
+                            getList();
+                        });
+                    });
+                });
+            }
+        });
+    };
+
+    /**
+     * 获取本人招聘列表
+     */
+    function getList() {
+        getJobList(req, res, {type:3, userId:id}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/user_job', member, info, {
+            workingLife: workingLife,
+            diploma: diploma,
+            jobType: jobType,
+            city: city
+        }, companys);
+    };
+});
+/**
+ * 获取招聘列表内容
+ * @param  {Object} o 限制条件
+ * @param  {String} mod 模板路径
+ * @param  {Object} member 用户信息
+ * @return
+ */
+function getJobList(req, res, o, pages, mod, member, info, relyData, companys) {
+    archiveModel.getSort({
+        key: "Archive",
+        body:o,// 仅读取文章类型的档案
+        pages:pages, // 分页信息
+        occupation: {"sortup":-1, "rank":-1, "editDate":-1}// 排序字段
+    }, function (err, data) {
+        var channelCount = 0,
+            userCount = 0,
+            allCount;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            if ( data.length < 1 ) {// 没有数据的时候直接返回
+                allCount = 0;
+                gosend();
+                return;
+            }
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 转化工作年限为汉字
+                    for ( var j=0; j<relyData.workingLife.length; j++ ) {
+                        if ( relyData.workingLife[j]._id == data[i].workingLife ) {
+                            data[i].workingLifeName = relyData.workingLife[j].name;
+                        }
+                    }
+                    // 转化学历为汉字
+                    for ( var k=0; k<relyData.diploma.length; k++ ) {
+                        if ( relyData.diploma[k]._id == data[i].diploma ) {
+                            data[i].diplomaName = relyData.diploma[k].name;
+                        }
+                    }
+                    // 转化招聘类型为汉字
+                    for ( var y=0; y<relyData.jobType.length; y++ ) {
+                        if ( relyData.jobType[y]._id == data[i].jobType ) {
+                            data[i].jobTypeName = relyData.jobType[y].name;
+                        }
+                    }
+                    // 转化城市为汉字
+                    for ( var z=0; z<relyData.city.length; z++ ) {
+                        if ( relyData.city[z]._id == data[i].city ) {
+                            data[i].cityName = relyData.city[z].name;
+                        }
+                    }
+
+
+                    // 获取分类信息
+                    jobModel.getOne({
+                        key: "Job_channel",
+                        body: {
+                            _id: data[i].channelId
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            data[i].channel = channelData.name;
+                            data[i].channelUrl = channelData.url;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取会员信息
+                    usersModel.getOne({
+                        key: "User",
+                        body: {
+                            _id: data[i].userId
+                        }
+                    }, function (err, userData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (userData) {
+                            data[i].user = userData.username;
+                            data[i].userId = userData._id;
+                        } else {
+                            data[i].user = "";
+                            data[i].userId = "";
+                        }
+                        userCount++;
+                        gosend();
+                        return;
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            archiveModel.getAll({// 查询分类，为添加文章做准备
+                key: "Archive",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+            var _page = pages;
+            if ( channelCount == data.length && userCount == data.length && allCount >= 0 ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: "会员发布的招聘",
+                    result: data,
+                    pages:_page,
+                    member: member,
+                    info: info,
+                    companys: companys
+                });
+           }
+        };
+    });
+};
+/**
+ * 获取招聘分类数据
+ * @param  {Object} o 筛选对象
+ * @param  {Function} callback 查询完的回调
+ */
+function getJobChannelData(o, callback) {
+    jobModel.getSort({
+        key: "Job_channel",
+        body:o,// 筛选条件
+        pages:{page:1, pagesize:1000, pathname:""}, // 分页信息
+        occupation: "order"// 排序字段
+    }, function (err, data) {
+        var items = data;
+        if (err || !data) {
+            items = [];
+        }
+        
+        if ( callback ) {
+            callback(items);
+        }
+    });
+};
+
+
+// 访问我的面试记录
+router.route('/myjobapply').get(function (req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+
+    var id = req.session.user._id,
+        member;
+
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 20,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    // 查询用户帐号
+    usersModel.getOne({
+        key: "User",
+        body: {
+            _id: id
+        }
+    }, function (err, data) {
+        if (err || !data) {// 会员信息不存在
+            res.render('article/error', {
+                title: "错误提示",
+                msg: "无此用户"
+            });
+        } else {// 已存在
+            member = data;
+
+            // 查询用户info
+            usersInfosModel.getOne({
+                key: "User_info",
+                body: {
+                    userid: id
+                }
+            }, function (err, data) {
+                if (err || !data) {// 会员信息不存在
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有此类信息！"
+                    });
+                } else {// 已存在
+                    getJobApplyList(req, res, {userid:id}, {page:page, pagesize:pagesize, pathname:pathname}, 'users/user_jobApply', member, data);
+                }
+            });
+        }
+    });
+});
+/**
+ * 获取面试记录
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {String} mod 模板路径
+ * @param  {Object} member 用户信息
+ * @param  {Object} info 用户详细信息
+ * @return
+ */
+function getJobApplyList(req, res, o, pages, mod, member, info) {
+    jobModel.getSort({// 获取列表信息
+        key: "Sent_resume",
+        body:o,// 条件
+        pages: pages,// 分页信息
+        occupation: "addDate"// 排序字段
+    }, function (err, data) {
+        var allCount;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            if ( data.length < 1 ) {// 没有数据的时候直接返回
+                allCount = 0;
+                gosend();
+                return;
+            }
+
+            // 获取总数【用于分页】
+            jobModel.getAll({
+                key: "Sent_resume",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( allCount >= 0 ) {
+                _page.sum = allCount;
+                res.render(mod, {
+                    title: "我的求职纪录",
+                    result: data,
+                    member: member,
+                    info: info,
+                    pages: _page
+                });
+           }
+        };
+    });
+};
+
+
 
 
 // 访问我的留言【出现这个链接默认为会员访问自己的留言】
@@ -1743,9 +2346,13 @@ function readFile(path, filesList) {
         }
     }
 }
-// 获取用户头像
+
+/**
+ * path:   /user/face/:id
+ * 获取用户头像
+ */
 router.route('/face/:id').get(function (req, res) {
-    // 待完善，过去用户头像，头像路径不存数据库，上传头像的直接创建ID命名的图片，没上传的显示默认头像
+    // 头像路径不存数据库，上传头像的直接创建ID命名的图片，没上传的显示默认头像
     var id = req.params.id,
         userPath = path.join(__dirname, '../public/users/'+id+'/face'),
         defaultPath = path.join(__dirname, '../public/users/default-face.png'),
@@ -1757,7 +2364,7 @@ router.route('/face/:id').get(function (req, res) {
     } else if ( geFileList(userPath).length < 1 ) {// 文件夹存在，但没有文件
         // console.log("yes");
         _send(defaultPath, "png");
-    } else {// 有文件时的处理【我们的face目录下默认值会显示一张图片】
+    } else {// 有文件时的处理【我们的face目录下默认只会显示一张图片】
         faceFileName = geFileList(userPath)[0].name;
         // console.log("ok");
         _send(userPath +'/'+ faceFileName, faceFileName.substring(faceFileName.indexOf(".")+1));
@@ -1777,6 +2384,39 @@ router.route('/face/:id').get(function (req, res) {
     };
 });
 
+/**
+ * path:  /user/comlogo/:id
+ * 获取企业logo
+ */
+router.route('/comlogo/:id').get(function (req, res) {
+    // logo路径不存数据库，上传logo的直接创建ID命名的图片，没上传的显示默认头像
+    var id = req.params.id,
+        userPath = path.join(__dirname, '../public/companys/'+id+'/logo'),
+        defaultPath = path.join(__dirname, '../public/companys/default-logo.png'),
+        logoFileName;
+
+    if ( !fs.existsSync(userPath) ) {// 企业logo文件夹不存在时
+        _send(defaultPath, "png");
+    } else if ( geFileList(userPath).length < 1 ) {// 文件夹存在，但没有文件
+        _send(defaultPath, "png");
+    } else {// 有文件时的处理【我们的logo目录下默认只会显示一张图片】
+        logoFileName = geFileList(userPath)[0].name;
+        _send(userPath +'/'+ logoFileName, logoFileName.substring(logoFileName.indexOf(".")+1));
+    }
+    
+    /**
+     * 返回图片信息
+     * @param  {String} _path 需要返回图片的路径
+     * @param  {String} _type 图片后缀
+     * @return
+     */
+    function _send(_path, _type) {
+        fs.readFile(_path, function (err, img) {
+            res.writeHead('200', {'Content-Type': 'image/'+_type});    //写http头部信息
+            res.end(img, 'binary');
+        });
+    };
+});
 
 
 /**
@@ -2060,13 +2700,13 @@ router.get("/activeAccount/", function (req, res) {
         }
     }, function (err, user) {
         if (err || !user) {
-            res.render('users/empty', {title:'账户激活', content:'服务器错误，请稍后尝试刷新！'});
+            res.render('users/empty', {title:'激活账户提示', content:'服务器错误，请稍后尝试刷新！'});
         } else {
             if ( !user.regCode && user.isActive ) {
                 res.redirect("/user/");
                 return false;
             }
-            res.render('users/empty', {title:'账户激活', content:'1. 请从邮箱中点击激活链接进行账户激活，否则无法正常使用会员功能。<br />2. 如果没有收到激活邮件请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
+            res.render('users/empty', {title:'激活账户提示', content:'1. 请从邮箱中点击激活链接进行账户激活，否则无法正常使用会员功能。<br />2. 如果没有收到激活邮件请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
         }
     });
 });
@@ -2087,20 +2727,20 @@ router.get("/activeAccount/:code", function (req, res) {
         }
     }, function (err, user) {
         if (err || !user) {
-            res.render('users/empty', {title:'账户激活', content:'服务器错误，请稍后尝试刷新！'});
+            res.render('users/empty', {title:'激活账户提示', content:'服务器错误，请稍后尝试刷新！'});
         } else {
             if ( !user.regCode && user.isActive ) {
                 res.redirect("/user/");
                 return false;
             }
             if ( user.regCode !== code ) {
-                res.render('users/empty', {title:'账户激活', content:'你的激活链接好像不正确，请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
+                res.render('users/empty', {title:'激活账户提示', content:'你的激活链接好像不正确，请点击<a href="#" id="reGetActiveAccountMail">重新发送激活邮件</a>'});
                 return false;
             }
             if (user.regCode && !user.isActive) {
-                res.render('users/empty', {title:'账户激活', regCode:user.regCode, content:'正在激活账户，请不要关闭浏览器...'});
+                res.render('users/empty', {title:'激活账户提示', regCode:user.regCode, content:'正在激活账户，请不要关闭浏览器...'});
             } else {
-                res.render('users/empty', {title:'账户激活', content:'不要重复激活啦，<a href="/">返回首页</a>'});
+                res.render('users/empty', {title:'激活账户提示', content:'不要重复激活啦，<a href="/">返回首页</a>'});
             }
         }
     });

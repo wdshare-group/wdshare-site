@@ -373,6 +373,26 @@ if(document.getElementById('init-fancybox')){
     require(["initfancybox"]);
 }
 
+/**
+ * 招聘企业信息管理
+ * @return
+ */
+if ( document.getElementById("js-company-info-form") ) {
+    require(["companyInfo"], function(companyInfo){
+        companyInfo.init();
+    });
+}
+
+/**
+ * 招聘信息管理
+ * @return
+ */
+if ( document.getElementById("js-job-create-form") ) {
+    require(["jobCreate"], function(jobCreate){
+        jobCreate.init();
+    });
+}
+
 // 公共方法初始化
 require(["jquery", "dialog"], function($, Dialog) {
     openActive();
@@ -384,4 +404,5 @@ require(["jquery", "dialog"], function($, Dialog) {
     }
 });
 
-
+// console.log("%c    ","background: url('http://www.wdshare.org/static/skin2015/img/logo.png') no-repeat left center; font-size:100px;","\n");
+// console.log("%c WDShare%c 公益型技术社区，为西安前端行业发展努力！", "color:#3188de;font-weight:bold;font-size:1.8em;","color:000;font-size:1.8em;");

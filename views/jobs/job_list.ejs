@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= title %> - WDShare</title>
+<meta name="keywords" content="<%= keywords %>" />
+<meta name="description" content="<%= description || "技术招聘" %>" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<% include ../etc/article-head-ad.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="article-list">
+  <div class="maxWidth module">
+    <h2 class="module-title">
+      <% if(user && user.email){ %>
+      <div class="module-but"><a href="/jobs/create">发布招聘</a></div>
+      <% } %>
+      <% if ( title != "技术招聘" ) { %>
+      <a href="/jobs">技术招聘</a> &gt; 
+      <% } %>
+      <%= title %>
+    </h2>
+    <div class="article-list-con">
+      <% result.forEach(function(item){ %>
+      <%
+        var tou = false,
+            hot = false,
+            _strong = false,
+            types = [];
+        if ( item.diyType ) {
+          types = item.diyType.split(",");
+        }
+        for ( var i=0; i<types.length; i++ ) {
+          if ( parseInt(types[i]) === 1 ) {
+            tou = true;
+          }
+          if ( parseInt(types[i]) === 2 ) {
+            hot = true;
+          }
+          if ( parseInt(types[i]) === 3 ) {
+            _strong = true;
+          }
+        }
+      %>
+
+      <%
+        var _date = item.editDate,
+            interval = (new Date()).getTime() - _date,
+            dataString = "刚刚",
+            count;
+        
+        if ( interval > 1000*60*5 ) {
+            count = Math.floor(interval/(1000*60));
+            dataString = count + "分钟前";
+        }
+        if ( interval > 1000*60*30 ) {
+            dataString = "半小时前";
+        }
+        if ( interval > 1000*60*60 ) {
+            count = Math.floor(interval/(1000*60*60));
+            dataString = count + "小时前";
+        }
+        if ( interval > 1000*60*60*24 ) {
+            count = Math.floor(interval/(1000*60*60*24));
+            dataString = count + "天前";
+        }
+        if ( interval > 1000*60*60*24*365 ) {
+            count = Math.floor(interval/(1000*60*60*24*365));
+            dataString = count + "年前";
+        }
+      %>
+      <div class="job-list-item">
+        <div class="job-list-item-body">
+          <div class="job-list-item-left">
+            <h3>
+              <a href="/jobs/<%= item._id%>">[<%= item.cityName%>] <%= item.title%></a><span title="<%= moment(item.editDate).format('YYYY-MM-DD HH:mm:ss') %>"><%=dataString%></span>
+              <% if ( !item.audit && !item.rejected ) { %><span style="font-weight:bold; padding-left:30px; color:#f00;">审核中...</span><% } %>
+              <% if ( item.rejected ) { %><span style="font-weight:bold; padding-left:30px; color:#c00; font-size:14px;">被驳回，理由：<%=item.rejected%>， 时间：<%= moment(item.rejectedData).format('YYYY-MM-DD HH:mm:ss') %></span><% } %>
+            </h3>
+            <p>
+              <strong><%= item.salaryStart%>k-<%= item.salaryEnd%>k</strong>
+              <span>经验<%= item.workingLifeName%> / <% if ( item.diplomaName == "无限制" ) { %>学历<%}%><%= item.diplomaName%> / 同职位人数：<%= item.jobmax%>人</span>
+            </p>
+          </div>
+          <div class="job-list-item-right">
+            <div class="job-list-item-logo" style="background-image:url('/user/comlogo/<%=item.company._id%>');"></div>
+            <h4><a href="/companys/<%= item.company._id%>"><%= item.company.name%></a></h4>
+            <p><%= item.company.realmName%> / <%= item.company.seedtimeName%> / <%= item.company.scaleName%></p>
+          </div>
+        </div>
+        <div class="job-list-item-foot">
+          <div class="job-list-item-left"><%= item.allure%></div>
+          <div class="job-list-item-right">
+            <% 
+            var tig_i = 0;
+            item.company.tag.split(",").forEach(function(tag){
+              if ( tig_i <= 3 ) {
+            %>
+            <span><%= tag%></span>
+            <%
+              tig_i++;
+              }
+            })
+            %>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+
+    <% if ( page_sum > 1 ) { %>
+    <div class="pages">
+      <div class="pages-con">
+        <% if ( page_current != 1 ) { %>
+        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+        <% } else { %>
+        <span class="pages-prev pages-dead">上一页</span>
+        <% } %>
+        <% for( var i=0; i<page_sum; i++ ) { %>
+          
+          <% if ( i == 0 || i == page_sum-1 ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% beforeOmit = true %>
+          <% } %>
+
+          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+            <% if ( !afterOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% afterOmit = true %>
+            <% } %>
+            <% continue %>
+          <% } %>
+
+          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+            <%- getPageHTML(i+1) %>
+            <% continue %>
+          <% } %>
+
+        <% } %>
+        <!-- <span class="pages-omit">...</span> -->
+        <% if ( page_current >= page_sum ) { %>
+        <span class="pages-next pages-dead">下一页</span>
+        <% } else { %>
+        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

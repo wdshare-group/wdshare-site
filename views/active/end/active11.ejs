@@ -1,0 +1,559 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= activeInfo.aName %></title>
+<meta name="keywords" content="WDShare【两周年庆典】 第11期 2016.07,WDShare,西安前端交流会" />
+<meta name="description" content="WDShare【两周年庆典】 第11期 2016.07, WDShare，W3C Developer Share 西安前端开发者分享交流会" />
+<% include ../../etc/htmlhead.ejs %>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link href="/static/plugin/fancybox/jquery.fancybox.css" rel="stylesheet" />
+<link href="/static/active_style/11/css/style.css" rel="stylesheet" />
+<%
+  var name = '',
+      com = '',
+      www = ''
+      email = '';
+  if(user && user.email) {
+    email = user.email;
+  }
+  if(user && user.email != user.username) {
+    name = user.username;
+  }
+  if(userInfo && userInfo.realname) {
+    name = userInfo.realname;
+  }
+  if(name == "undefined") {
+    name = '';
+  }
+
+  if(userInfo && userInfo.com) {
+    com = userInfo.com;
+  }
+  if(com == "undefined") {
+    com = '';
+  }
+
+  if(userInfo && userInfo.www && userInfo.www != "http://") {
+    www = userInfo.www;
+  }
+  if(www == "undefined") {
+    www = '';
+  }
+%>
+<script>
+  var activeStatus = <%=activeInfo.aStatus%>
+</script>
+</head>
+
+<body>
+<script>
+if ( navigator.userAgent.indexOf("Mac OS X")>0 ) {
+  document.getElementsByTagName("body")[0].style.fontFamily = "'Hiragino Sans GB', 'Microsoft YaHei'";
+}
+</script>
+<div class="ie">没有IE9+、Chrome、Firefox等现代化浏览器，我都不好意思给你看！</div>
+
+<div class="active11-top">
+  <div class="active11-top-con">
+    <div class="active11-top-logo"><a href="http://www.wdshare.org/"><img src="/static/active_style/11/img/logo.png" /></a></div>
+    <div class="active11-top-nav">
+      <a href="#gaikuang">活动概况</a>
+      <a href="#zhichi">赞助支持</a>
+      <a href="#content">活动内容</a>
+      <!-- <a href="#join" class="important">我要报名</a> -->
+      <a href="#xianchang" class="important">活动现场</a>
+      <a href="#changdi">场地概况</a>
+      <a href="#comment">活动互动</a>
+    </div>
+    <div class="gw-nav">
+      <a href="http://www.wdshare.org/">官网</a>
+      <a href="http://www.wdshare.org/active/">活动</a>
+      <a href="http://www.wdshare.org/article/">技术文章</a>
+    </div>
+  </div>
+</div>
+
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
+
+<a name="gaikuang"></a>
+<div class="active11-head">
+  <img src="/static/active_style/11/img/banner.jpg" style="margin:auto;" />
+  <div class="active11-head-text">
+    <h1>WDShare【两周年庆典】 前端线下交流会</h1>
+    <h2>
+      <em>2016-07-31 14:00 -- 18:00 &nbsp;&nbsp; 圆满结束</em>
+      <strong>西安市高新路36号 智空间2楼 汇天使咖啡【无强制消费】</strong>
+    </h2>
+    <h3>WDShare.org<span></span>两岁生日快乐</h3>
+    <a href="#zhichi" class="active11-learn-more"></a>
+    <div class="active11-balloon"></div>
+  </div>
+</div>
+
+<a name="zhichi"></a>
+<div class="active11-zhichi">
+  <h2 class="mod-title">期望得到您的支持</h2>
+  <img src="/static/active_style/11/img/zhichi.jpg" />
+  <div style="text-align:center;"><img src="/static/img/donation-weixin.png" style="width:350px;"></div>
+</div>
+
+<a name="content"></a>
+<div class="active11-content">
+  <h2 class="mod-title">活动内容</h2>
+  <h3 class="mod-title-small">如果您是有经验的前端开发者、乐于分享的前端、有自己研发的前端组件或产品，请联系F7，正在招募下一期讲师</h3>
+  <div class="active11-content-list">
+    <div class="active11-content-item">
+      <div class="torus" data-percent="1">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-checkin.png" /></div>
+        </div>
+      </div>
+      <div class="time">13:30 - 14:00</div>
+      <div class="text">
+        <h4 style="margin-top:30px;">签到，并凭邀请码登记抽奖信息</h4>
+      </div>
+    </div>
+    <div class="active11-content-item">
+      <div class="torus" data-percent="25">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">14:00 - 15:00</div>
+      <div class="text">
+        <h4 style="margin-top:15px;">【现代化web应用架构及相关实践】 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://kuitos.github.io/takahashi-slides/?modern-webapp-architecture" target="_blank">PPT查看</a></h4>
+        <p>刘奎   数云前端架构师   <a href="https://github.com/kuitos" target="_blank">Github</a></p>
+      </div>
+    </div>
+    <div class="active11-content-item">
+      <div class="torus" data-percent="50">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">15:00 - 16:00</div>
+      <div class="text">
+        <h4 style="margin-top:0;">【Web全栈开发工程师的利器-MEAN】 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.dang-jian.com/labs/why-mean/index.html#/title" target="_blank">PPT查看</a></h4>
+        <p>党建，《Web前端开发最佳实践》作者，西电硕士，10+年经验，软件开发架构师，项目经理，合伙人；西安瑞木信息技术有限公司技术总监。 <a href="http://www.dang-jian.com/" target="_blank">博客</a></p>
+      </div>
+    </div>
+    <div class="active11-content-item">
+      <div class="torus" data-percent="50">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-xiuxi.png" /></div>
+        </div>
+      </div>
+      <div class="time">16:00 - 16:15</div>
+      <div class="text">
+        <h4 style="margin-top:30px;">休息 + 集体合影留念</h4>
+      </div>
+    </div>
+    <div class="active11-content-item">
+      <div class="torus" data-percent="75">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">16:15 - 17:15</div>
+      <div class="text">
+        <h4 style="margin-top:0;">【使用前端技术高效构建高质量Hybrid App】 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/files/20160731/使用前端技术高效构建高质量 Hybrid App.pdf" target="_blank">PPT下载</a></h4>
+        <p>张思楚，ThoughtWorks 高级咨询师。拥有超过 10 年软件开发及项目管理经验，多项 Web 专利技术发明人，畅销 Web 产品 SpreadWeb 架构师。</p>
+      </div>
+    </div>
+    <div class="active11-content-item">
+      <div class="torus" data-percent="50">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-talk.png" /></div>
+        </div>
+      </div>
+      <div class="time">17:15 - 18:00</div>
+      <div class="text">
+        <h4 style="margin-top:0;">【抽奖】＋【Open share：新技术探讨】</h4>
+        <p>提问、探讨、个人分享环节；如果您在Open share环节想给大家演示自己的作品或者案例，请提前联系F7</p>
+      </div>
+    </div>
+    <!-- <div class="active11-content-item">
+      <div class="torus" data-percent="100">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/11/img/icon-talk.png" /></div>
+        </div>
+      </div>
+      <div class="time">18:00 - 18:20</div>
+      <div class="text">
+        <h4></h4>
+        <p>周年庆特大奖品准备中...</p>
+      </div>
+    </div> -->
+    <div class="active11-content-item">
+      <div class="torus-zhanwei"></div>
+      <div class="time">18:00 - 结束</div>
+      <div class="text">
+        <h4 style="margin-top:15px;">令人难忘的AA聚餐，欢乐多多，美女多多</h4>
+        <p>期待您的下次参与！</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="active11-work">
+    <h3>活动奖品：</h3>
+    <div class="active11-work-con">
+      <a href="https://book.douban.com/subject/26305106/" target="_blank" title="党建大大亲笔签名赠书"><img src="https://img3.doubanio.com/lpic/s27989530.jpg" /></a>
+      <a href="https://book.douban.com/subject/26745943/" target="_blank"><img src="https://img1.doubanio.com/lpic/s28659699.jpg" /></a>
+      <a href="https://book.douban.com/subject/25768396/" target="_blank"><img src="https://img3.doubanio.com/lpic/s27269296.jpg" /></a>
+      <a href="https://book.douban.com/subject/10546125/" target="_blank"><img src="https://img3.doubanio.com/lpic/s8958650.jpg" /></a>
+      <a href="https://book.douban.com/subject/26342322/" target="_blank"><img src="https://img3.doubanio.com/lpic/s28024394.jpg" /></a>
+      <a href="https://book.douban.com/subject/26369130/" target="_blank"><img src="https://img1.doubanio.com/lpic/s28056637.jpg" /></a>
+      <a href="/static/active_style/11/img/prize.jpg" target="_blank"><img src="/static/active_style/11/img/prize.jpg" /></a>
+    </div>
+  </div>
+
+  <div class="active11-work">
+    <h3>本期工作人员：</h3>
+    <div class="active11-work-con">
+      <span>1、主持人 [F7(付琦)]</span>
+      <span>2、讲师助手及设备调试 【棍子】</span>
+      <span>3、签到管理【小强】</span>
+      <span>4、后勤保障 【雷朋伟】</span>
+    </div>
+  </div>
+
+  <div class="active11-work active11-media">
+    <h3>主办：<img src="/static/active_style/11/img/logo-wdshare.png" alt="WDShare" />  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 协办：<img src="/static/active_style/11/img/logo-zhikongjian.png" alt="智空间" />  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 支持社区：<img src="/static/active_style/11/img/logo-sf.png" alt="SegmentFault" /></h3>
+  </div>
+
+</div>
+
+<% if ( activeInfo.aStatus == 1 ) { %>
+<a name="join"></a>
+<div class="active11-join" id="js-active-join">
+  <h2 class="mod-title">我要报名</h2>
+  <h3 class="mod-title-small">报名须知：本活动为公益性，免费参加。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</h3>
+  <div class="active-join">
+    <% if(!user){ %>
+    <div class="active-login">
+      登录后启用快捷报名
+      <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
+    </div>
+    <% } %>
+    <form name="joinform" id="js-joinform" method="post"> 
+      <input type="hidden" name="aid" value="<%= activeInfo._id %>">
+      <dl>
+        <dt>邮箱：</dt>
+        <dd>
+          <input type="text" name="mail" placeholder="常用邮箱" value="<%=email%>"> <em>请正确填写邮箱</em>
+          <span style="color:#666;">通过邮箱接收邀请函</span>
+        </dd>
+      </dl>
+      <dl>
+        <dt>姓名/昵称：</dt>
+        <dd>
+          <input type="text" name="name" placeholder="尊姓大名" value="<%=name%>"> <em>名称至少两个字符</em>
+        </dd>
+      </dl>
+      <dl>
+        <dt>公司：</dt>
+        <dd>
+          <input type="text" name="com" placeholder="就职公司" value="<%=com%>">    
+          <span>选填</span>
+        </dd>
+      </dl>
+      <dl>
+        <dt>网站：</dt>
+        <dd>
+          <input type="text" name="web" placeholder="个人或公司网站" value="<%=www%>">    
+          <span>选填</span>
+        </dd>
+      </dl>
+      <dl>
+        <dt>分享前端知识：</dt>
+        <dd>
+          <label>
+            <input type="radio" name="w_share" value="1" style="width:auto; margin-right:5px;">有，下期我可以分享</label>
+          &nbsp;
+          <label> &nbsp; &nbsp; &nbsp;
+            <input type="radio" checked="checked" name="w_share" value="0" style="width:auto; margin-right:5px;">暂时没有</label>
+          <span>帮助大家学习</span>
+        </dd>
+      </dl>
+      <dl>
+        <input type="hidden" name="content">    
+        <dt>给主办方留言：</dt>
+        <dd>
+          <textarea name="guestbook"></textarea>
+          <span>选填</span>
+          <br>
+          <em style="color:#ff0;display:block; padding-left:0;">工作、学习困惑，感叹、吐槽、给我们提意见，该项填写更容易获取邀请函</em>
+        </dd>
+      </dl>
+      <dl>
+        <dt>您是否参与AA聚餐：</dt>
+        <dd>
+          <label><input type="radio" name="chi" value="1" style="width:auto; margin-right:5px;">是</label> &nbsp; &nbsp; &nbsp; &nbsp;
+          <label><input type="radio" name="chi" value="0" checked="checked" style="width:auto; margin-right:5px;">否</label>
+          <span style="color:#666;">聚餐是为了认识更多的朋友</span>
+        </dd>
+      </dl>
+      <% if ( activeJoinCaptcha && activeJoinCaptcha === true ) { %>
+      <dl>
+        <dt>验证码：</dt>
+        <dd>
+          <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="activeJoin-code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" style="display:inline-block;" /> <em>请填写验证码</em>
+        </dd>
+      </dl>
+      <% } %>
+      <dl>
+        <dd class="form-but">
+          <input type="submit" name="button" value="提交报名"></dd>
+      </dl>
+    </form>
+  </div>
+</div>
+<% } %>
+
+<a name="xianchang"></a>
+<input id="init-fancybox" type="hidden"/>
+<div class="active11-xianchang">
+  <h2 class="mod-title">精彩现场</h2>
+  <div class="active11-xianchang-con active-con">
+    <a href="/files/20160731/1.jpg"><img src="/files/20160731/1-s.jpg"></a>
+    <a href="/files/20160731/2.jpg"><img src="/files/20160731/2-s.jpg"></a>
+    <a href="/files/20160731/3.jpg"><img src="/files/20160731/3-s.jpg"></a>
+    <a href="/files/20160731/4.jpg"><img src="/files/20160731/4-s.jpg"></a>
+    <a href="/files/20160731/5.jpg"><img src="/files/20160731/5-s.jpg"></a>
+    <a href="/files/20160731/6.jpg"><img src="/files/20160731/6-s.jpg"></a>
+    <a href="/files/20160731/7.jpg"><img src="/files/20160731/7-s.jpg"></a>
+    <a href="/files/20160731/8.jpg"><img src="/files/20160731/8-s.jpg"></a>
+    <a href="/files/20160731/9.jpg"><img src="/files/20160731/9-s.jpg"></a>
+    <a href="/files/20160731/10.jpg"><img src="/files/20160731/10-s.jpg"></a>
+    <a href="/files/20160731/11.jpg"><img src="/files/20160731/11-s.jpg"></a>
+    <a href="/files/20160731/heying.jpg"><img src="/files/20160731/heying.jpg"></a>
+  </div>
+</div>
+
+<a name="changdi"></a>
+<div class="active11-content">
+  <h2 class="mod-title">场地介绍</h2>
+  <h3 class="mod-title-small">本期场地由智空间提供，场地为创业型咖啡厅，无任何强制消费，店内咖啡自愿购买，可提供免费饮用水</h3>
+  <p style="height:40px;">&nbsp;</p>
+  <!-- <div><img style="margin:auto;" src="/static/active_style/11/img/zkj-logo.jpg" /></div> -->
+  <!-- <p style="height:40px;">&nbsp;</p> -->
+  <!-- <iframe class="ueditor_baidumap" src="/static/ueditor/dialogs/map/show.html#center=108.912346,34.241589&amp;zoom=17&amp;width=800&amp;height=500&amp;markers=108.912543,34.241469&amp;markerStyles=l,A" frameborder="0" width="800" height="500"></iframe> -->
+  <img style="width:800px; margin:auto;" src="/static/active_style/11/img/map.jpg" />
+
+  <p class="changdi-yindao">在高新路与光华路的交界处［工行、建行楼后面，请从西侧安吉巷绕行］，有一座白色[很低调的]小楼，<br />楼体上“智空间”三个橙色的大字，智空间2楼 汇天使咖啡 <a href="http://map.baidu.com/#panoid=a1fe6566f97fc0b685420ea1&panotype=inter&heading=197.37&pitch=-22.58&l=19&tn=B_NORMAL_MAP&sc=0&newmap=1&shareurl=1&pid=0802150001160329124204881UZ&iid=a1fe6566f97fc0b685420ea1&psp=%7B%22PanoIndoorPoiModule%22%3A%7B%22uid%22%3A%22596d5e983eb778a62806ceb0%22%7D%7D" target="_blank">点击查看全景预览</a></p>
+  <div class="changdi-yulan">
+    <img src="/static/active_style/11/img/changdi-4.jpg" />
+    <img src="/static/active_style/11/img/changdi-1.jpg" />
+    <img src="/static/active_style/11/img/changdi-2.jpg" />
+    <img src="/static/active_style/11/img/changdi-3.jpg" />
+  </div>
+</div>
+
+
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
+<a name="comment"></a>
+<div class="active11-comment">
+<% if ( configIsComment && activeInfo.isComment ) { %>
+  <div class="maxWidth active-comment">
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这个活动</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= activeInfo._id %>" />
+              <input type="hidden" name="model" value="active" />
+              <input type="hidden" name="title" value="<%= activeInfo.aName %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+  </div>
+<% } %>
+</div>
+
+<% include ../../etc/foot.ejs %>
+
+<script src="/static/skin2015/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+  /**
+   * 初始化圆环
+   * @param {HTMLElement} elem    圆环总节点
+   * @param {Number} percent 要显示的百分比
+   */
+  function setTorus(elem, percent) {
+      if ( !elem ) { return false };
+      var torus_right = $(elem).find(".pie_chart_torus_c1_r p"),
+          torus_left = $(elem).find(".pie_chart_torus_c1_l p"),
+          li_odd = $(elem).find("ul li").eq(0),
+          li_even = $(elem).find("ul li").eq(1),
+          width = $(elem).width(),
+          count = 360 / 100 * percent;
+
+      
+      // 根据父类宽高处理显示
+      li_odd.css("clip", "rect(0px, " + width + "px, " + width + "px, " + width / 2 + "px)");
+      li_even.css("clip", "rect(0px, " + width / 2 + "px, " + width + "px, 0px)");
+
+      // 设置百分比
+      if (count <= 180) {
+          torus_left.css("transform", "rotate(0deg)");
+          torus_right.css("transform", "rotate(" + count + "deg)");
+      } else {
+          torus_right.css("transform", "rotate(180deg)");
+          torus_left.css("transform", "rotate(" + (count - 180) + "deg)");
+      }
+  };
+
+  $(".torus").each(function() {
+    setTorus(this, $(this).attr("data-percent"));
+  });
+  
+  // 菜单当前状态设置
+  function menuState() {
+    var item = $(".active11-top-nav a"),
+        _top = $(document).scrollTop();
+    item.each(function() {
+      var name = $(this).attr("href").replace("#", "");
+      if ( _top >= ($("a[name='"+name+"']").offset().top-200) ) {
+        item.removeClass('current');
+        $(this).addClass('current');
+      }
+    });
+  };
+  menuState();
+  $(document).on("scroll", function() {
+    menuState();
+  });
+</script>
+</body>
+</html>

@@ -18,7 +18,8 @@ var active = require('./active.js');
  */
 router.get('/', function(req, res) {
     var avtive = false,
-        article = false;
+        article = false,
+        job = false;
 
     var pathname = URL.parse(req.originalUrl, true).pathname;
     // 请求活动数据
@@ -33,20 +34,27 @@ router.get('/', function(req, res) {
         gosend();
         return;
     });
+    // 请求招聘数据
+    getJobsList (req, res, {type:3}, {page:1, pagesize:5, pathname:pathname}, function(data) {
+        job = data;
+        gosend();
+        return;
+    });
 
     function gosend() {
-        if ( avtive && article ) {
+        if ( avtive && article && job ) {
             res.render('manages/index', {
                 title: '后台首页调用活动模块',
                 avtive:avtive,
-                article:article
+                article:article,
+                job:job
             });
         }
     };
 });
 
 /**
- * 获取列表内容
+ * 获取活动列表内容
  * @param  {Object} o 限制条件
  * @param  {Object} pages 分页参数对象
  * @param  {Function} callback 回调函数
@@ -185,7 +193,7 @@ function getArticleList(req, res, o, pages, callback) {
         key: "Archive",
         body:o,// 仅读取文章类型的档案
         pages: pages,// 分页信息
-        occupation: "addDate"// 排序字段
+        occupation: {"sortup":-1, "rank":-1, "addDate":-1}// 排序字段：置顶、排序、添加时间
     }, function (err, data) {
         var channelCount = 0,
             userCount = 0,
@@ -305,6 +313,138 @@ function getArticleList(req, res, o, pages, callback) {
     });
 };
 
+/**
+ * 获取招聘列表内容
+ * @param  {Object} o 限制条件
+ * @param  {Object} pages 分页参数对象
+ * @param  {Function} callback 回调函数
+ * @return
+ */
+function getJobsList(req, res, o, pages, callback) {
+    archiveModel.getSort({
+        key: "Archive",
+        body:o,// 仅读取文章类型的档案
+        pages: pages,// 分页信息
+        occupation: {"sortup":-1, "rank":-1, "editDate":-1}// 排序字段：置顶、排序、修改时间
+    }, function (err, data) {
+        var channelCount = 0,
+            userCount = 0,
+            allCount,
+            channelItem;
+        if (err) {
+            res.send("服务器错误，请重试！");
+            return;
+        }
+
+        if (data) {
+            for ( var i=0; i<data.length; i++ ) {
+                (function(i) {
+                    // 获取分类信息
+                    jobModel.getOne({
+                        key: "Job_channel",
+                        body: {
+                            _id: data[i].channelId
+                        }
+                    }, function (err, channelData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (channelData && channelData.name) {
+                            // console.log(channelData.name);
+                            data[i].channel = channelData.name;
+                            channelCount++;
+                            gosend();
+                            return;
+                        }
+                        res.send("未知错误，请重试！");
+                    });
+
+                    // 获取会员信息
+                    usersModel.getOne({
+                        key: "User",
+                        body: {
+                            _id: data[i].userId
+                        }
+                    }, function (err, userData) {
+                        if (err) {
+                            res.send("服务器错误，请重试！");
+                            return;
+                        }
+
+                        if (userData) {
+                            data[i].user = userData.username;
+                            data[i].usermail = userData.email;
+                        } else {
+                            data[i].user = "";
+                            data[i].usermail = "";
+                        }
+                        userCount++;
+                        gosend();
+                        return;
+                    });
+                })(i);
+            }
+
+            // 获取总数【用于分页】
+            archiveModel.getAll({
+                key: "Archive",
+                body: o
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    allCount = data.length;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            // 获取招聘分类信息，列表页显示分类
+            jobModel.getAll({
+                key: "Job_channel",
+                body: {parent:1}
+            }, function (err, data) {
+                if (err) {
+                    res.send("服务器错误，请重试！");
+                    return;
+                }
+
+                if (data) {
+                    channelItem = data;
+                    gosend();
+                    return;
+                }
+
+                res.send("未知错误，请重试！");
+            });
+
+            return;
+        }
+
+        res.send("未知错误，请重试！");
+
+        // 所有数据都获取完成后执行返回
+        function gosend() {
+           var _page = pages;
+           if ( channelCount == data.length && userCount == data.length && allCount >= 0 && channelItem ) {
+                _page.sum = allCount;
+                callback({
+                    title: "招聘信息",
+                    result: data,
+                    channel: channelItem,
+                    pages: _page
+                });
+           }
+        };
+    });
+};
 
 
 /**
@@ -711,6 +851,15 @@ router.get('/tags/member', function(req, res) {
         pathname = URL.parse(req.originalUrl, true).pathname;
 
     getTagsList(req, res, {model:"member"}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/tag/tag_list', "会员标签");
+});
+router.get('/tags/job', function(req, res) {
+    var urlParams = URL.parse(req.originalUrl, true).query,
+        model = urlParams.model;
+        page = urlParams.page || 1,
+        pagesize = urlParams.pagesize || 10,
+        pathname = URL.parse(req.originalUrl, true).pathname;
+
+    getTagsList(req, res, {model:"job"}, {page:page, pagesize:pagesize, pathname:pathname}, 'manages/tag/tag_list', "招聘企业标签");
 });
 
 /**

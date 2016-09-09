@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-求职纪录</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">
+      求职纪录
+    </h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%= title %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共有 <%= item_sum %> 条</h3>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Content</th>
+                <th width="200">求职者</th>
+                <th width="100">邮件内容</th>
+                <th width="100">Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(apply){ %>
+              <%
+                var _date = apply.addDate,
+                    interval = (new Date()).getTime() - _date,
+                    dataString = "刚刚",
+                    count;
+                
+                if ( interval > 1000*60*5 ) {
+                    count = Math.floor(interval/(1000*60));
+                    dataString = count + "分钟前";
+                }
+                if ( interval > 1000*60*30 ) {
+                    dataString = "半小时前";
+                }
+                if ( interval > 1000*60*60 ) {
+                    count = Math.floor(interval/(1000*60*60));
+                    dataString = count + "小时前";
+                }
+                if ( interval > 1000*60*60*24 ) {
+                    count = Math.floor(interval/(1000*60*60*24));
+                    dataString = count + "天前";
+                }
+                if ( interval > 1000*60*60*24*365 ) {
+                    count = Math.floor(interval/(1000*60*60*24*365));
+                    dataString = count + "年前";
+                }
+
+                var _html = '';
+                _html += '<div style="color:#333333;border:1px dashed #D8D8D8;margin:10px; height:500px; overflow-y:scroll;">';
+                _html += '<h1 style="text-align:center;margin:20px;padding:0 20px 20px;border-bottom:1px dashed #D8D8D8;">'+ apply.username + ' &nbsp; ' + apply.workingLife + '经验 &nbsp; ' + apply.diploma +'</h1>';
+
+                _html += '<div style="font-size:14px;font-family:Helvetica Neue, Helvetica Neue, Helvetica, Hiragino Sans GB, Microsoft Yahei, Arial;line-height:1.8em;padding:0 10px;">';
+
+                _html += '<p>尊敬的 '+ apply.jobContactName +'：</p>';
+                _html += '<p>'+ apply.username +' 通过WDShare向贵公司的 <strong>'+ apply.jobTitle +'</strong> 职位发出面试申请，以下是他的相关信息：</p>';
+                _html += '<div style="background-color:#F2F2F2;padding:5px 20px;">';
+                _html += '<p>姓名：'+ apply.username +'</p>';
+                _html += '<p>电话：'+ apply.tel +'</p>';
+                _html += '<p>邮箱：<a href="mailto:'+ apply.mail +'">'+ apply.mail +'</a></p>';
+                _html += '<p>工作经验：'+ apply.workingLife +'</p>';
+                _html += '<p>学历：'+ apply.diploma +'</p>';
+                if ( apply.resumes ) {
+                    _html += '<p>简历：<a href="'+ apply.resumes +'" target="_blank">'+ apply.resumes +'</a></p>';
+                }
+                _html += '</div>';
+                _html += '<p>&nbsp;</p>';
+                _html += '<p><strong>WDShare收集的该用户信息：</strong></p>';
+                _html += '<div style="background-color:#fafafa;padding:5px 20px;">';
+                _html += '<p>官网会员主页：<a href="http://www.wdshare.org/user/'+ apply.userid +'" target="_blank">http://www.wdshare.org/user/'+ apply.userid +'</a></p>';
+                if ( apply.userArticle ) {
+                    _html += '<p>在官网发布文章总数：'+ apply.userArticle +'篇</p>';
+                }
+                if ( apply.userProject ) {
+                    _html += '<p>在官网发布项目总数：'+ apply.userProject +'个</p>';
+                }
+                if ( apply.userZan ) {
+                    _html += '<p>获得总赞数：'+ apply.userZan +'</p>';
+                }
+                if ( apply.userOffer ) {
+                    _html += '<p>被企业主动邀请面试：'+ apply.userOffer +'次</p>';
+                }
+                _html += '</div>';
+
+                _html += '<p>&nbsp;</p>';
+                _html += '<p><strong>加分项：</strong></p>';
+                _html += '<div style="background-color:#fafafa;padding:5px 20px;">';
+                if ( apply.github ) {
+                    _html += '<p>Github：<a href="'+ apply.github +'" target="_blank">'+ apply.github +'</a></p>';
+                }
+                if ( apply.www ) {
+                    _html += '<p>个人主页：<a href="'+ apply.www +'" target="_blank">'+ apply.www +'</a></p>';
+                }
+
+                if ( apply.content ) {
+                    _html += '<p>求职者说：</p>';
+                    _html += '<p>'+ apply.content +'</p>';
+                }
+                _html += '</div>';
+                _html += '<p>&nbsp;</p>';
+                _html += '<p><strong>注意：以上信息由WDShare招聘系统自动发出，请勿回复；可直接电话或邮件联系求职者。</strong></p>';
+
+                _html += '系统邮件签名！';
+                _html += '</div>';
+                _html += '</div>';
+              %>
+              <tr>
+                <td style="text-align:left;" class="no-a-style">
+                  <em title="<%= moment(apply.addDate).format('YYYY-MM-DD HH:mm:ss') %>"><%=dataString%></em> 申请了 <a href="/jobs/<%=apply.jobid%>" target="_blank">《<%=apply.jobTitle%>》</a> 职位， 所属公司 <a href="/companys/<%=apply.companyid%>" target="_blank"><%=apply.companyTitle%></a>
+                </td>
+                <td class="no-a-style"><a href="/user/<%=apply.userid%>" target="_blank"><%= apply.username %></a></td>
+                <td>
+                  <a href="javascript:void(0);" onclick="Dialog({msg:$(this).next().html(), showButtons:true}); return false;">查看</a>
+                  <div class="lookhtml" style="display:none;"><%- _html %></div>
+                </td>
+                <td><a href="#" data-id="<%= apply._id %>" class="js-apply-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

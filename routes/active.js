@@ -45,7 +45,7 @@ function getActiveList(req, res, o, pages, mod, channelName) {
         key: "Active",
         body:o,// 筛选内容
         pages: pages,// 分页信息
-        occupation: "aAddDate"// 排序字段
+        occupation: {"aStatus":-1, "aSort":-1, "aAddDate": -1}// 排序字段
     }, function (err, data) {
         var channelCount = 0,
             joinCount = 0,

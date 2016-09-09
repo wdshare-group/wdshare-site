@@ -50,85 +50,89 @@ if (user && user._id == member._id) {
 <% include etc/user_head.ejs %>
 
 <div id="js-myhome" style="display:none;"></div>
-<div class="maxWidth module">
-	<div class="user-comment">
-  
-	<% if ( result.length < 1 ) { %>
-		<p style="padding:50px 0 0; text-align:center; font-size:16px;">该用户未参与任何评论</p>
-	<% } else { %>
-    <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
-  <% } %>
 
-	<% result.forEach(function(comment){ %>
-		<%
-      var _href = "/" + comment.model + "/" + comment.typeid,
-          suffix = "评论到";
-      if ( comment.model == "message" ) {
-        _href = "/user/message/" + comment.typeid;
-        suffix = "留言到";
-      }
-    %>
-    <div class="user-comment-item">
-			<h4>
-				<%= who %>在 <a href="<%=_href%>" target="_blank"><%= comment.title %></a> 中<%= suffix %>：<% if (comment.privacy) { %><span class="red" title="只有发布者和接收者能看到">私密消息</span><% } %>
-			</h4>
-      <p><%- comment.content %></p>
-			<div class="type">
-        <span>赞 (<%= comment.zan %>)</span>
-        <span><%= moment(comment.addDate).format('YYYY-MM-DD HH:mm:ss') %></span>
-        <% if (user && user._id == member._id) { %>
-        <a href="#" data-id="<%= comment._id %>" class="user-comment-del">删除</a>
-        <% } %>
-      </div>
-		</div>
-	<% }) %>
+<div class="myhome-main maxWidth">
+  <% include etc/user_left.ejs %>
+  <div class="myhome-right">
+    <div class="user-comment">
+      
+      <% if ( result.length < 1 ) { %>
+        <p style="padding:50px 0 0; text-align:center; font-size:16px;">该用户未参与任何评论</p>
+      <% } else { %>
+        <h3 class="user-comment-sum">共有 <%= item_sum %> 条信息</h3>
+      <% } %>
 
-  <% if ( page_sum > 1 ) { %>
-    <div class="pages">
-      <div class="pages-con">
-        <% if ( page_current != 1 ) { %>
-        <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
-        <% } else { %>
-        <span class="pages-prev pages-dead">上一页</span>
-        <% } %>
-        <% for( var i=0; i<page_sum; i++ ) { %>
-          
-          <% if ( i == 0 || i == page_sum-1 ) { %>
-            <%- getPageHTML(i+1) %>
-            <% continue %>
-          <% } %>
-
-          <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
-            <span class="pages-omit">...</span>
-            <% beforeOmit = true %>
-          <% } %>
-
-          <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
-            <% if ( !afterOmit ) { %>
-              <span class="pages-omit">...</span>
-              <% afterOmit = true %>
+      <% result.forEach(function(comment){ %>
+        <%
+          var _href = "/" + comment.model + "/" + comment.typeid,
+              suffix = "评论到";
+          if ( comment.model == "message" ) {
+            _href = "/user/message/" + comment.typeid;
+            suffix = "留言到";
+          }
+        %>
+        <div class="user-comment-item">
+          <h4>
+            <%= who %>在 <a href="<%=_href%>" target="_blank"><%= comment.title %></a> 中<%= suffix %>：<% if (comment.privacy) { %><span class="red" title="只有发布者和接收者能看到">私密消息</span><% } %>
+          </h4>
+          <p><%- comment.content %></p>
+          <div class="type">
+            <span>赞 (<%= comment.zan %>)</span>
+            <span><%= moment(comment.addDate).format('YYYY-MM-DD HH:mm:ss') %></span>
+            <% if (user && user._id == member._id) { %>
+            <a href="#" data-id="<%= comment._id %>" class="user-comment-del">删除</a>
             <% } %>
-            <% continue %>
-          <% } %>
+          </div>
+        </div>
+      <% }) %>
 
-          <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
-            <%- getPageHTML(i+1) %>
-            <% continue %>
+      <% if ( page_sum > 1 ) { %>
+      <div class="pages">
+        <div class="pages-con">
+          <% if ( page_current != 1 ) { %>
+          <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+          <% } else { %>
+          <span class="pages-prev pages-dead">上一页</span>
           <% } %>
+          <% for( var i=0; i<page_sum; i++ ) { %>
+            
+            <% if ( i == 0 || i == page_sum-1 ) { %>
+              <%- getPageHTML(i+1) %>
+              <% continue %>
+            <% } %>
 
-        <% } %>
-        <!-- <span class="pages-omit">...</span> -->
-        <% if ( page_current >= page_sum ) { %>
-        <span class="pages-next pages-dead">下一页</span>
-        <% } else { %>
-        <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
-        <% } %>
+            <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% beforeOmit = true %>
+            <% } %>
+
+            <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+              <% if ( !afterOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% afterOmit = true %>
+              <% } %>
+              <% continue %>
+            <% } %>
+
+            <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+              <%- getPageHTML(i+1) %>
+              <% continue %>
+            <% } %>
+
+          <% } %>
+          <!-- <span class="pages-omit">...</span> -->
+          <% if ( page_current >= page_sum ) { %>
+          <span class="pages-next pages-dead">下一页</span>
+          <% } else { %>
+          <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+          <% } %>
+        </div>
       </div>
+      <% } %>
     </div>
-    <% } %>
-	</div>
-
+  </div>
 </div>
+
 
 <% include ../etc/foot.ejs %>
 </body>

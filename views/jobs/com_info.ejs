@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>企业信息管理-wdshare</title>
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="article crumbs-article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-left">
+        <% if ( company._id ) { %><span class="module-but"><a href="/jobs/create">发布招聘信息</a></span><% } %>
+        <h1 class="article-title">
+          企业信息管理
+        </h1>
+      </div>
+    </div>
+    <% if ( company._id && !company.audit) {%>
+    <div class="inform" style="background:none; width:90%; margin:0 auto 50px;">
+        <div class="inform-con"><p><strong class="red">警告：</strong>您的企业信息未审核，请先完善企业信息后联系管理员审核！</p></div>
+    </div>
+    <%}%>
+    <div class="add-article">
+      <% if ( !company._id ) { %>
+      <div class="inform" style="padding:0 0 40px 0;">
+        <div class="inform-con"> <strong class="red">重要：</strong>您必须先完成企业信息录入后才可以发布招聘信息！</div>
+      </div>
+      <% } %>
+      <form id="js-company-info-form">
+        <input type="hidden" name="aid" value="<%=company._id||""%>" />
+
+        <% if ( company._id ) { %>
+        <div class="addActive-form-item">
+          <strong style="padding-top:16px;">公司Logo：</strong>
+          <a href="#" id="js-editor-logo"><img src="/user/comlogo/<%=company._id%>" style="height:64px;" />
+          <em>&nbsp;&nbsp;点击更换logo</em></a>
+        </div>
+        <% } %>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司名称：</strong><input type="text" name="name" value="<%=company.name||""%>" style="width:60%;" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong>一句话简介：</strong><input type="text" name="intro" value="<%=company.intro||""%>" style="width:60%;" /></label><span>最多30个字</span>
+        </div>
+        <div class="addActive-form-item addActive-form-radio">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司领域：</strong>
+          <div class="form-companys-realm">
+            <% realm.forEach(function(item){ %>
+              <% if ( company.realm && company.realm.indexOf(item._id) != -1 ) { %>
+                <label><input type="checkbox" name="realm" value="<%=item._id%>" checked="checked" /><%=item.name%></label>
+              <% } else { %>
+                <label><input type="checkbox" name="realm" value="<%=item._id%>" /><%=item.name%></label>
+              <% } %>
+            <% }) %>
+          </div>
+        </div>
+        <div class="addActive-form-item">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司规模：</strong>
+          <select name="scale">
+            <% if (!company.scale) { %>
+            <option value="" selected>请选择规模</option>
+            <% } %>
+
+            <% scale.forEach(function(item){ %>
+              <% if (item._id == company.scale) { %>
+                <option value="<%=item._id%>" selected><%=item.name%></option>
+              <% } else { %>
+                <option value="<%=item._id%>"><%=item.name%></option>
+              <% } %>
+            <% }) %>
+          </select>
+        </div>
+        <div class="addActive-form-item">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>发展阶段：</strong>
+          <select name="seedtime">
+            <% if (!company.seedtime) { %>
+            <option value="" selected>请选择发展阶段</option>
+            <% } %>
+
+            <% seedtime.forEach(function(item){ %>
+              <% if (item._id == company.seedtime) { %>
+                <option value="<%=item._id%>" selected><%=item.name%></option>
+              <% } else { %>
+                <option value="<%=item._id%>"><%=item.name%></option>
+              <% } %>
+            <% }) %>
+          </select>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>城市：</strong>
+            <select name="city">
+              <% city.forEach(function(ct){ %>
+              <option value="<%= ct._id%>" <%if (ct._id == company.city) {%>selected<%}%>><%= ct.name%></option>
+              <% }) %>
+            </select></label>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司地址：</strong><input type="text" name="address" value="<%=company.address||""%>" style="width:60%;" /></label><span>请填写详细的工作地址</span>
+        </div>
+        <div class="addActive-form-item">
+          <input type="hidden" name="mapLng" value="<%=company.mapLng||""%>" />
+          <input type="hidden" name="mapLat" value="<%=company.mapLat||""%>" />
+          <input type="hidden" name="mapZoom" value="<%=company.mapZoom||""%>" />
+          <script src="http://api.map.baidu.com/api?v=1.1&services=true"></script>
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>显示地图：</strong>
+          <div class="job-set-map" id="js-job-set-map">
+            城市：<input id="setmap-city" type="text" value="<% city.forEach(function(ct){ %><%if (ct._id == company.city) {%><%= ct.name%><%}%><% }) %>" />
+            地址：<input id="setmap-address" type="text" value="<%=company.address||""%>" />
+            <input id="setmap-search" type="button" value="搜索" />
+            <div id="setmap-con"></div>
+          </div>
+        </div>
+        
+        <div class="addActive-form-item">
+          <label><strong>公司主页：</strong><input type="text" name="www" value="<%=company.www||"http://"%>" style="width:60%;" /></label><span>请以http开头</span>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系人：</strong><input type="text" name="contactName" value="<%=company.contactName||""%>" style="width:60%;" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系电话：</strong><input type="text" name="tel" value="<%=company.tel||""%>" style="width:60%;" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系邮箱：</strong><input type="text" name="mail" value="<%=company.mail||""%>" style="width:60%;" /></label>
+        </div>
+
+        <div class="addActive-form-item">
+          <strong>公司产品：</strong>
+          <span>请输入公司运营的产品信息，有助于求职者了解公司现状。</span>
+        </div>
+        <div class="editor-box addActive-form-item"><textarea name="product" style="height:180px;"><%=company.product||""%></textarea></div>
+
+        <div class="addActive-form-item" id="js-articleadd-content">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司简介：</strong>
+        </div>
+        <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%-company.content||""%></textarea></div>
+
+        <div class="addActive-form-item" id="js-articleadd-tag">
+          <strong>TAG：</strong>
+          <input type="hidden" name="tag" id="js-hidden-tag" value="<%=company.tag||""%>" />
+          <div class="content-tegs">
+            <div class="content-tegs-show" id="js-content-tegs-show"></div>
+            <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+          </div>
+          <div class="content-tegs-list">
+            <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+            <i id="js-content-tegs-resetList">换一批</i>
+          </div>
+        </div>
+
+        <% if ( captcha && captcha === true ) { %>
+        <div class="addActive-form-item" style="margin-bottom:20px;">
+          <label><strong>验证码：</strong>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></label>
+        </div>
+        <% } %>
+
+        <div class="addActive-form-but">
+          <input class="green" name="submitbutton" type="submit" value="提交"/>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+
+</body>
+</html>

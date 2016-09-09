@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%=member.username%>发布的招聘 - WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+
+<% if ( typeof info != "undefined") { %>
+<script>
+var sex = <%=info.sex%>;
+</script>
+<% } %>
+
+<%
+var who = "他";
+if (typeof info != "undefined" && info.sex == 2) {
+	who = "她";
+}
+if (user && user._id == member._id) {
+	who = "我";
+}
+%>
+
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+
+<% include etc/user_head.ejs %>
+
+<div id="js-myhome" style="display:none;"></div>
+
+<div class="myhome-main maxWidth">
+  <% include etc/user_left.ejs %>
+  <div class="myhome-right">
+    <div class="user-article">
+      <% if (user && user._id == member._id) { %>
+      <% if (!companys.audit) {%>
+      <div class="inform" style="background:none; width:90%; margin:0 auto 50px;">
+          <div class="inform-con"><p><strong class="red">警告：</strong>您的企业信息未审核，请先完善企业信息后联系管理员审核！</p></div>
+      </div>
+      <%}%>
+      <div style="font-size:16px; padding-bottom:30px; overflow:hidden;">
+        <div class="module-but"><a href="/jobs/create">发布招聘</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="/jobs/companys" title="每个账号只能绑定一个企业">企业信息</a></div>
+      </div>
+      <% } %>
+
+      <% if ( result.length < 1 ) { %>
+        <p style="padding:50px 0 0; text-align:center; font-size:16px;">没有发布任何招聘</p>
+      <% } else { %>
+        <%
+          var sum = 0;
+          result.forEach(function(item){
+            if ( item.audit || (user && user._id == member._id) ) {
+              sum++;
+            }
+          });
+        %>
+        <% if ( sum < 1 ) { %>
+          <p style="padding:50px 0 0; text-align:center; font-size:16px;">没有发布任何招聘</p>
+        <% } else { %>
+        <h3 class="user-comment-sum">共有 <%= sum %> 条信息</h3>
+        <% } %>
+      <% } %>
+      <div class="my-job">
+      <% result.forEach(function(item){ %>
+        <%
+          var tou = false,
+              hot = false,
+              _strong = false,
+              types = [];
+          if ( item.diyType ) {
+            types = item.diyType.split(",");
+          }
+          for ( var i=0; i<types.length; i++ ) {
+            if ( parseInt(types[i]) === 1 ) {
+              tou = true;
+            }
+            if ( parseInt(types[i]) === 2 ) {
+              hot = true;
+            }
+            if ( parseInt(types[i]) === 3 ) {
+              _strong = true;
+            }
+          }
+        %>
+
+        <%
+        var _date = item.editDate,
+            interval = (new Date()).getTime() - _date,
+            dataString = "刚刚",
+            count;
+        
+        if ( interval > 1000*60*5 ) {
+            count = Math.floor(interval/(1000*60));
+            dataString = count + "分钟前";
+        }
+        if ( interval > 1000*60*30 ) {
+            dataString = "半小时前";
+        }
+        if ( interval > 1000*60*60 ) {
+            count = Math.floor(interval/(1000*60*60));
+            dataString = count + "小时前";
+        }
+        if ( interval > 1000*60*60*24 ) {
+            count = Math.floor(interval/(1000*60*60*24));
+            dataString = count + "天前";
+        }
+        if ( interval > 1000*60*60*24*365 ) {
+            count = Math.floor(interval/(1000*60*60*24*365));
+            dataString = count + "年前";
+        }
+      %>
+
+        <% if ( item.audit || (user && user._id == member._id) ) { %>
+        <div class="job-list-item">
+          <div class="job-list-item-body">
+            <div class="job-list-item-left">
+              <h3>
+                <a href="/jobs/<%= item._id%>"><%= item.title%> [<%= item.cityName%>]</a><span title="<%= moment(item.editDate).format('YYYY-MM-DD HH:mm:ss') %>"><%=dataString%></span>
+                <% if ( !item.audit && !item.rejected ) { %><span style="font-weight:bold; padding-left:10px; color:#f00; font-size:12px;">审核中...</span><% } %>
+                <% if ( item.rejected ) { %><span style="font-weight:bold; padding-left:30px; color:#c00; font-size:14px;">被驳回，理由：<%=item.rejected%>， 时间：<%= moment(item.rejectedData).format('YYYY-MM-DD HH:mm:ss') %></span><% } %>
+              </h3>
+              <p>
+                <strong><%= item.salaryStart%>k-<%= item.salaryEnd%>k</strong>
+                <span>经验<%= item.workingLifeName%> / <%= item.diplomaName%> / 同职位人数：<%= item.jobmax%>人</span>
+              </p>
+            </div>
+            <!-- <div class="job-list-item-right">
+              <h4><a href="#"><%= companys.name%></a></h4>
+              <p><%= companys.realmName%> / <%= companys.seedtimeName%> / <%= companys.scaleName%></p>
+            </div> -->
+          </div>
+          <div class="job-list-item-foot">
+            <div class="job-list-item-left"><%= item.allure%></div>
+            <!-- <div class="job-list-item-right">
+              <% companys.tag.split(",").forEach(function(tag){ %>
+              <span><%= tag%></span>
+              <% }) %>
+            </div> -->
+          </div>
+          <% if (user && user._id == member._id) { %>
+            <div class="job-list-manage">
+              点击：<%= item.click%> 次
+              <a href="/jobs/edit/<%=item._id%>">修改</a>
+              <% if (item.audit) { %>
+                <% if ( item.garbage ) { %>
+                <a href="#" data-id="<%=item._id%>" class="js-job-online">上线</a>
+                <% } else { %>
+                <a href="#" data-id="<%=item._id%>" class="js-job-cancel">下线</a>
+                <a href="#" data-id="<%=item._id%>" class="js-job-refresh">刷新</a>
+                <% } %>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+        <% } %>
+      <% }) %>
+      </div>
+      
+
+      <% if ( page_sum > 1 ) { %>
+      <div class="pages">
+        <div class="pages-con">
+          <% if ( page_current != 1 ) { %>
+          <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+          <% } else { %>
+          <span class="pages-prev pages-dead">上一页</span>
+          <% } %>
+          <% for( var i=0; i<page_sum; i++ ) { %>
+            
+            <% if ( i == 0 || i == page_sum-1 ) { %>
+              <%- getPageHTML(i+1) %>
+              <% continue %>
+            <% } %>
+
+            <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+              <span class="pages-omit">...</span>
+              <% beforeOmit = true %>
+            <% } %>
+
+            <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+              <% if ( !afterOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% afterOmit = true %>
+              <% } %>
+              <% continue %>
+            <% } %>
+
+            <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+              <%- getPageHTML(i+1) %>
+              <% continue %>
+            <% } %>
+
+          <% } %>
+          <!-- <span class="pages-omit">...</span> -->
+          <% if ( page_current >= page_sum ) { %>
+          <span class="pages-next pages-dead">下一页</span>
+          <% } else { %>
+          <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

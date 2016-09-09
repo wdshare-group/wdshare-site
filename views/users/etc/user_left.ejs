@@ -1,0 +1,27 @@
+<div class="myhome-nav">
+	<div class="myhome-nav-con">
+		<em>贡献</em>
+		<a href="/user/myactive/<%=member._id%>"><%=who%>参与的活动</a>
+		<a href="/user/myarticle/<%=member._id%>"><%=who%>的文章</a>
+		<!-- <a href="#"><%=who%>的项目</a> -->
+		<em>招聘</em>
+		<a href="/user/myjob/<%=member._id%>"><%=who%>的招聘</a>
+		<% if (user && user._id == member._id) { %>
+		<a href="/user/myjobapply"><%=who%>的求职</a>
+		<% } %>
+		<em>社交</em>
+		<a href="/user/mycomment/<%=member._id%>"><%=who%>的评论</a>
+		<% if (user && user._id == member._id) { %>
+		<a href="/user/message/<%=member._id%>"><%=who%>的留言</a>
+		<% } else { %>
+		<a href="/user/message/<%=member._id%>">给<%=who%>留言</a>
+		<% } %>
+		<% if (user && user._id == member._id) { %>
+		<em>个人资料</em>
+		<a href="/user/editFace">修改头像</a>
+		<a href="/user/editInfo">修改资料</a>
+		<a href="/user/editPassword">修改密码</a>
+		<% } %>
+		<!-- <a href="#">邀请他面试</a> -->
+	</div>
+</div>

@@ -82,7 +82,7 @@
                 <td><% if ( join.chi === "1" ) { %>是<% } else { %>否<% } %></td>
                 <td><%= moment(join.addDate).format('YYYY-MM-DD HH:mm:ss') %></td>
                 <td><% if ( join.code ) { %>
-                  <%= active.aCodebefor %><%= join.code %>
+                  <%= active.aCodebefor %><% if ( (""+join.code).length < 3 ) { %><% if ( (""+join.code).length < 2 ) { %><%= "00"+join.code %><% } else { %><%= "0"+join.code %><% } %><% } else { %><%= join.code %><% } %>
                   <% } else { %>
                   -
                   <% } %>

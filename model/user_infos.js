@@ -91,6 +91,32 @@ User_infos.prototype = {
             callback && callback(err,doc);
         });
     },
+    
+    /**
+     * Person
+      .find({ occupation: /host/ })
+      .where('name.last').equals('Ghost')
+      .where('age').gt(17).lt(66)
+      .where('likes').in(['vaporizing', 'talking'])
+      .limit(10)
+      .sort('-occupation')
+      .select('name occupation')
+      .exec(callback);
+     */
+    getSort : function(obj,callback){
+        "use strict";
+        var condition = obj.body || {},
+            start = (obj.pages.page - 1) * obj.pages.pagesize || 0;
+        if ( typeof obj.occupation == "object" ) {
+            this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort(obj.occupation).exec(function(err,doc){
+                callback && callback(err,doc);
+            });
+        } else {
+            this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
+                callback && callback(err,doc);
+            });
+        }
+    },
     getAllByConditions : function(obj,callback){
         "use strict";
         this[obj.key].find(obj.query,obj.fields,obj.options).exec(function(err,doc){

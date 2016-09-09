@@ -31,7 +31,7 @@ function getActivesList(num, callback) {
     key: "Active",
     body: {},
     pages: { page: 1, pagesize: num },
-    occupation: "aAddDate"
+    occupation: {"aStatus":-1, "aSort":-1, "aAddDate": -1}
   }, function(err, data) {
     callback(err, data);
   })
@@ -68,7 +68,7 @@ function getAchivesList(num, callback) {
 /**
  * 获取文章列表，不包含了文章的作者和分类信息，默认为10篇，获取规则如下：
  * 1. 获取最新10篇头条文章
- * 2. 热门文章不够10篇，则取剩下最新文章补齐10篇
+ * 2. 头条文章不够10篇，则取剩下最新文章补齐10篇
  * 
  * @param {integer} num
  * @param {fuction} callback 
@@ -81,7 +81,7 @@ function getAchives(num, callback) {
         key: "Archive",
         body: { type: 1, audit: true, diyType: { '$regex': /1/i } },
         pages: { page: 1, pagesize: num },
-        occupation: "addDate"
+        occupation: {"sortup":-1, "rank":-1, "addDate":-1}
       }, function(err, data) {
         callback(err, data);
       })
@@ -96,7 +96,7 @@ function getAchives(num, callback) {
           key: "Archive",
           body: { type: 1, audit: true, diyType: { '$regex': /^((?!1).)+$|^$/ } },
           pages: { page: 1, pagesize: len },
-          occupation: "addDate"
+          occupation: {"sortup":-1, "rank":-1, "addDate":-1}
         }, function(err, data02) {
           callback(err, data01.concat(data02));
         })
@@ -127,7 +127,7 @@ function fixAchives(item, callback) {
       })
     },
     function(callback) {
-      // 获取文章的类比信息
+      // 获取文章的类别信息
       archiveModel.getOne({
         key: "Article_channel",
         body: {
@@ -141,6 +141,135 @@ function fixAchives(item, callback) {
     callback(err, result);
   });
 }
+
+/**
+ * 获取"招聘"列表，默认为10篇
+ * 
+ * @param {integer} num
+ * @param {fuction} callback 
+ */
+function getJobsList(num, callback) {
+  num = num || 10;
+  getJobs(num, function(err, data) {
+    async.map(data, function(item, callback) {
+        fixJobs(item, function(err, result) {
+          var companyInfo = result[0] || {};
+          var cityInfo = result[1] || {};
+          var workingLifeInfo = result[2] || {};
+          var diplomaInfo = result[3] || {};
+          item.companyName = companyInfo.name || "";
+          item.cityName = cityInfo.name || "";
+          item.workingLifeName = workingLifeInfo.name || "";
+          item.diplomaName = diplomaInfo.name || "";
+          callback(err, item);
+        });
+      },
+      function(err, result) {
+        callback(err, result);
+      });
+  })
+}
+
+/**
+ * 获取招聘列表，默认为10篇，获取规则如下：
+ * 1. 获取最新10篇头条招聘
+ * 2. 头条招聘不够10篇，则取剩下最新招聘补齐10篇
+ * 
+ * @param {integer} num
+ * @param {fuction} callback 
+ */
+function getJobs(num, callback) {
+  async.waterfall([
+    function(callback) {
+      // 获取头条招聘
+      archiveModel.getSort({
+        key: "Archive",
+        body: { type: 3, audit: true, garbage: false, diyType: { '$regex': /1/i } },
+        pages: { page: 1, pagesize: num },
+        occupation: {"sortup":-1, "rank":-1, "editDate":-1}
+      }, function(err, data) {
+        callback(err, data);
+      })
+    },
+    function(data01, callback) {
+      // 如果头条文章不够10篇，获取最新的其他文章
+      if (data01.lenght >= 10) {
+        callback(null, data);
+      } else {
+        var len = num - data01.length
+        archiveModel.getSort({
+          key: "Archive",
+          body: { type: 3, audit: true, garbage: false, diyType: { '$regex': /^((?!1).)+$|^$/ } },
+          pages: { page: 1, pagesize: len },
+          occupation: {"sortup":-1, "rank":-1, "editDate":-1}
+        }, function(err, data02) {
+          callback(err, data01.concat(data02));
+        })
+      }
+    }
+  ], function(err, result) {
+    callback(err, result);
+  });
+}
+
+/**
+ * 对获取的"招聘"添加其它信息
+ * 
+ * @param {Object} item  招聘对象
+ * @param {fuction} callback 
+ */
+function fixJobs(item, callback) {
+  async.parallel([
+    function(callback) {
+      // 获取招聘的企业信息
+      jobModel.getOne({
+        key: "Companie",
+        body: {
+          _id: item.companys
+        }
+      }, function(err, companyData) {
+        callback(err, companyData);
+      })
+    },
+    function(callback) {
+      // 获取招聘的地域信息
+      jobModel.getOne({
+        key: "Job_channel",
+        body: {
+          _id: item.city
+        }
+      }, function(err, cityData) {
+        callback(err, cityData);
+      })
+    },
+    function(callback) {
+      // 获取招聘的经验信息
+      jobModel.getOne({
+        key: "Job_channel",
+        body: {
+          _id: item.workingLife
+        }
+      }, function(err, workingLifeData) {
+        callback(err, workingLifeData);
+      })
+    },
+    function(callback) {
+      // 获取招聘的学历信息
+      jobModel.getOne({
+        key: "Job_channel",
+        body: {
+          _id: item.diploma
+        }
+      }, function(err, diplomaData) {
+        callback(err, diplomaData);
+      })
+    }
+  ], function(err, result) {
+    callback(err, result);
+  });
+}
+
+
 
 /**
  * 获取最新加入的会员，默认为最新8个
@@ -193,10 +322,10 @@ function fixUsers(item, callback) {
     },
     function(callback) {
       // 获取会员的文章信息
-      archiveModel.getOne({
+      archiveModel.getAll({
         key: "Archive",
         body: {
-          _id: item._id,
+          userId: item._id,
           audit: true
         }
       }, function(err, article) {
@@ -242,7 +371,10 @@ function getData(callback) {
     },
     userSum: function(callback) {
       getUserSum(callback);
-    }
+    },
+    jobs: function(callback) {
+      getJobsList(10, callback);
+    },
   }, function(err, result) {
     callback(err, result);
   });
@@ -269,7 +401,8 @@ router.get('/', function(req, res) {
         title: '会员信息',
         result: result.users,
         allCount: result.userSum
-      }
+      },
+      jobs: result.jobs
     };
     res.render('index', data);
   })

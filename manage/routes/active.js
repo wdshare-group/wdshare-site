@@ -842,7 +842,7 @@ router.get('/invite/:id', function(req, res) {
 
     // 发送邀请邮件
     function sendInvite() {
-        var mailTpl;
+        var mailTpl,_code=join.code;
         if ( !join || !active ) {
             res.end(JSON.stringify({status:false,msg:"发送邮件数据不全"}));
             return false;
@@ -853,10 +853,18 @@ router.get('/invite/:id', function(req, res) {
             return false;
         }
 
+        if ( (""+_code).length < 3 ) {
+            if ( (""+_code).length < 2 ) {
+                _code = "00" + _code;
+            } else {
+                _code = "0" + _code;
+            }
+        }
+
         mailTpl = active.aEmailTpl;
         mailTpl = mailTpl.replace(/{=title}/g, active.aName);
         mailTpl = mailTpl.replace(/{=name}/g, join.name);
-        mailTpl = mailTpl.replace(/{=code}/g, active.aCodebefor + join.code);
+        mailTpl = mailTpl.replace(/{=code}/g, active.aCodebefor + _code);
         mailTpl = mailTpl.replace(/{=mail}/g, join.mail);
         mailTpl = mailTpl.replace(/{=id}/g, join._id);
         mailTpl = mailTpl.replace(/{=time}/g, active.aTime);

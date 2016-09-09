@@ -7,7 +7,7 @@
 <style type="text/css">
   body { text-align:center;}
   table { border-collapse:collapse; width:94%; margin:0 auto 0;}
-  td,th { padding:0; border:1px solid #333; line-height:30px; padding:12px 5px; font-size:14px;}
+  td,th { padding:0; border:1px solid #333; line-height:30px; padding:5px 5px; font-size:14px;}
 
   h1 { line-height:240%; font-size:20px; padding-top:5px;}
 </style>
@@ -16,7 +16,7 @@
 <body>
 <% 
   var count = 0;// 序号计数器
-  var pagesize = 15;// 每页显示数量
+  var pagesize = 20;// 每页显示数量
   var max = Math.ceil(result.length/pagesize);
   var page = 1;// 当前页面标识
   var i = 0;
@@ -27,10 +27,10 @@
     <thead>
       <tr>
         <th width="9%">序号</th>
-        <th width="14%">姓名</th>
+        <th width="20%">姓名</th>
         <th>公司</th>
-        <th width="18%">邀请码</th>
-        <th width="13%">AA聚餐</th>
+        <th width="22%">邀请码</th>
+        <!-- <th width="11%">AA聚餐</th> -->
         <th width="14%">签名</th>
       </tr>
     </thead>
@@ -42,14 +42,14 @@
       <% if ( join.state !== 0 ) { %>
         <tr>
           <td><%= count+1 %></td>
-          <td><%= join.name %></td>
+          <td><%= join.name.substring(0, 8) %></td>
           <td><span style="display:block; height:30px; overflow:hidden;"><%= join.com %></span></td>
           <td><% if ( join.code ) { %>
-                      <%= active.aCodebefor %><%= join.code %>
-                      <% } else { %>
-                      -
-                      <% } %></td>
-          <td></td>
+              <%= active.aCodebefor %><% if ( (""+join.code).length < 3 ) { %><% if ( (""+join.code).length < 2 ) { %><%= "00"+join.code %><% } else { %><%= "0"+join.code %><% } %><% } else { %><%= join.code %><% } %>
+              <% } else { %>
+              -
+              <% } %></td>
+          <!-- <td></td> -->
           <td></td>
         </tr>
 
@@ -69,10 +69,10 @@
       <thead>
         <tr>
           <th width="9%">序号</th>
-          <th width="14%">姓名</th>
+          <th width="20%">姓名</th>
           <th>公司</th>
-          <th width="18%">邀请码</th>
-          <th width="13%">AA聚餐</th>
+          <th width="22%">邀请码</th>
+          <!-- <th width="11%">AA聚餐</th> -->
           <th width="14%">签名</th>
         </tr>
       </thead>

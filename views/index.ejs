@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <title>WDShare 西安前端交流会</title>
 <meta name="keywords" content="WDShare,西安前端交流会" />
-<meta name="description" content="WDShare，W3C Developer Share 西安前端开发人员分享交流会" />
+<meta name="description" content="WDShare，W3C Developer Share 西安前端开发者分享交流会" />
 <% include ./etc/htmlhead.ejs %>
 </head>
 
@@ -40,7 +40,7 @@
         <% } else if ( active.aStatus == 2 ) { %>
         <div class="activity-state"><span class="stop">暂停</span></div>
         <% } else if ( active.aStatus == 3 ) { %>
-        <div class="activity-state"><span class="ready">等待</span></div>
+        <div class="activity-state"><span class="ready">筹备</span></div>
         <% } else { %>
         <div class="activity-state"><span class="over">详情</span></div>
         <% } %>
@@ -56,9 +56,7 @@
 <div class="index-article">
   <div class="maxWidth module">
     <h2 class="module-title">
-      <% if(user && user.email){ %>
       <div class="module-but"><a href="/article/create">发布文章</a></div>
-      <% } %>
       精彩文章
     </h2>
     <div class="article-list-con">
@@ -114,6 +112,86 @@
   </div>
 </div>
 
+<% if ( jobs && jobs != "error" ) { %>
+<div class="index-job">
+  <div class="maxWidth module">
+    <h2 class="module-title">
+      <div class="module-but"><a href="/jobs/create">发布招聘</a></div>
+      企业招聘
+    </h2>
+    <div class="index-jobs-con">
+      <% var jobsCount = 0 %>
+      <% jobs.forEach(function(job){ %>
+      <% if ( jobsCount < 10 ) { %>
+      <%
+        jobsCount++;
+
+        var tou = false,
+            hot = false,
+            _strong = false,
+            types = [];
+        if ( job.diyType ) {
+          types = job.diyType.split(",");
+        }
+        for ( var i=0; i<types.length; i++ ) {
+          if ( parseInt(types[i]) === 1 ) {
+            tou = true;
+          }
+          if ( parseInt(types[i]) === 2 ) {
+            hot = true;
+          }
+          if ( parseInt(types[i]) === 3 ) {
+            _strong = true;
+          }
+        }
+      %>
+
+      <%
+        var _date = job.editDate,
+            interval = (new Date()).getTime() - _date,
+            dataString = "刚刚",
+            count;
+        
+        if ( interval > 1000*60*5 ) {
+            count = Math.floor(interval/(1000*60));
+            dataString = count + "分钟前";
+        }
+        if ( interval > 1000*60*30 ) {
+            dataString = "半小时前";
+        }
+        if ( interval > 1000*60*60 ) {
+            count = Math.floor(interval/(1000*60*60));
+            dataString = count + "小时前";
+        }
+        if ( interval > 1000*60*60*24 ) {
+            count = Math.floor(interval/(1000*60*60*24));
+            dataString = count + "天前";
+        }
+        if ( interval > 1000*60*60*24*365 ) {
+            count = Math.floor(interval/(1000*60*60*24*365));
+            dataString = count + "年前";
+        }
+        %>
+      <div class="index-jobs-item">
+        <div class="index-jobs-item-face"><a href="/companys/<%= job.companys %>" title="企业：<%= job.companyName %>" style="background-image:url('/user/comlogo/<%= job.companys %>');"></a></div>
+        <div class="index-jobs-item-text">
+          <h3 class="index-jobs-item-title">
+            <a href="/jobs/<%= job._id %>" title="<%= job.title %>"><em style="<% if ( job.color ) { %>color:<%= job.color %>;<% } %> font-weight:<%= _strong ? "bold" : "normal" %>;">[<%= job.cityName %>] <%= job.title %></em></a><span title="<%= moment(job.editDate).format('YYYY-MM-DD HH:mm:ss') %>"><%= dataString %></span>
+          </h3>
+          <p>
+            <strong><%= job.salaryStart %>k-<%= job.salaryEnd %>k</strong>
+            <span>经验<%= job.workingLifeName %> / <%= job.diplomaName %> / 同职位人数：<%= job.jobmax %>人</span>
+          </p>
+        </div>
+        <div class="index-jobs-item-allure"><%= job.allure %></div>
+      </div>
+      <% } %>
+      <% }) %>
+    </div>
+    <div class="mudule-more"><a href="/jobs/" class="but but-blue">更多招聘</a></div>
+  </div>
+</div>
+<% } %>
 
 <% if ( users && users != "error" ) { %>
 <div class="index-mamber">

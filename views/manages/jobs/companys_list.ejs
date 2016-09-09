@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-招聘企业管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%= title %> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;共 <%= item_sum %> 家</h3>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th width="80">Logo</th>
+                <th>企业</th>
+                <th width="70">点击</th>
+                <th width="70">审核</th>
+                <th width="110">Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(com){ %>
+              <tr>
+                <td class="no-a-style"><a href="/jobs/company/<%= com._id %>" target="_blank"><img style="width:60px; height:60px; border-radius:5px" src="/user/comlogo/<%= com._id %>" /></a></td>
+                <td style="text-align:left;" class="no-a-style">
+                  <div style="font-size:1rem; font-weight:bold;"><a href="/jobs/company/<%= com._id %>" target="_blank"><%= com.name %></a></div>
+                  <div style="font-size:.9rem; color:#666;">
+                  <%= com.realmName %> &nbsp;||&nbsp; <%= com.scaleName %> &nbsp;||&nbsp; <%= com.seedtimeName %> &nbsp;||&nbsp; <a href="/user/<%= com.user._id %>" style="color:#369;" target="_blank"><%= com.user.username %></a><br />
+                  联系人：<%= com.contactName %> &nbsp;||&nbsp; <%= com.tel %> &nbsp;||&nbsp; <%= com.mail %>
+                  </div>
+                </td>
+                <td><%= com.click %></td>
+                <td><% if ( com.audit ) { %>已审核<% } else {%><span style="color:#c00;">未审核</span><% } %></td>
+                <td>
+                  <a href="/manage/jobs/companys/edit/<%= com._id %>">修改</a>
+                  <a href="#" data-id="<%= com._id %>" class="js-job-com-delete">删除</a>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

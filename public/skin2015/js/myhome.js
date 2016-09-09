@@ -7,7 +7,9 @@ define(['jquery', 'dialog'], function($) {
             url = window.location.href;
         url = url.replace("http://", "");
         url = url.substring(url.indexOf("/"));
-
+        if ( url.indexOf("?") > 0 ) {
+            url = url.substring(0, url.indexOf("?"));
+        }
         _lis.each(function() {
             if ( $(this).attr("href") == url ) {
                 $(this).addClass("current");
@@ -176,8 +178,8 @@ define(['jquery', 'dialog'], function($) {
                 (function() {
                     var reader = new FileReader(),
                         img = document.createElement("img"),
-                        img1 = document.createElement("img")
-                        img2 = document.createElement("img")
+                        img1 = document.createElement("img"),
+                        img2 = document.createElement("img"),
                         img3 = document.createElement("img");
                     reader.readAsDataURL(fileObj.files[i]);
                     reader.onload = function(e) {  
@@ -282,7 +284,9 @@ define(['jquery', 'dialog'], function($) {
 
         if ( data.state != "SUCCESS" ) {// 报错
             Dialog.close("imageUpload-dialog");
-            new Dialog({'msg':data.state, 'lock': true, 'lockClose':false, 'title':"图片上传结果", 'animation': 'BounceIn'});
+            new Dialog({'msg':data.state, 'lock': true, 'lockClose':false, 'title':"图片上传结果", 'animation': 'BounceIn', 'showButtons':true, 'cancelButton':false, 'onSubmit':function() {
+                window.location.reload();
+            }});
         } else {// 成功处理
             $("#up-baby-photo").val(data.url);
             Dialog.close("imageUpload-dialog");
@@ -357,6 +361,124 @@ define(['jquery', 'dialog'], function($) {
         };
     };
 
+    /**
+     * 我的招聘相关js
+     */
+    function myJobInit() {
+        // 注册点击刷新
+        $(".js-job-refresh").click(function() {
+            var id = $(this).attr("data-id");
+            $.get("/jobs/refresh/"+id, function(data) {
+                var data;
+                if ( !data ) { return false };
+                if ( typeof data == "string" ) {
+                    data = $.parseJSON(data);
+                } else {
+                    data = data;
+                }
+
+                if ( data.status == 200 && data.code && data.code == 1 ) {// 操作成功
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "time": 3000,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        },
+                        "onComplete": function() {
+                            window.location.reload();
+                        }
+                    });
+                    if ( data.url ) {
+                        window.location = data.url;
+                    }
+                } else {// 操作失败
+                    Dialog({
+                        "msg":"<br />"+ data.message +"<br /><br />",
+                        "lock":true,
+                        "showButtons":true,
+                        "cancelButton":false,
+                        "onReady": function() {
+                            $(".D_submit").focus();
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+
+        // 注册点击下线
+        $(".js-job-cancel").click(function() {
+            var id = $(this).attr("data-id");
+            if ( confirm("确定要将此招聘下线？") ) {
+                action();
+            };
+            function action() {
+                $.get("/jobs/cancel/"+id, function(data) {
+                    var data;
+                    if ( !data ) { return false };
+                    if ( typeof data == "string" ) {
+                        data = $.parseJSON(data);
+                    } else {
+                        data = data;
+                    }
+
+                    if ( data.status == 200 && data.code && data.code == 1 ) {// 操作成功
+                        window.location.reload();
+                    } else {// 操作失败
+                        Dialog({
+                            "msg":"<br />"+ data.message +"<br /><br />",
+                            "lock":true,
+                            "showButtons":true,
+                            "cancelButton":false,
+                            "onReady": function() {
+                                $(".D_submit").focus();
+                            }
+                        });
+                    }
+                });
+            }
+            
+            return false;
+        });
+
+        // 注册点击上线
+        $(".js-job-online").click(function() {
+            var id = $(this).attr("data-id");
+            if ( confirm("确定要将此招聘上线？") ) {
+                action();
+            };
+            function action() {
+                $.get("/jobs/online/"+id, function(data) {
+                    var data;
+                    if ( !data ) { return false };
+                    if ( typeof data == "string" ) {
+                        data = $.parseJSON(data);
+                    } else {
+                        data = data;
+                    }
+
+                    if ( data.status == 200 && data.code && data.code == 1 ) {// 操作成功
+                        window.location.reload();
+                    } else {// 操作失败
+                        Dialog({
+                            "msg":"<br />"+ data.message +"<br /><br />",
+                            "lock":true,
+                            "showButtons":true,
+                            "cancelButton":false,
+                            "onReady": function() {
+                                $(".D_submit").focus();
+                            }
+                        });
+                    }
+                });
+            }
+            
+            return false;
+        });
+    };
 
 
     var myhome = {};
@@ -382,6 +504,8 @@ define(['jquery', 'dialog'], function($) {
         });
 
         delMyComment();
+
+        myJobInit();
     };
 
 

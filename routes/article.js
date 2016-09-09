@@ -38,7 +38,7 @@ function getList(req, res, o, pages, mod, channelName, channelKeywords, channelD
         key: "Archive",
         body:o,// 仅读取文章类型的档案
         pages:pages, // 分页信息
-        occupation: "addDate"// 排序字段
+        occupation: {"sortup":-1, "rank":-1, "addDate":-1}// 排序字段
     }, function (err, data) {
         var channelCount = 0,
             userCount = 0,
@@ -382,7 +382,37 @@ router.post('/create', function(req, res) {
                 return;
             }
 
-            action();
+            // 不是自己的文章不能修改
+            if ( req.body.aid ) {
+                archiveModel.getOne({
+                    key: "Archive",
+                    body: {
+                        _id: req.body.aid
+                    }
+                }, function (err, data) {
+                    if (err || !data) {
+                        res.send({
+                            status: 200,
+                            code: 0,
+                            message: "文章内容不存在，请刷新后重新修改！"
+                        });
+                        return false;
+                    }
+
+                    if (data.userId != req.session.user._id) {
+                        res.send({
+                            status: 200,
+                            code: 0,
+                            message: "您无权修改此文章！"
+                        });
+                        return false;
+                    }
+                    
+                    action();
+                });
+            } else {
+                action();
+            }
         }
     });
 
@@ -706,7 +736,7 @@ function sendArticleChangeMail(req, res, state, title) {
     sendMail({
         from: config.mail.sendMail,
         to: "manage@wdshare.org",//需要通知的管理员邮箱
-        subject: "[需审批]"+req.session.user.username +" "+ state +" 《"+ title +"》",
+        subject: "[文章-需审批]"+req.session.user.username +" "+ state +" 《"+ title +"》",
         html: '管理员，你好：<br /> 会员【' + req.session.user.username + "】 刚才 " + state +"了 《"+ title +"》，请尽快进行审批。"
     });
 };

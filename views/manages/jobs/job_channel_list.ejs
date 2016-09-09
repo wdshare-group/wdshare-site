@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-招聘分类管理</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title"><a href="/manage/jobs/channel">所有分类</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/1">招聘分类</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/2">企业领域</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/3">企业规模</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/4">公司发展阶段</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/5">工作年限</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/6">学历</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/7">招聘类型</a> &nbsp;&nbsp; <a href="/manage/jobs/channel/list/8">工作城市</a></h1>
+    <div class="manage-module">
+      <div class="manage-module-head">
+        <h3 class="manage-module-title"><%=title%> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em style="font-size:14px;">共 <%=item_sum%> 条纪录</em></h3>
+        <div class="manage-tool">
+          <a href="/manage/jobs/channel/create" class="green">添加招聘分类</a>
+        </div>
+      </div>
+      <div class="manage-module-con">
+        <div class="manage-data">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>归属</th>
+                <th>排序</th>
+                <th>描述</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach(function(channel){ %>
+              <tr>
+                <td><%= channel.name %></td>
+                <td>
+                  <%if (channel.parent == 1) {%>招聘分类<%}%>
+                  <% if (channel.parent == 2) {%>企业领域<%}%>
+                  <% if (channel.parent == 3) {%>企业规模<%}%>
+                  <% if (channel.parent == 4) {%>公司发展阶段<%}%>
+                  <% if (channel.parent == 5) {%>工作年限<%}%>
+                  <% if (channel.parent == 6) {%>学历<%}%>
+                  <% if (channel.parent == 7) {%>招聘类型<%}%>
+                  <% if (channel.parent == 8) {%>工作城市<%}%>
+                </td>
+                <td><%= channel.order %></td>
+                <td><%= channel.description %></td>
+                <td><a href="/manage/jobs/channel/edit/<%= channel._id %>">修改</a><a href="#" data-id="<%= channel._id %>" class="js-jobChannels-delete">删除</a></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if ( page_sum > 1 ) { %>
+        <div class="pages">
+          <div class="pages-con">
+            <% if ( page_current != 1 ) { %>
+            <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+            <% } else { %>
+            <span class="pages-prev pages-dead">上一页</span>
+            <% } %>
+            <% for( var i=0; i<page_sum; i++ ) { %>
+              
+              <% if ( i == 0 || i == page_sum-1 ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+              <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+                <span class="pages-omit">...</span>
+                <% beforeOmit = true %>
+              <% } %>
+
+              <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+                <% if ( !afterOmit ) { %>
+                  <span class="pages-omit">...</span>
+                  <% afterOmit = true %>
+                <% } %>
+                <% continue %>
+              <% } %>
+
+              <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+                <%- getPageHTML(i+1) %>
+                <% continue %>
+              <% } %>
+
+            <% } %>
+            <!-- <span class="pages-omit">...</span> -->
+            <% if ( page_current >= page_sum ) { %>
+            <span class="pages-next pages-dead">下一页</span>
+            <% } else { %>
+            <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

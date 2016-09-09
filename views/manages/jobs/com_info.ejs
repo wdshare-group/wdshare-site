@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WDShare管理中心-修改企业信息</title>
+<meta name="auther" content="F7" />
+<% include ../etc/htmlhead.ejs %>
+<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+<div class="manage">
+  <% include ../etc/left.ejs %>
+  <div class="manage-right">
+    <h1 class="manage-title">企业信息</h1>
+    <div class="manage-module">
+      <form id="js-company-info-form">
+        <input type="hidden" name="aid" value="<%=company._id%>" />
+        <div class="manage-module-head">
+          <h3 class="manage-module-title">修改企业信息</h3>
+          <div class="manage-tool">
+            <input class="green" name="submitbutton_head" type="submit" value="提交"/>
+            <input class="gray" type="reset" value="重置"/>
+          </div>
+        </div>
+        <div class="manage-module-con">
+          <div class="manage-addActive-form">
+            <div class="manage-addActive-form-item">
+              <label><strong style="padding-top:16px;">公司Logo：</strong>
+              <img src="/user/comlogo/<%=company._id%>" style="height:64px;" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司名称：</strong><input type="text" name="name" value="<%=company.name||""%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>一句话简介：</strong><input type="text" name="intro" value="<%=company.intro||""%>" /><span>最多30个字</span></label>
+            </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司领域：</strong>
+              <div class="form-companys-realm">
+                <% realm.forEach(function(item){ %>
+                  <% if ( company.realm && company.realm.indexOf(item._id) != -1 ) { %>
+                    <label><input type="checkbox" name="realm" value="<%=item._id%>" checked="checked" /><%=item.name%></label>
+                  <% } else { %>
+                    <label><input type="checkbox" name="realm" value="<%=item._id%>" /><%=item.name%></label>
+                  <% } %>
+                <% }) %>
+              </div>
+            </div>
+            <div class="manage-addActive-form-item">
+              <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司规模：</strong>
+              <select name="scale">
+                <% if (!company.scale) { %>
+                <option value="" selected>请选择规模</option>
+                <% } %>
+
+                <% scale.forEach(function(item){ %>
+                  <% if (item._id == company.scale) { %>
+                    <option value="<%=item._id%>" selected><%=item.name%></option>
+                  <% } else { %>
+                    <option value="<%=item._id%>"><%=item.name%></option>
+                  <% } %>
+                <% }) %>
+              </select>
+            </div>
+            <div class="manage-addActive-form-item">
+              <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>发展阶段：</strong>
+              <select name="seedtime">
+                <% if (!company.seedtime) { %>
+                <option value="" selected>请选择发展阶段</option>
+                <% } %>
+
+                <% seedtime.forEach(function(item){ %>
+                  <% if (item._id == company.seedtime) { %>
+                    <option value="<%=item._id%>" selected><%=item.name%></option>
+                  <% } else { %>
+                    <option value="<%=item._id%>"><%=item.name%></option>
+                  <% } %>
+                <% }) %>
+              </select>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司地址：</strong><input type="text" name="address" value="<%=company.address||""%>" /><span>请填写详细的工作地址</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>公司主页：</strong><input type="text" name="www" value="<%=company.www||"http://"%>" /><span>请以http开头</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系人：</strong><input type="text" name="contactName" value="<%=company.contactName||""%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系电话：</strong><input type="text" name="tel" value="<%=company.tel||""%>" /></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>联系邮箱：</strong><input type="text" name="mail" value="<%=company.mail||""%>" /></label>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <strong>公司产品：</strong>
+              <span>请输入公司运营的产品信息，有助于求职者了解公司现状。</span>
+            </div>
+            <div class="editor-box manage-addActive-form-item"><textarea name="product" style="height:180px;"><%=company.product||""%></textarea></div>
+
+            <div class="manage-addActive-form-item" id="js-articleadd-content">
+              <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>公司简介：</strong>
+            </div>
+            <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%-company.content||""%></textarea></div>
+
+            <div class="manage-addActive-form-item" id="js-articleadd-tag">
+              <strong>TAG：</strong>
+              <input type="text" name="tag" value="<%=company.tag||""%>" /><span>多个关键词必须以英文逗号“,”隔开，后台这里懒的写点选效果啦</span>
+            </div>
+
+            <div class="manage-addActive-form-item">
+              <label><strong>使用模板：</strong><input type="text" name="tpl" value="<%=company.tpl%>" /><span>企业模板，用于定制类企业信息展示</span></label>
+            </div>
+
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>是否审核：</strong>
+              <label><input type="radio" name="audit" value="1" <%if (company.audit) {%>checked="checked"<%}%> /> 是</label>
+              <label><input type="radio" name="audit" value="0" <%if (!company.audit) {%>checked="checked"<%}%> /> 否 </label><span>未审核内容将不在前端显示， &nbsp;&nbsp; 取消审核时必须将该用户的所有上架招聘都下线，否则将产生错误</span>
+            </div>
+            
+            <div class="manage-manage-addActive-form manage-form-but">
+              <input class="green" name="submitbutton" type="submit" value="提交"/>
+              <input class="gray" type="reset" value="重置"/>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+  </div>
+</div>
+
+<% include ../etc/foot.ejs %>
+
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+</body>
+</html>

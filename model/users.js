@@ -111,9 +111,15 @@ Users.prototype = {
         "use strict";
         var condition = obj.body || {},
             start = (obj.pages.page - 1) * obj.pages.pagesize || 0;
-        this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
-            callback && callback(err,doc);
-        });
+        if ( typeof obj.occupation == "object" ) {
+            this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort(obj.occupation).exec(function(err,doc){
+                callback && callback(err,doc);
+            });
+        } else {
+            this[obj.key].find(condition).skip(start).limit(obj.pages.pagesize).sort('-'+obj.occupation).exec(function(err,doc){
+                callback && callback(err,doc);
+            });
+        }
     },
     getAllByConditions : function(obj,callback){
         "use strict";

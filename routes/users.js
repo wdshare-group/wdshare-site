@@ -1722,10 +1722,18 @@ router.route('/myjob/:id').get(function (req, res) {
             }
         }, function (err, _companys) {
             if (err || !_companys) {// 企业信息不存在
-                res.render('article/error', {
-                    title: "错误提示",
-                    msg: "该用户没有关联企业信息！"
-                });
+                companys = {};
+                getList();
+                /*
+                if (id == req.session.user._id) {
+                    res.redirect("/jobs/company-error");
+                } else {
+                    res.render('article/error', {
+                        title: "错误提示",
+                        msg: "该用户没有关联企业信息！"
+                    });
+                }*/
+                
             } else {// 已存在
                 getJobChannelData({parent:2}, function(realm) {
                     getJobChannelData({parent:3}, function(scale) {

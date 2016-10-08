@@ -33,7 +33,9 @@
             <select name="channelId">
               <option value="" selected>请选择栏目</option>
               <% result.forEach(function(channel){ %>
-              <option value="<%= channel._id%>"><%= channel.name%></option>
+                <% if ( channel.is_contribute ) { %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                <% } %>
               <% }) %>
             </select></label>
         </div>

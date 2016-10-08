@@ -31,11 +31,19 @@
             <div class="manage-addActive-form-item">
               <label><strong>URL标识：</strong><%=result.url%></label>
             </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>前端发稿：</strong>
+              <label><input type="radio" name="is_contribute" value="1" <%if (result.is_contribute) {%>checked="checked"<%}%> /> 是</label>
+              <label><input type="radio" name="is_contribute" value="0" <%if (!result.is_contribute) {%>checked="checked"<%}%> /> 否</label><span>发稿时是否显示该分类</span>
+            </div>
             <div class="manage-addActive-form-item" style="display:none;">
               <label><strong>父类：</strong><select name="parent"><option value="" selected>顶级栏目</option></select></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>使用模板：</strong><input type="text" name="end_tpl" value="<%=result.end_tpl ? result.end_tpl : ''%>" /><span>留空代表使用默认模板</span></label>
+              <label><strong>分类模板：</strong><input type="text" name="channel_tpl" value="<%=result.channel_tpl ? result.channel_tpl : ''%>" /><span>该栏目所使用的模板，留空代表使用默认模板</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>终极页模板：</strong><input type="text" name="end_tpl" value="<%=result.end_tpl ? result.end_tpl : ''%>" /><span>该栏目终极页使用的模板，留空代表使用默认模板</span></label>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>关键字：</strong><input type="text" name="keywords" value="<%=result.keywords%>" /><span>显示在meta标签的keywords</span></label>

@@ -1,0 +1,316 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= title %> - WDShare</title>
+<meta name="keywords" content="<%= keywords || "前端技术文章,前端技术学习,网页开发文章,手机前端开发,移动端开发教程,JS框架学习,前端框架" %>" />
+<meta name="description" content="<%= description || "WDShare一对一定制教学" %>" />
+<% include ../etc/htmlhead.ejs %>
+<link href="/static/skin2015/css/onetoone.css" rel="stylesheet" />
+</head>
+
+<body class="onetoone">
+<% include ../etc/head.ejs %>
+<%
+  var showPageSize = 5;
+      item_sum = +pages.sum,
+      page_current = +pages.page,
+      page_size = pages.pagesize,
+      page_sum = Math.ceil(item_sum/page_size),
+      pathname = pages.pathname,
+      beforeOmit = false,
+      afterOmit = false;
+
+
+  function getPageHTML(c) {
+    var _html = '';
+    if ( i+1 == +page_current ) {
+      _html += '<span class="pages-current">'+ c +'</span>';
+    } else {
+      _html += '<a href="'+ pathname +'?page='+ c +'&pagesize='+ page_size +'">'+ c +'</a>';
+    }
+    return _html;
+  };
+%>
+
+<script>
+  document.getElementsByClassName("hd-logo")[0].getElementsByTagName("img")[0].setAttribute("src", "/static/skin2015/img/logo-white.png");
+</script>
+
+<div class="banner-font">
+  <img src="/static/skin2015/img/onetoone/banner-font.png" />
+</div>
+<div class="lead">
+  <h1>什么是一对一再培训？<br />如果你平常有空闲时间、有HTML和CSS基础；<br />如果你想更深层次的研究技术，如果你自学进展速度太慢；<br />快来拜师吧，参加一对一再培训，我们教你并监督你快速学习前端技术，助你就业、助你拿高薪！</h1>
+</div>
+<div class="onetoone-list">
+  <h1>一对一再培训 讲师名录</h1>
+  <div class="onetoone-list-con">
+    <!--<div class="onetoone-item">
+      <h2 class="onetoone-item-head">企业导师：F7</h2>
+      <p class="onetoone-item-photo"><img src="/static/skin2015/img/onetoone/test-photo.jpg" /></p>
+      <ul class="onetoone-item-text">
+        <li><strong>讲师简介：</strong>12年前端开发经验，北京工作9年，其中6年效力于中华网，现就职于华扬联众西安分公司，项目经验丰富，紧随前沿技术；</li>
+        <li><strong>讲师特长：</strong>PC、移动端页面交互及排版、模块化及组件开发、架构设计；最新技术使用Vue；</li>
+        <li><strong>上课形式：</strong>QQ在线支持＋每周4小时现场授课</li>
+        <li><strong>课程周期：</strong>2个月［根据学员定制课程］</li>
+        <li><strong>费用：</strong>500/月</li>
+      </ul>
+      <div class="onetoone-item-but">
+        <a href="#">讲师主页</a>
+        <a href="#" class="baishi">预约拜师</a>
+        <a href="#">评价老师<span>(<em>36</em>)</span></a>
+      </div>
+    </div>-->
+
+    <% result.forEach(function(article){ %>
+    <%
+      var tou = false,
+          hot = false,
+          _strong = false,
+          types = [];
+      if ( article.diyType ) {
+        types = article.diyType.split(",");
+      }
+      for ( var i=0; i<types.length; i++ ) {
+        if ( parseInt(types[i]) === 1 ) {
+          tou = true;
+        }
+        if ( parseInt(types[i]) === 2 ) {
+          hot = true;
+        }
+        if ( parseInt(types[i]) === 3 ) {
+          _strong = true;
+        }
+      }
+    %>
+    <div class="onetoone-item">
+      <h2 class="onetoone-item-head"><%= article.title %></h2>
+      <%- article.description %>
+      <div class="onetoone-item-but">
+        <a href="/user/<%= article.userId %>">讲师主页</a>
+        <a href="#" data-id="<%= article.userId %>" class="baishi">预约拜师</a>
+        <a href="/article/<%= article._id %>#comment">评价老师<span>(<em>...</em>)</span></a>
+      </div>
+    </div>
+    <% }) %>
+
+    <div class="onetoone-note">
+      <h3>拜师4步走：</h3>
+      <p>1、您向讲师发起预约；<br/>
+      2、讲师约您面谈；<br/>
+      3、技术摸底＋定制学习大纲；<br/>
+      4、大纲满意后付费开课（15天内不满意可退还学费）</p>
+    </div>
+
+    <div class="onetoone-note">
+      <h3>一对一定制教学目标：</h3>
+      <p>为了加快初学者的学习速度以及企业适应能力，我们特别开设了一对一定制教学栏目；<br />我们面向的学生：有一定前端基础的大学生、参加过前端培训的同学、已入职但前端能力薄弱的同学等等，可以跟我们的企业导师们拜师学艺；<br/>导师会完全模拟企业工作流程及环境让大家参与，以便每位同学能快速上岗。教学形式：全天QQ在线支持、每周线下4小时现场授课、真对每个学生量身定制教学大纲、完整的企业案例教学、项目化作业；<br />收费金额由导师决定，WDShare仅为平台向大家提供导师信息，拜师不开心可联系本站管理员投诉，投诉邮箱：manage@wdshare.org</p>
+    </div>
+
+    <div class="onetoone-note">
+      <h3>如何成为企业导师？</h3>
+      <p>请按照导师名录中的导师介绍，组织自己的信息并发送邮件到manage@wdshare.org中，管理员会与您联系进行考核，通过后将出现在导师名录中</p>
+    </div>
+  </div>
+
+  <% if ( page_sum > 1 ) { %>
+  <div class="pages">
+    <div class="pages-con">
+      <% if ( page_current != 1 ) { %>
+      <a href="<%=pathname%>?page=<%=+page_current-1%>&pagesize=<%=page_size%>" class="pages-prev">上一页</a>
+      <% } else { %>
+      <span class="pages-prev pages-dead">上一页</span>
+      <% } %>
+      <% for( var i=0; i<page_sum; i++ ) { %>
+        
+        <% if ( i == 0 || i == page_sum-1 ) { %>
+          <%- getPageHTML(i+1) %>
+          <% continue %>
+        <% } %>
+
+        <% if ( page_current-Math.floor(showPageSize/2) > 2 && !beforeOmit ) { %>
+          <span class="pages-omit">...</span>
+          <% beforeOmit = true %>
+        <% } %>
+
+        <% if ( i+1 > page_current+Math.floor(showPageSize/2) ) { %>
+          <% if ( !afterOmit ) { %>
+            <span class="pages-omit">...</span>
+            <% afterOmit = true %>
+          <% } %>
+          <% continue %>
+        <% } %>
+
+        <% if ( i+1 >= page_current-Math.floor(showPageSize/2) ) { %>
+          <%- getPageHTML(i+1) %>
+          <% continue %>
+        <% } %>
+
+      <% } %>
+      <!-- <span class="pages-omit">...</span> -->
+      <% if ( page_current >= page_sum ) { %>
+      <span class="pages-next pages-dead">下一页</span>
+      <% } else { %>
+      <a href="<%=pathname%>?page=<%=+page_current+1%>&pagesize=<%=page_size%>" class="pages-next">下一页</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<script src="/static/skin2015/js/jquery-1.11.1.min.js"></script>
+<script>
+var _html = '',
+      notLoginHtml = '',
+      loginurl = '/user/login?referer='+window.location.href,
+      regurl = '/user/register?referer='+window.location.href;
+  _html += '<form id="onetoone-form" name="side-feedback" method="post" action="">';
+  _html += '<input type="hidden" name="typeid" value="">';
+  _html += '<input type="hidden" name="privacy" value="1">';
+  _html += '<input type="hidden" name="model" value="message">';
+  _html += '<input type="hidden" name="title" value="一对一再培训平台预约讲师申请">';
+  _html += '<input type="hidden" name="privacy" value="0">';
+  _html += '<input type="hidden" name="content">';
+  _html += '<div class="side-feedback-box">';
+  _html += '<dl><dt>姓名：</dt><dd><input type="text" name="name" class="in" placeholder="您的姓名" /></dd></dl>';
+  _html += '<dl><dt>手机：</dt><dd><input type="text" name="phone" class="in" placeholder="常用手机号" /></dd></dl>';
+  _html += '<dl><dt>内容：</dt><dd><textarea name="msg" placeholder="请输入学习誓言" ></textarea></dd></dl>';
+  _html += '</div>';
+  _html += '</form>';
+
+  notLoginHtml += '<div class="dialog-not-login"><a href="'+loginurl+'">登录</a>后才可以提交内容，没有帐号请先<a href="'+regurl+'">注册</a>。</div>';
+$(".baishi").click(function() {
+    var that = this;
+    if ( user ) {
+        new Dialog({
+            'id': 'js-dialog-side-onetoone',
+            'msg': _html,
+            'lock': true,
+            'animation': 'animated bounceInRight',
+            'title': '向讲师发起预约',
+            'lockClose': false,
+            'showButtons': true,
+            'submitButton': '提交',
+            'onReady': function() {
+                $("#onetoone-form").submit(function () {
+                    onetooneSubmit(this);
+                    return false;
+                });
+                $("#onetoone-form")[0].typeid.value = $(that).attr("data-id");
+            },
+            'onSubmit': function() {
+                onetooneSubmit($("#onetoone-form")[0]);
+                return false;
+            }
+        });
+    } else {
+        new Dialog({
+            'msg': notLoginHtml,
+            'lock': true,
+            'animation': 'animated bounceInRight',
+            'title': '向讲师发起预约',
+            'lockClose': false,
+            'showButtons': true,
+            'submitButton': '登录',
+            'cancelButton': '注册',
+            'onSubmit': function() {
+                window.location = loginurl;
+            },
+            'onCancel': function() {
+                window.location = regurl;
+            }
+        });
+    }
+    return false;
+});
+
+function onetooneSubmit(_form) {
+    if ( !_form.name.value ) {
+        alert("请填写姓名");
+        _form.name.focus();
+        return false;
+    }
+    if ( !_form.phone.value ) {
+        alert("请填写联系手机");
+        _form.phone.focus();
+        return false;
+    }
+    if ( _form.phone.value.length != 11 ) {
+        alert("请正确填写联系手机");
+        _form.phone.focus();
+        return false;
+    }
+    if ( !_form.msg.value ) {
+        alert("请填写学习誓言");
+        _form.msg.focus();
+        return false;
+    }
+    if ( _form.msg.value.length > 300 ) {
+        alert("内容太多了，请缩减一些。");
+        _form.msg.focus();
+        return false;
+    }
+    _form.content.value = "学员 "+_form.name.value +" 向您拜师：手机号［"+ _form.phone.value +"］"+ _form.msg.value + " 【来自WDShare一对一再培训平台】";
+
+    var formData = $(_form).serialize();
+    $("#js-dialog-side-onetoone .D_submit").val("稍等...").attr("disabled", true);
+
+    $.ajax({
+        method: "POST",
+        url: "/comment/add",
+        data: formData,
+        success:function( data ) {
+            if ( !data ) { return false };
+            if ( typeof data == "string" ) {
+                data = $.parseJSON(data);
+            } else {
+                data = data;
+            };
+
+            $("#js-dialog-side-onetoone .D_submit").val("提交").attr("disabled", false);
+
+            if ( data.reload && !document.getElementById("side-feedback-code") ) {
+                $("#js-dialog-side-onetoone .side-feedback-box").append('<dl class="side-feedback-code"><dt>验证码：</dt><dd><input type="text" name="code" placeholder="验证码" /> <img id="side-feedback-code" src="/captcha/get?'+new Date().getTime()+'" onclick="this.src +=\'?\'+new Date().getTime(); return false;" title="点击刷新验证码" /></dd></dl>');
+                $("#onetoone-form input[name=code]").focus();
+                return false;
+            }
+
+            if ( data.status == 200 && data.code && data.code == 1 ) {// 成功
+                Dialog({
+                    "msg":"<br />预约已成功，请等待讲师联系您！<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onReady": function() {
+                        $(".D_submit").focus();
+                    }
+                });
+                Dialog.close("js-dialog-side-onetoone");
+            } else {// 失败
+                Dialog({
+                    "msg":"<br />"+ data.message +"<br /><br />",
+                    "lock":true,
+                    "showButtons":true,
+                    "cancelButton":false,
+                    "onReady": function() {
+                        $(".D_submit").focus();
+                    },
+                    "onComplete": function() {
+                        if ( data.url ) {
+                            window.location = data.url;
+                            return false;
+                        }
+                        // 更新验证码
+                        $("#side-feedback-code").attr("src", $("#side-feedback-code").attr("src")+'?'+new Date().getTime());
+                    }
+                });
+            }
+        }
+    });
+};
+</script>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

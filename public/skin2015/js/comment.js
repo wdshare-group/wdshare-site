@@ -67,7 +67,7 @@ define(['jquery', 'dialog', 'autosize'], function($, dialog, autosize) {
                 _html += '    <div class="comment-item-face"><a href="/user/'+this.userid+'"><img src="/user/face/'+this.userid+'" title="'+this.username+'" /></a></div>';
                 _html += '    <div class="comment-item-text">';
                 _html += '        <div class="comment-item-head">';
-                _html += '            <a href="/user/face/'+this.userid+'" class="comment-item-name">'+this.username+'</a>';
+                _html += '            <a href="/user/'+this.userid+'" class="comment-item-name">'+this.username+'</a>';
                 _html += '            <span class="comment-item-date" title="'+textDate+'">'+dataString+' 说：</span>';
                 if ( param.id.indexOf(",") > 0 ) {
                     _html += '            <span class="comment-item-title">职位：<a href="/jobs/'+ this.archivesid +'" target="_blank">'+ this.title +"</a></span>";

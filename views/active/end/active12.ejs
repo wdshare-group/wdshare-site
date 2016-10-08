@@ -1,0 +1,506 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title><%= activeInfo.aName %></title>
+<meta name="keywords" content="WDShare【走进校园－西电前端布道交流】 第12期 2016.10,WDShare,西安前端社区" />
+<meta name="description" content="WDShare【走进校园－西电前端布道交流】 第12期 2016.10, WDShare，Web Developer Share 西安前端开发者分享社区" />
+<% include ../../etc/htmlhead.ejs %>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<link href="/static/plugin/fancybox/jquery.fancybox.css" rel="stylesheet" />
+<link href="/static/active_style/12/css/style.css" rel="stylesheet" />
+<%
+  var name = '',
+      com = '',
+      www = '',
+      email = '',
+      school = '';
+  if(user && user.email) {
+    email = user.email;
+  }
+  if(user && user.email != user.username) {
+    name = user.username;
+  }
+  if(userInfo && userInfo.realname) {
+    name = userInfo.realname;
+  }
+  if(name == "undefined") {
+    name = '';
+  }
+
+  if(userInfo && userInfo.com) {
+    com = userInfo.com;
+  }
+  if(com == "undefined") {
+    com = '';
+  }
+
+  if(userInfo && userInfo.school) {
+    school = userInfo.school;
+  }
+  if(school == "undefined") {
+    school = '';
+  }
+
+  if(userInfo && userInfo.www && userInfo.www != "http://") {
+    www = userInfo.www;
+  }
+  if(www == "undefined") {
+    www = '';
+  }
+%>
+<script>
+  var activeStatus = <%=activeInfo.aStatus%>
+</script>
+</head>
+
+<body>
+<script>
+if ( navigator.userAgent.indexOf("Mac OS X")>0 ) {
+  document.getElementsByTagName("body")[0].style.fontFamily = "'Hiragino Sans GB', 'Microsoft YaHei'";
+}
+</script>
+<div class="ie">没有IE9+、Chrome、Firefox等现代化浏览器，我都不好意思给你看！</div>
+
+<div class="active12-top">
+  <div class="active12-top-con">
+    <div class="active12-top-logo"><a href="http://www.wdshare.org/"><img src="/static/active_style/12/img/logo.png" /></a></div>
+    <div class="active12-top-nav">
+      <a href="#gaikuang">活动概况</a>
+      <!-- <a href="#zhichi">赞助支持</a> -->
+      <a href="#content">活动内容</a>
+      <a href="#join" class="important">报名筹备中</a>
+      <!-- <a href="#xianchang" class="important">活动现场</a> -->
+      <!-- <a href="#changdi">场地概况</a> -->
+      <a href="#comment">活动互动</a>
+    </div>
+    <div class="gw-nav">
+      <a href="http://www.wdshare.org/">官网</a>
+      <!-- <a href="http://www.wdshare.org/active/">活动</a> -->
+      <a href="http://www.wdshare.org/article/">技术文章</a>
+      <a href="http://www.wdshare.org/donation/">捐赠</a>
+    </div>
+  </div>
+</div>
+
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
+
+<a name="gaikuang"></a>
+<div class="active12-head">
+  <img src="/static/active_style/12/img/banner.jpg" style="margin:auto;" />
+  <div class="active12-head-text horizontal-middle">
+    <div class="active12-head-con">
+      <div class="active12-info">
+        <h1>WDShare【走进校园－前端布道交流会】</h1>
+        <p>让学生理解前端行业、了解前端在企业中的定位、了解IT从业者的未来</p>
+        <p class="other">地址：<b>西电本部</b>（太白南路2号）多功能教室待定<br />时间：2016-10-30 13:00--17:00  &nbsp;&nbsp;&nbsp;&nbsp;   欢迎所有学校学生参加<br />
+        QQ群：210874879【WDShare校园前端社区--学生专属群】</p>
+      </div>
+      <div class="zhuban">
+        <img src="/static/active_style/12/img/zhuban-logo-wdshare.png" alt="WDShare" />
+        <img src="/static/active_style/12/img/zhuban-logo-1ke.png" alt="lKE" />
+        <img src="/static/active_style/12/img/zhuban-logo-xd.png" alt="西安电子科技大学" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<a name="zhichi"></a>
+<div class="active12-zhichi">
+  <h2 class="mod-title">公益活动希望得到您的支持</h2>
+  <img src="/static/active_style/12/img/zhichi.jpg" />
+  <!-- <div style="text-align:center;"><img src="/static/img/donation-weixin.png" style="width:350px;"></div> -->
+</div>
+
+<a name="content"></a>
+<div class="active12-content">
+  <h2 class="mod-title">活动内容</h2>
+  <h3 class="mod-title-small">帮助学生深入理解前端行业、了解前端工程师在企业中的定位，以及所有IT从业者的就业及未来规划<br />QQ群：210874879【WDShare校园前端社区--学生专属群】</h3>
+  <div class="active12-content-list">
+    <div class="active12-content-item">
+      <div class="torus" data-percent="1">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-checkin.png" /></div>
+        </div>
+      </div>
+      <div class="time">12:30 - 13:00</div>
+      <div class="text">
+        <h4 style="margin-top:30px;">签到，并凭邀请码登记抽奖信息</h4>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus" data-percent="25">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">13:00 - 14:00</div>
+      <div class="text">
+        <h4 style="margin-top:15px;">【什么是前端开发？在企业中的定位？】</h4>
+        <p>嘉宾信息即将公布</p>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus" data-percent="50">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">14:00 - 15:00</div>
+      <div class="text">
+        <h4 style="margin-top:15px;">【一个前端工程师的成长经历】</h4>
+        <p>嘉宾信息即将公布</p>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus" data-percent="55">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-xiuxi.png" /></div>
+        </div>
+      </div>
+      <div class="time">15:00 - 15:15</div>
+      <div class="text">
+        <h4 style="margin-top:30px;">休息</h4>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus" data-percent="75">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-share.png" /></div>
+        </div>
+      </div>
+      <div class="time">15:15 - 16:15</div>
+      <div class="text">
+        <h4 style="margin-top:0;">【IT从业者择行择业择未来】</h4>
+        <p>Nick，1KE CEO，美国宾夕法尼亚大学教育学硕士；曾就职哈佛大学上海中心以及Nike美国总部，有丰富的人才培养和招聘经历</p>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus" data-percent="95">
+        <div class="pie_chart_torus">
+          <ul>
+            <li class="pie_chart_torus_c1_r">
+              <p>
+                <span class="pie_left"></span>
+              </p>
+            </li>
+            <li class="pie_chart_torus_c1_l">
+              <p>
+                <span class="pie_right"></span>
+              </p>
+            </li>
+          </ul>
+        </div>
+        <div class="torus-text-position horizontal-middle">
+          <div class="torus-text horizontal-middle"><img src="/static/active_style/12/img/icon-talk.png" /></div>
+        </div>
+      </div>
+      <div class="time">16:15 - 17:00</div>
+      <div class="text">
+        <h4 style="margin-top:15px;">【抽奖】＋【环场提问】</h4>
+        <p>提问问题不限本次交流内容，可以提出所有你想问的问题</p>
+      </div>
+    </div>
+    <div class="active12-content-item">
+      <div class="torus-zhanwei"></div>
+      <div class="time">结束</div>
+      <div class="text">
+        <h4 style="margin-top:30px;">欢迎您持续关注WDShare其它技术交流会，每两个月一期</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="active12-work">
+    <h3>活动奖品：</h3>
+    <div class="active12-work-con">
+      <a href="https://book.douban.com/subject/26745943/" target="_blank"><img src="https://img1.doubanio.com/lpic/s28659699.jpg" /></a>
+      <a href="https://book.douban.com/subject/25768396/" target="_blank"><img src="https://img3.doubanio.com/lpic/s27269296.jpg" /></a>
+      <a href="https://book.douban.com/subject/10546125/" target="_blank"><img src="https://img3.doubanio.com/lpic/s8958650.jpg" /></a>
+      <a href="https://book.douban.com/subject/26342322/" target="_blank"><img src="https://img3.doubanio.com/lpic/s28024394.jpg" /></a>
+      <a href="https://book.douban.com/subject/26708954/" target="_blank"><img src="https://img3.doubanio.com/lpic/s28383612.jpg" /></a>
+      <a href="https://book.douban.com/subject/10549733/" target="_blank"><img src="https://img3.doubanio.com/lpic/s8958854.jpg" /></a>
+      <a href="/static/active_style/12/img/prize.jpg" target="_blank"><img src="/static/active_style/12/img/prize.jpg" /></a>
+    </div>
+  </div>
+
+  <div class="active12-work">
+    <h3>本期工作人员：</h3>
+    <div class="active12-work-con">
+      <span>1、主持人 [F7(付琦)]</span>
+      <span>2、讲师助手及设备调试 【棍子】</span>
+      <span>3、签到管理【小强】</span>
+      <span>4、后勤保障 【雷朋伟】</span>
+    </div>
+  </div>
+
+</div>
+
+<% if ( activeInfo.aStatus == 1 ) { %>
+<a name="join"></a>
+<div class="active12-join" id="js-active-join">
+  <h2 class="mod-title">我要报名</h2>
+  <h3 class="mod-title-small">报名须知：本活动为公益性，免费参加。活动提供学习、交流、工作的机会。为了您能得到更贴身的技能，请如实填写信息。</h3>
+  <div class="active-join">
+    <% if(!user){ %>
+    <div class="active-login">
+      登录后启用快捷报名
+      <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-blue but-login">登录</a><a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;" class="but but-gray but-reg">注册</a>
+    </div>
+    <% } %>
+    <form name="joinform" id="js-joinform" method="post"> 
+      <input type="hidden" name="aid" value="<%= activeInfo._id %>">
+      <input type="hidden" name="w_share" value="0" />
+      <input type="hidden" name="chi" value="0" />
+      <dl>
+        <dt>邮箱：</dt>
+        <dd>
+          <input type="text" name="mail" placeholder="常用邮箱" value="<%=email%>"> <em>请正确填写邮箱</em>
+          <span style="color:#666;">通过邮箱接收邀请函</span>
+        </dd>
+      </dl>
+      <dl>
+        <dt>姓名/昵称：</dt>
+        <dd>
+          <input type="text" name="name" placeholder="尊姓大名" value="<%=name%>"> <em>名称至少两个字符</em>
+        </dd>
+      </dl>
+      <dl>
+        <dt>学校：</dt>
+        <dd>
+          <input type="text" name="com" placeholder="所在学校名称" value="<%=school%>">    
+          <span>选填</span>
+        </dd>
+      </dl>
+      <dl>
+        <dt>博客：</dt>
+        <dd>
+          <input type="text" name="web" placeholder="博客、微博、Github等地址" value="<%=www%>">    
+          <span>选填：博客、微博、Github等地址</span>
+        </dd>
+      </dl>
+      <!-- <dl>
+        <dt>分享前端知识：</dt>
+        <dd>
+          <label>
+            <input type="radio" name="w_share" value="1" style="width:auto; margin-right:5px;">有，下期我可以分享</label>
+          &nbsp;
+          <label> &nbsp; &nbsp; &nbsp;
+            <input type="radio" checked="checked" name="w_share" value="0" style="width:auto; margin-right:5px;">暂时没有</label>
+          <span>帮助大家学习</span>
+        </dd>
+      </dl> -->
+      <dl>
+        <input type="hidden" name="content">    
+        <dt>给主办方留言：</dt>
+        <dd>
+          <textarea name="guestbook"></textarea>
+          <span>选填</span>
+          <br>
+          <em style="color:#ff0;display:block; padding-left:0;">学习及就业时的困惑、感叹、吐槽等，或者给我们提意见，该项填写更容易获取邀请函</em>
+        </dd>
+      </dl>
+      <!-- <dl>
+        <dt>您是否参与AA聚餐：</dt>
+        <dd>
+          <label><input type="radio" name="chi" value="1" style="width:auto; margin-right:5px;">是</label> &nbsp; &nbsp; &nbsp; &nbsp;
+          <label><input type="radio" name="chi" value="0" checked="checked" style="width:auto; margin-right:5px;">否</label>
+          <span style="color:#666;">聚餐是为了认识更多的朋友</span>
+        </dd>
+      </dl> -->
+      <% if ( activeJoinCaptcha && activeJoinCaptcha === true ) { %>
+      <dl>
+        <dt>验证码：</dt>
+        <dd>
+          <input type="text" name="code" placeholder="验证码" style="width:120px;" /> <img id="activeJoin-code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" style="display:inline-block;" /> <em>请填写验证码</em>
+        </dd>
+      </dl>
+      <% } %>
+      <dl>
+        <dd class="form-but">
+          <input type="submit" name="button" value="提交报名"></dd>
+      </dl>
+    </form>
+  </div>
+</div>
+<% } %>
+
+
+<input id="js-archives-id" type="hidden" value="<%= activeInfo._id %>" />
+<input id="js-archives-model" type="hidden" value="active" />
+<a name="comment"></a>
+<div class="active12-comment">
+<% if ( configIsComment && activeInfo.isComment ) { %>
+  <div class="maxWidth active-comment">
+    <!--  Comment  -->
+    <div class="comment" id="js-comment">
+      <h1>评论这个活动</h1>
+      <div class="comment-add">
+        <% if ( user ) { %>
+          <% if ( user.username.indexOf("@") > -1 ) { %>
+            <div class="comment-not-login">先给自己一个昵称吧 <a href="/user/">点击设置昵称</a></div>
+          <% } else { %>
+            <a name="comment"></a>
+            <form id="js-comment-form" name="comment-form" method="post">
+              <input type="hidden" name="typeid" value="<%= activeInfo._id %>" />
+              <input type="hidden" name="model" value="active" />
+              <input type="hidden" name="title" value="<%= activeInfo.aName %>" />
+              <input type="hidden" name="privacy" value="0" />
+              <div class="comment-form-box">
+                <div class="comment-form-user"><img src="/user/face/<%=user._id %>" title="<%=user.username %>" /></div>
+                <div class="comment-form-body">
+                  <textarea name="content" placeholder="请输入评论内容，遵纪守法就是好公民！"></textarea>
+                  <% if ( captcha && captcha === true ) { %>
+                  <div class="comment-form-code"><input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="this.src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></div>
+                  <% } %>
+                  <div class="comment-form-but">
+                    <input type="submit" class="but-blue" name="button" value="提交" />
+                  </div>
+                </div>
+              </div>
+            </form>
+          <% } %>
+        <% } else { %>
+          <a name="comment"></a>
+          <div class="comment-not-login">
+            只有WDShare成员才能发表评论。 <br />
+            请 <a href="/user/login" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/login?referer='+window.location.href; } else {window.location='/user/login?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">登录</a> 或者 <a href="/user/register" onclick="if ( window.location.href.indexOf('referer') < 0 ) { window.location='/user/register?referer='+window.location.href; } else {window.location='/user/register?'+window.location.href.substring(window.location.href.indexOf('referer'));} return false;">注册</a> 后发表评论！
+          </div>
+        <% } %>
+      </div>
+      <div class="comment-list" id="js-comment-list">
+        数据加载中...
+      </div>
+    </div>
+    <!--  Comment End  -->
+  </div>
+<% } %>
+</div>
+
+<% include ../../etc/foot.ejs %>
+
+<script src="/static/skin2015/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+  /**
+   * 初始化圆环
+   * @param {HTMLElement} elem    圆环总节点
+   * @param {Number} percent 要显示的百分比
+   */
+  function setTorus(elem, percent) {
+      if ( !elem ) { return false };
+      var torus_right = $(elem).find(".pie_chart_torus_c1_r p"),
+          torus_left = $(elem).find(".pie_chart_torus_c1_l p"),
+          li_odd = $(elem).find("ul li").eq(0),
+          li_even = $(elem).find("ul li").eq(1),
+          width = $(elem).width(),
+          count = 360 / 100 * percent;
+
+      
+      // 根据父类宽高处理显示
+      li_odd.css("clip", "rect(0px, " + width + "px, " + width + "px, " + width / 2 + "px)");
+      li_even.css("clip", "rect(0px, " + width / 2 + "px, " + width + "px, 0px)");
+
+      // 设置百分比
+      if (count <= 180) {
+          torus_left.css("transform", "rotate(0deg)");
+          torus_right.css("transform", "rotate(" + count + "deg)");
+      } else {
+          torus_right.css("transform", "rotate(180deg)");
+          torus_left.css("transform", "rotate(" + (count - 180) + "deg)");
+      }
+  };
+
+  $(".torus").each(function() {
+    setTorus(this, $(this).attr("data-percent"));
+  });
+  
+  // 菜单当前状态设置
+  function menuState() {
+    var item = $(".active12-top-nav a"),
+        _top = $(document).scrollTop();
+    item.each(function() {
+      var name = $(this).attr("href").replace("#", "");
+      if ( $("a[name='"+name+"']").length > 0 && _top >= ($("a[name='"+name+"']").offset().top-200) ) {
+        item.removeClass('current');
+        $(this).addClass('current');
+      }
+    });
+  };
+  menuState();
+  $(document).on("scroll", function() {
+    menuState();
+  });
+</script>
+</body>
+</html>

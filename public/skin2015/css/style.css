@@ -855,7 +855,8 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .side-feedback-box dl { width:100%; overflow:hidden; line-height:34px; padding:10px 0;}
 .side-feedback-box dt { width:60px; text-align:right; float:left;}
 .side-feedback-box dd { margin-left:60px;}
-.side-feedback-box dd select { border:1px solid #ccc; border-radius:5px; color:#333; height:34px; padding:0 5px; width:150px;}
+.side-feedback-box dd select,
+.side-feedback-box dd .in { border:1px solid #ccc; border-radius:5px; color:#333; height:34px; padding:0 5px; width:150px;}
 .side-feedback-box dd textarea { display:block; border:1px solid #ccc; padding:5px; border-radius:5px; color:#333; width:90%; height:80px;}
 .side-feedback-code input { border:1px solid #ccc; border-radius:5px; color:#333; line-height:18px; padding:8px 5px; width:80px;}
 .side-feedback-code img { height:36px; vertical-align:middle; margin-top:-3px; border-radius:5px;}

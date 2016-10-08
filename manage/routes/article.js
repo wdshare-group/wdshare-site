@@ -780,7 +780,9 @@ router.post('/channel/create', function(req, res) {
     var name = req.body.name,
         url = req.body.url,
         parent = req.body.parent,
+        channel_tpl = req.body.channel_tpl,
         end_tpl = req.body.end_tpl,
+        is_contribute = req.body.is_contribute === "1" ? true : false;
         keywords = req.body.keywords,
         description = req.body.description,
         id = req.body.aid;
@@ -794,6 +796,8 @@ router.post('/channel/create', function(req, res) {
                 name: name,
                 parent: parent,
                 end_tpl: end_tpl,
+                channel_tpl: channel_tpl,
+                is_contribute: is_contribute,
                 keywords: keywords,
                 description: description,
                 editDate: (new Date()).getTime()
@@ -844,7 +848,9 @@ router.post('/channel/create', function(req, res) {
                     name: name,
                     url: url,
                     parent: parent,
+                    channel_tpl: channel_tpl,
                     end_tpl: end_tpl,
+                    is_contribute: is_contribute,
                     keywords: keywords,
                     description: description,
                     addDate: (new Date()).getTime(),

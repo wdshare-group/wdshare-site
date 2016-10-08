@@ -37,7 +37,9 @@
             <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
             <select name="channelId">
               <% channels.forEach(function(channel){ %>
-              <option value="<%= channel._id%>" <%if (channel._id == result.channelId) {%>selected<%}%>><%= channel.name%></option>
+                <% if ( channel.is_contribute || channel._id == result.channelId ) { %>
+                  <option value="<%= channel._id%>" <%if (channel._id == result.channelId) {%>selected<%}%>><%= channel.name%></option>
+                <% } %>
               <% }) %>
             </select>
           </label>

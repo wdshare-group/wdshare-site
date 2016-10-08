@@ -348,7 +348,7 @@ router.post('/create', function(req, res) {
 
 
 
-    // 记录该用户登录的次数
+    // 记录该用户添加的次数
     if ( req.session.addArticleIsShowCaptcha ) {
         req.session.addArticleIsShowCaptcha++;
     } else {
@@ -408,13 +408,35 @@ router.post('/create', function(req, res) {
                         return false;
                     }
                     
-                    action();
+                    saveAndUpdata();
                 });
             } else {
-                action();
+                saveAndUpdata();
             }
         }
     });
+
+    function saveAndUpdata() {
+        var channelId = req.body.channelId;
+        // 检测该分类是否允许前端发布
+        archiveModel.getOne({
+            key: "Article_channel",
+            body: {
+                _id: channelId
+            }
+        }, function (err, channel) {
+            if ( channel && channel.is_contribute ) {
+                action();
+            } else {
+                res.send({
+                    status: 200,
+                    code: 0,
+                    message: "您没有权限修改此信息！"
+                });
+                return false;
+            }
+        });
+    };
 
     function action() {
         var type = 1,// 数据模型：1为文章、2为项目、3为招聘
@@ -884,9 +906,10 @@ router.get('/:id', function(req, res) {
      */
     function getChannelList() {
         var urlParams = URL.parse(req.originalUrl, true).query,
-        page = urlParams.page || 1,
-        pagesize = urlParams.pagesize || 20,
-        pathname = URL.parse(req.originalUrl, true).pathname;
+            page = urlParams.page || 1,
+            pagesize = urlParams.pagesize || 20,
+            pathname = URL.parse(req.originalUrl, true).pathname,
+            channelTpl = "article/article_list";
 
         archiveModel.getOne({
             key: "Article_channel",
@@ -899,7 +922,10 @@ router.get('/:id', function(req, res) {
             }
             // console.log(data);
             if (data) {
-                getList(req, res, {type:1, audit:true, channelId:data._id}, {page:page, pagesize:pagesize, pathname:pathname}, 'article/article_list', data.name, data.keywords, data.description);
+                if ( data.channel_tpl ) {
+                    channelTpl = "article/" + data.channel_tpl;
+                };
+                getList(req, res, {type:1, audit:true, channelId:data._id}, {page:page, pagesize:pagesize, pathname:pathname}, channelTpl, data.name, data.keywords, data.description);
                 return false;
             }
 

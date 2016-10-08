@@ -94,7 +94,7 @@ app.use(cookieSession({          //session 加密字符串
 }));
 
 app.use('/files/', express.static(path.join(__dirname, 'files')));
-app.use('/static/',express.static(path.join(__dirname, 'public')));
+app.use('/static/', express.static(path.join(__dirname, 'public')));
 
 
 app.use(function(req,res,next){

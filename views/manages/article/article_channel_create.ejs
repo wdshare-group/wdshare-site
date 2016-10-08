@@ -60,6 +60,11 @@
             <div class="manage-addActive-form-item">
               <label><strong>URL标识：</strong><input type="text" name="url"/><span>短链接标识，保存后不能修改，例如：http://www.wdshare.org/article/***</span></label>
             </div>
+            <div class="manage-addActive-form-item manage-addActive-form-radio">
+              <strong>前端发稿：</strong>
+              <label><input type="radio" name="is_contribute" value="1" checked="checked" /> 是</label>
+              <label><input type="radio" name="is_contribute" value="0" /> 否</label><span>发稿时是否显示该分类</span>
+            </div>
             <div class="manage-addActive-form-item" style="display:none;">
               <label><strong>父类：</strong>
                 <select name="parent">
@@ -70,7 +75,10 @@
                 </select></label>
             </div>
             <div class="manage-addActive-form-item">
-              <label><strong>使用模板：</strong><input type="text" name="end_tpl" /><span>该栏目终极页使用的模板，留空代表使用默认模板</span></label>
+              <label><strong>分类模板：</strong><input type="text" name="channel_tpl" /><span>该栏目所使用的模板，留空代表使用默认模板</span></label>
+            </div>
+            <div class="manage-addActive-form-item">
+              <label><strong>终极页模板：</strong><input type="text" name="end_tpl" /><span>该栏目终极页使用的模板，留空代表使用默认模板</span></label>
             </div>
             <div class="manage-addActive-form-item">
               <label><strong>关键字：</strong><input type="text" name="keywords" /><span>显示在meta标签的keywords</span></label>

@@ -347,7 +347,7 @@ router.get('/create', function(req, res) {
             }
         }, function (err, data) {
             if (err || !data) {
-                res.redirect("/jobs/companys");
+                res.redirect("/jobs/company-error");
                 return false;
             }
             
@@ -1357,6 +1357,26 @@ router.get('/cancel/:id', function(req, res) {
         }
         return false;
     };
+});
+
+/**
+ * path:  /jobs/company-error
+ * 企业信息不存在时的过渡页面
+ */
+router.get('/company-error', function(req, res) {
+    "use strict";
+    if (!req.session.user) {
+        res.redirect("/user/login");
+        return false;
+    }
+    // 未激活用户不允许进入
+    if (!req.session.user.isActive) {
+        res.redirect("/user/activeAccount");
+        return false;
+    }
+
+    res.render('users/empty', {title:'招聘信息发布提示', content:'您还没有创建企业信息，创建企业信息后才可以发布招聘职位，<a href="/jobs/companys">点击创建企业信息</a>'});
+    
 });
 
 /**

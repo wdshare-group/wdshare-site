@@ -7,12 +7,19 @@
 <meta name="description" content="<%= article.description %>" />
 <% include ../../etc/htmlhead.ejs %>
 
+<% if (!article.editorModel) { %>
 <link href="/static/ueditor/third-party/SyntaxHighlighter/shCoreSublime.css" rel="stylesheet" />
 <script src="/static/ueditor/third-party/SyntaxHighlighter/shCore.js"></script>
 <script type="text/javascript">
   /* ueditor 代码高亮 */
   SyntaxHighlighter.all();
 </script>
+<% } %>
+<% if (article.editorModel == 'markdown') { %>
+<link rel="stylesheet" href="/static/plugin/editor.md/examples/css/style.css" />
+<link rel="stylesheet" href="/static/plugin/editor.md/css/editormd.preview.css" />
+<link rel="stylesheet" href="/static/skin2015/css/markdown-correction.css" />
+<% } %>
 </head>
 
 <body>
@@ -62,9 +69,17 @@
       </div>
     </div>
     <div id="js-description"><%= article.description %></div>
+    <% if (!article.editorModel) { %>
     <div class="article-con" id="article-detail">
       <%- article.content %>
     </div>
+    <% } %>
+    <% if (article.editorModel) { %>
+    <div class="article-con" id="article-detail">
+      <p class="markdownShowLoading"><img src="/static/skin2015/img/loading.gif" />内容加载中...</p>
+      <textarea id="editormd-con" style="display:none;"><%- article.content %></textarea>
+    </div>
+    <% } %>
 
     <a href="#" class="article-like"><span>icon</span>喜欢(<em><%= article.zan %></em>)</a>
     <% if ( article.tag ) { %>

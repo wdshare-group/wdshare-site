@@ -206,6 +206,11 @@ function getList(req, res, o, pages, mod, channelName) {
  * 添加文章
  */
 router.get('/create', function(req, res) {
+    var editorModel = 'markdown';
+    if (req.query.editorModel) {
+        editorModel = req.query.editorModel
+    }
+
     archiveModel.getAll({// 查询分类，为添加文章做准备
         key: "Article_channel"
     }, function (err, data) {
@@ -217,6 +222,7 @@ router.get('/create', function(req, res) {
         if (data) {
             res.render('manages/article/article_create', {
                 title: "添加文章",
+                editorModel: editorModel,
                 result: data// 返回分类信息
             });
             return;
@@ -233,6 +239,7 @@ router.post('/create', function(req, res) {
         linkUrl = req.body.linkUrl,
         cover = req.body.cover,
         channelId = req.body.channelId,
+        editorModel = req.body.editorModel || "",
         tag = req.body.tag,
         source = req.body.source,
         sourceUrl = req.body.sourceUrl,
@@ -386,6 +393,7 @@ router.post('/create', function(req, res) {
                 body: {
                     type: type,
                     channelId:channelId,
+                    editorModel:editorModel,
                     title: title,
                     linkUrl: linkUrl,
                     diyType: diyType,
@@ -521,6 +529,7 @@ router.get('/edit/:id', function(req, res) {
                             title: "修改文章",
                             result: aricle,
                             channels: data,
+                            editorModel: aricle.editorModel || "ueditor",
                             mamber: mamber || {}
                         });
                         return;

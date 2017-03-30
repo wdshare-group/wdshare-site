@@ -7,7 +7,7 @@
 <style type="text/css">
   body { text-align:center;}
   table { border-collapse:collapse; width:94%; margin:0 auto 0;}
-  td,th { padding:0; border:1px solid #333; line-height:30px; padding:5px 5px; font-size:14px;}
+  td,th { padding:0; border:1px solid #333; line-height:34px; padding:5px 5px; font-size:14px;}
 
   h1 { line-height:240%; font-size:20px; padding-top:5px;}
 </style>
@@ -35,7 +35,7 @@
       </tr>
     </thead>
     <tbody>
-      <% result.forEach(function(join){ %>
+  <% result.forEach(function(join){ %>
       <% 
         i++;
       %>
@@ -59,7 +59,7 @@
 
       <% } %>
 
-    <% if ( count % pagesize === 0 && i+1 < result.length ) { %>
+    <% if ( count % pagesize === 0 && i+1 < result.length && join.state !== 0 ) { %>
       </tbody>
     </table>
     <% page++ %>

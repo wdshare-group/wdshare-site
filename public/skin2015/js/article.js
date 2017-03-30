@@ -324,12 +324,32 @@ define(['jquery', 'dialog'], function($) {
         };
     };
 
+    /**
+     * markdown显示初始化
+     */
+    function markdownShowInit() {
+        if ( document.getElementById("editormd-con") ) {
+            require(depsShow, function(editormd) {
+                var editormdView = editormd.markdownToHTML("article-detail", {
+                    htmlDecode      : "style,script,iframe",  // you can filter tags decode
+                    emoji           : true,
+                    taskList        : true,
+                    tex             : true,  // 默认不解析
+                    flowChart       : true,  // 默认不解析
+                    sequenceDiagram : true  // 默认不解析
+                });
+                $(".markdownShowLoading").remove();
+            });
+        }
+    };
+
     var article = {};
     article.init = function() {
         share();
         zan();
         // jobEndMap();
         SentResumes.init();
+        markdownShowInit();
     };
 
     return article;

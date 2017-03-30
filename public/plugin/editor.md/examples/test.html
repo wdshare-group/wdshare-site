@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple example - Editor.md examples</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="../css/editormd.css" />
+    </head>
+    <body>
+        <div id="layout">
+            <header>
+                <h1>Simple example</h1>
+            </header>
+            <div id="test-editormd">
+                <textarea style="display:none;">请输入MarkDown语法的文章</textarea>
+            </div>
+        </div>
+        
+        <script src="js/jquery.min.js"></script>
+        <script src="../editormd.min.js"></script>
+        <script type="text/javascript">
+            var testEditor;
+
+            $(function() {
+                testEditor = editormd("test-editormd", {
+                    width   : "90%",
+                    height  : 540,
+                    syncScrolling : "single",
+                    path    : "../lib/",
+                    codeFold : true,
+                    toolbarIcons : function() {
+                        // 使用 "||" 设置菜单右对齐
+                        return ["bold", "italic", "quote", "|", "h2", "h3", "|", "link", "reference-link", "image", "code", "code-block", "table", "search", "|", "undo", "redo", "||", "watch", "fullscreen", "preview", "help"]
+                    },
+                    saveHTMLToTextarea : true,                // 保存HTML到Textarea
+                    imageUpload : true,
+                    imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                    imageUploadURL : "./php/upload.php",
+                    // 接口返回： {"success":1,"url":"/image/loading.gif"}
+                    onload : function() {
+                        console.log('onload', this);
+                        //this.fullscreen();
+                        //this.unwatch();
+                        //this.watch().fullscreen();
+
+                        //this.setMarkdown("#PHP");
+                        //this.width("100%");
+                        //this.height(480);
+                        //this.resize("100%", 640);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -27,6 +27,7 @@ Archives.prototype = {
         this.archiveSchema = new this.Schema({
             type:Number,
             channelId:String,
+            editorModel:String,
             title:String,
             //linkType:Boolean,
             linkUrl:String,

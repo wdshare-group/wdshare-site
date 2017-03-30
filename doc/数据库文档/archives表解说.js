@@ -3,6 +3,7 @@
 	"_id": ObjectId("55ab44c94665dd2c10ce5f5f"),// 主键，自增ID
 	"type": 1,// 数据模型：1为文章、2为项目、3为招聘
 	"channelId": "",// 分类名称
+	"editorModel": "",// 可选，为空代表uEditor，markdown时代表markdown编辑器
 	"title": "",// 内容标题
 	//"linkType":false,// 是否为跳转
 	"linkUrl":"",// 跳转链接地址

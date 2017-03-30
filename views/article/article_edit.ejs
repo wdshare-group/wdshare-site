@@ -4,9 +4,16 @@
 <meta charset="utf-8" />
 <title>修改文章 -- WDShare</title>
 <% include ../etc/htmlhead.ejs %>
+<% if (editorModel == 'ueditor') { %>
 <script src="/static/ueditor/ueditor.config.js"></script>
 <script src="/static/ueditor/ueditor.all.min.js"> </script>
 <script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+<% } %>
+<% if (editorModel == 'markdown') { %>
+<link rel="stylesheet" href="/static/plugin/editor.md/examples/css/style.css" />
+<link rel="stylesheet" href="/static/plugin/editor.md/lib/codemirror/codemirror.min.css" />
+<link rel="stylesheet" href="/static/plugin/editor.md/css/editormd.css" />
+<% } %>
 </head>
 
 <body>
@@ -19,7 +26,7 @@
         <h1 class="article-title">修改文章</h1>
       </div>
     </div>
-    <div class="add-article">
+    <div class="add-article <% if (editorModel == 'markdown') { %>add-article-markdown<% } %>">
       <% if ( typeof error == "string" ) { %>
       <p style="min-height:400px; text-align:center; font-size:16px; padding-top:50px;"><%= error %></p>
       <% } else { %>
@@ -49,11 +56,23 @@
           <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" value="<%=result.source%>" /></label>
           <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="<%= result.sourceUrl ? result.sourceUrl : 'http://'%>" /></label>
         </div>
-
+        
+        <% if (editorModel == 'ueditor') { %>
         <div class="addActive-form-item">
           <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong>
         </div>
         <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%=result.content%></textarea></div>
+        <% } %>
+        <% if (editorModel == 'markdown') { %>
+        <div class="addActive-form-item">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong> &nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue;">MarkDown编辑器</span>
+        </div>
+        <input type="hidden" name="editorModel" value="markdown" />
+        <textarea name="content" style="display:none;"><%=result.content%></textarea>
+        <div class="wds-editormd" id="wds-editormd">
+          <p class="markdownLoading">MarkDown加载中...</p>
+        </div>
+        <% } %>
 
         <div class="addActive-form-item" id="js-articleadd-tag">
           <strong>TAG：</strong>
@@ -103,9 +122,12 @@
   </div>
 </div>
 
-<% include ../etc/foot.ejs %>
+<% if (editorModel == 'ueditor') { %>
 <script>
   var ue = UE.getEditor('editor');
 </script>
+<% } %>
+
+<% include ../etc/foot.ejs %>
 </body>
 </html>

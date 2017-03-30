@@ -6,7 +6,7 @@ later.date.localTime();
 var sched = later.parse.text('at 1:11 am');
 // var sched = later.parse.recur().every(2).second(); // 每两秒发送一次，测试使用
 
-var mailAddress = ['ggiiss@qq.com', "106324307@qq.com"];
+var mailAddress = ["106324307@qq.com"];
 // var mailAddress = ['ggiiss@qq.com'];
 
 var backupPath = "mongodb/";
@@ -46,7 +46,7 @@ function generateNames(){
 
 // 生成备份文件 /var/www/bak/mongodb/201512111037'
 function createBack(callback){
-  var createCMD = 'mongodump --host 127.0.0.1 --port 27017 -d wdshare -o ' + backupPath + backupTime;
+  var createCMD = 'mongodump --host 127.0.0.1 --port 27017 -d ****** -u ****** -p ****** -o ' + backupPath + backupTime;
   cp.exec(createCMD,{}, function(err, stdout, stderr){
     callback(err);
   })   
@@ -67,20 +67,20 @@ function backup(err, callback){
 var transporter = nodemailer.createTransport({
   service: 'QQ',
   auth: {
-    user: '544580627@qq.com',
-    pass: 'zjwhgcrrmgaebfjf'
+    user: 'sent@wdshare.org',
+    pass: '******'
   }
 }, {
-  from: 'ggiiss<544580627@qq.com>'
+  from: 'WDShare_db<sent@wdshare.org>'
 });
 
 // 发送 备份文件到指定邮箱
 function sendMain(){
   var mailOptions = {
     to: mailAddress.join(','),
-    subject: 'wdshare backup file',
-    text: 'wdshare backup file',
-    html: 'wdshare backup file',
+    subject: 'WDShareDB backup file'+backupTime,
+    text: 'WDShareDB backup file'+backupTime,
+    html: 'WDShareDB backup file'+backupTime,
     attachments: [{
       path: tarFilepath
     }]

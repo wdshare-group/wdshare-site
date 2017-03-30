@@ -2,7 +2,11 @@ define(['jquery', 'dialog'], function($) {
     function addInit() {
         $('#js-article-create-form').submit(function() {
             var _form = this;
+            var linkUrl = _form.linkUrl.value;
             
+            linkUrl = linkUrl.replace("https://", "");
+            linkUrl = linkUrl.replace("http://", "");
+
             // 先看添加标签的表单有没有内容，有内容则代表添加标签
             if ( $("#js-newtag").val() ) {
                 // 检测是否超限制
@@ -40,9 +44,19 @@ define(['jquery', 'dialog'], function($) {
                 _form.channelId.focus();
                 return false;
             }
-            if ( !_form.linkUrl.value && !_form.content.value ) {
+
+            // markdown时向内容表单赋值
+            if (typeof mdEditor == "object") {
+                _form.content.value = mdEditor.getMarkdown();
+            }
+
+            if ( !linkUrl && !_form.content.value ) {
                 alert("内容必须填写！");
                 _form.content.focus();
+                if (typeof mdEditor == "object") {
+                    $(document).scrollTop($('#wds-editormd').offset().top)
+                    mdEditor.config("tocDropdown", false);
+                }
                 return false;
             }
 
@@ -289,6 +303,58 @@ define(['jquery', 'dialog'], function($) {
         return flag;
     };
 
+    // markdown编辑器初始化
+    var mdEditor;
+    function markdownInit() {
+        if ( document.getElementById("wds-editormd") ) {
+  
+            require(deps, function(editormd) {
+
+                mdEditor = editormd("wds-editormd", {
+                    width: "90%",
+                    height: 640,
+                    path : '/static/plugin/editor.md/lib/',
+                    markdown : $("#js-article-create-form")[0].content.value,
+                    codeFold : true,
+                    toolbarIcons : function() {
+                        // 使用 "||" 设置菜单右对齐
+                        return ["bold", "italic", "quote", "|", "h2", "h3", "h4", "|", "link", "image", "code", "code-block", "table", "|", "undo", "redo", "||", "watch", "fullscreen", "preview", "help"]
+                    },
+                    searchReplace : true,
+                    saveHTMLToTextarea : true,                // 保存HTML到Textarea
+                    htmlDecode : "style,script,iframe|on*",       // 开启HTML标签解析，为了安全性，默认不开启    
+                    emoji : true,
+                    taskList : true,
+                    tex : true,
+                    tocm            : true,         // Using [TOCM]
+                    autoLoadModules : false,
+                    previewCodeHighlight : true,
+                    flowChart : true,
+                    sequenceDiagram : true,
+                    //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+                    //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+                    //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+                    //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+                    //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+                    imageUpload : true,
+                    imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                    imageUploadURL : "/user/mdupload",
+                    onload : function() {
+                        $(".markdownLoading").remove();
+                        //this.fullscreen();
+                        //this.unwatch();
+                        //this.watch().fullscreen();
+
+                        //this.setMarkdown("#PHP");
+                        //this.width("100%");
+                        //this.height(480);
+                        //this.resize("100%", 640);
+                    }
+                });
+            });
+
+        }
+    };
 
     var addArticle = {};
     addArticle.init = function() {
@@ -301,6 +367,18 @@ define(['jquery', 'dialog'], function($) {
 
         // 初始化标签选择效果
         tags.init();
+
+        // markdown编辑器初始化
+        markdownInit();
+
+        // 切换编辑器时进行刷新
+        $("#addArticle-changeEditor").change(function() {
+            var url = window.location.href;
+            if ( url.indexOf("?") > -1 ) {
+                url = url.substring(0, url.indexOf("?"));
+            }
+            window.location = url + "?editorModel=" + this.value;
+        });
     };
 
     return addArticle;

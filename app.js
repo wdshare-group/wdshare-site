@@ -55,8 +55,8 @@ var moment    = require('moment');
 
 // 数据库连接，其他页面只需要引用mongooose操作，无需connect链接
 var mongoose = require('mongoose'),
-    dataBase = require("./server/config.js").db;
-mongoose.connect('mongodb://localhost/'+dataBase);
+    config = require("./server/config.js");
+mongoose.connect('mongodb://'+config.dbUser+':'+config.dbPass+'@localhost/'+config.db);
 global.mongoose = mongoose;
 
 

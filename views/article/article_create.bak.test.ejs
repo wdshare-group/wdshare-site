@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>添加文章到WDShare</title>
+<% include ../etc/htmlhead.ejs %>
+<% if (editorModel == 'ueditor') { %>
+<script src="/static/ueditor/ueditor.config.js"></script>
+<script src="/static/ueditor/ueditor.all.min.js"> </script>
+<script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script>
+  var editorModel = 'ueditor';
+</script>
+<% } %>
+<% if (editorModel == 'markdown') { %>
+<link rel="stylesheet" href="/static/plugin/editormd/css/style.css" />
+<link rel="stylesheet" href="/static/plugin/editormd/css/editormd.css" />
+<script src="/static/skin2015/js/jquery-1.11.1.min.js"></script>
+<script src="/static/plugin/editormd/js/editormd.min.js"></script>
+<script>
+  var editorModel = 'markdown';
+</script>
+<% } %>
+</head>
+
+<body>
+<% include ../etc/head.ejs %>
+
+<div class="article crumbs-article">
+  <div class="maxWidth module">
+    <div class="article-head">
+      <div class="article-head-left">
+        <h1 class="article-title">发布文章</h1>
+      </div>
+    </div>
+    <div class="add-article">
+      <form id="js-article-create-form">
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>文章标题：</strong><input type="text" name="title" style="width:60%;" /></label>
+          <label style="display:inline-block; margin-left:40px;">跳转：<input type="checkbox" name="linkType" id="js-linkType" style="width:auto; height:auto;" /></label>
+        </div>
+        <div class="addActive-form-item" id="js-linkUrl-box" style="display:none;">
+          <label><strong>跳转URL：</strong><input type="text" name="linkUrl" style="width:500px;" value="http://" /></label>
+        </div>
+        <div class="addActive-form-item">
+          <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>归属栏目：</strong>
+            <select name="channelId">
+              <option value="" selected>请选择栏目</option>
+              <% result.forEach(function(channel){ %>
+                <% if ( channel.is_contribute ) { %>
+                  <option value="<%= channel._id%>"><%= channel.name%></option>
+                <% } %>
+              <% }) %>
+            </select></label>
+        </div>
+        
+        <div class="addActive-form-item" id="js-articleadd-source">
+          <label><strong>来源：</strong><input type="text" name="source" style="width:100px;" /></label>
+          <label style="margin-left:30px;">来源链接：<input type="text" name="sourceUrl" value="http://" /></label>
+        </div>
+
+        <div class="addActive-form-item" id="js-articleadd-content">
+          <strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong>
+        </div>
+        <!-- <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"></textarea></div> -->
+        <div class="wds-editormd" id="test-editormd"></div>
+
+        <div class="addActive-form-item" id="js-articleadd-tag">
+          <strong>TAG：</strong>
+          <input type="hidden" name="tag" id="js-hidden-tag" value="" />
+          <div class="content-tegs">
+            <div class="content-tegs-show" id="js-content-tegs-show"></div>
+            <input type="text" name="newtag" id="js-newtag" placeholder="请输入新的标签" style="width:120px;" /><i id="js-add-tag">添加</i>
+          </div>
+          <div class="content-tegs-list">
+            <div class="content-tegs-list-con" id="js-content-tegs-list"></div>
+            <i id="js-content-tegs-resetList">换一批</i>
+          </div>
+        </div>
+
+        <!-- <div class="addActive-form-item">
+          <label><strong>关键字：</strong><input type="text" name="keywords" /><span>显示在meta标签的keywords</span></label>
+        </div> -->
+        <div class="addActive-form-item" id="js-articleadd-description">
+          <label><strong>摘要描述：</strong>
+          <textarea name="description" cols="30" rows="5"></textarea><span>显示在meta标签的description</span></label>
+        </div>
+
+        <% if (user.vip && user.vip.indexOf("article_send") >= 0) {%>
+        <div class="addActive-form-item addActive-form-radio" id="js-articleadd-description">
+          <strong>是否审核：</strong>
+          <div class="addActive-form-item-right">
+            <label><input type="radio" name="audit" value="1" checked="checked"> 是</label>
+            <label><input type="radio" name="audit" value="0"> 否 </label>
+            <span>未审核内容将不在前台显示</span>
+          </div>
+        </div>
+        <% } %>
+
+        <% if ( captcha && captcha === true ) { %>
+        <div class="addActive-form-item" style="margin-bottom:20px;">
+          <label><strong>验证码：</strong>
+          <input type="text" name="code" placeholder="验证码" /> <img id="code" src="/captcha/get" onclick="document.getElementById('code').src +='?'+new Date().getTime(); return false;" title="点击刷新验证码" /></label>
+        </div>
+        <% } %>
+
+        <div class="addActive-form-but">
+          <input class="green" name="submitbutton" type="submit" value="提交"/>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<% if (editorModel == 'ueditor') { %>
+<script>
+  var ue = UE.getEditor('editor');
+</script>
+<% } %>
+
+<% if (editorModel == 'markdown') { %>
+<script type="text/javascript">
+var WDSEditor;
+
+$(function() {
+    WDSEditor = editormd("test-editormd", {
+        width   : "90%",
+        height  : 540,
+        syncScrolling : "single",
+        path    : "/static/plugin/editormd/lib/",
+        codeFold : true,
+        toolbarIcons : function() {
+            // 使用 "||" 设置菜单右对齐
+            return ["bold", "italic", "quote", "|", "h2", "h3", "|", "link", "reference-link", "image", "code", "code-block", "table", "search", "|", "undo", "redo", "||", "watch", "fullscreen", "preview", "help"]
+        },
+        saveHTMLToTextarea : true,                // 保存HTML到Textarea
+        imageUpload : true,
+        imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+        imageUploadURL : "./php/upload.php",
+        // 接口返回： {"success":1,"url":"/image/loading.gif"}
+        onload : function() {
+            console.log('onload', this);
+            //this.fullscreen();
+            //this.unwatch();
+            //this.watch().fullscreen();
+
+            //this.setMarkdown("#PHP");
+            //this.width("100%");
+            //this.height(480);
+            //this.resize("100%", 640);
+        }
+    });
+});
+</script>
+<% } %>
+
+<% include ../etc/foot.ejs %>
+</body>
+</html>

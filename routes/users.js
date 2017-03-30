@@ -1091,6 +1091,77 @@ router.route("/editComlogo").post(function (req, res) {
 
 });
 
+// MarkDown上传图片
+router.route("/mdupload").post(function (req, res) {
+    "use strict";
+    // 未登录禁止上传
+    if (!req.session.user) {
+        res.json({success:0, message:"请登录后再上传！"});
+        return false;
+    }
+
+    var busboy = new Busboy({ headers: req.headers });
+    var staticPath = path.join(siteDir, 'public');
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        var isReturn = false;
+        save(file, filename, req, function (err, url) {
+            //防止多次res.end()
+            if (isReturn) return;
+            isReturn = true;
+            //console.log(req.body);
+            var r = {
+                'url': '/static' + url,
+                'message': '图片上传成功！',
+                'original': filename,
+            }
+            if (err) {
+                r.success = 0;
+                r.message = '图片上传失败！';
+            } else {
+                r.success = 1;
+            }
+            res.json(r);
+        });
+    });
+    req.pipe(busboy);
+
+
+    function getFileName(extname) {
+        var d = new Date();
+        var name = [ d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(),
+                     d.getMinutes(), d.getSeconds(), d.getMilliseconds() ]
+                    .join('_') + extname;
+        return name;
+    }
+
+    var save = function (file, filename, req, callback) {
+        var realName = getFileName(path.extname(filename));
+        var dPath = "/upload/" + req.session.user._id;
+        var saveTo = path.join(os.tmpDir(), realName);
+
+        // 管理员登录时将路径存储到公共images目录
+        if (req.session.manageuser) {
+            dPath = "/upload/images";
+        }
+
+        file.pipe(fs.createWriteStream(saveTo));
+        file.on('end', function() {
+            var readPath = path.join(staticPath, dPath, realName);
+            fse.move(saveTo, readPath, function(err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    // 缩放图片【限制最大宽高】
+                    imageMagick(readPath).resize(1000, 1000, ">").noProfile().write(readPath, function() {
+                        console.log("face upload ok!");
+                    });
+                    callback(null, dPath + '/' + realName);
+                }
+            });
+        });
+    }
+});
+
 
 // 访问我的文章【出现这个链接默认为会员访问自己发布的文章】
 router.route('/myarticle').get(function (req, res) {

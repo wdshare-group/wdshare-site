@@ -10,13 +10,42 @@ requirejs.config({
         ],
         dialog: './dialog.3.1.min',
         fancybox: './jquery.fancybox',
-        autosize: './autosize.min'// textarea自动调整大小
+        autosize: './autosize.min',// textarea自动调整大小
+        // markdown相关
+        marked          : "../../plugin/editor.md/lib/marked.min",
+        prettify        : "../../plugin/editor.md/lib/prettify.min",
+        raphael         : "../../plugin/editor.md/lib/raphael.min",
+        underscore      : "../../plugin/editor.md/lib/underscore.min",
+        flowchart       : "../../plugin/editor.md/lib/flowchart.min", 
+        jqueryflowchart : "../../plugin/editor.md/lib/jquery.flowchart.min", 
+        sequenceDiagram : "../../plugin/editor.md/lib/sequence-diagram.min",
+        katex           : "../../plugin/editor.md/lib/katex.min",
+        editormd        : "../../plugin/editor.md/editormd.amd" // Using Editor.md amd version for Require.js
     },
     shim: {
+        jqueryflowchart: ["jquery"],
+        editormd: ["jquery"]
     },
     waitSeconds: 60
 });
 
+// markdown依赖
+var deps = [
+    "editormd", 
+    // "../../plugin/editor.md/languages/en", 
+    "../../plugin/editor.md/plugins/link-dialog/link-dialog",
+    "../../plugin/editor.md/plugins/reference-link-dialog/reference-link-dialog",
+    "../../plugin/editor.md/plugins/image-dialog/image-dialog",
+    "../../plugin/editor.md/plugins/code-block-dialog/code-block-dialog",
+    "../../plugin/editor.md/plugins/table-dialog/table-dialog",
+    "../../plugin/editor.md/plugins/emoji-dialog/emoji-dialog",
+    "../../plugin/editor.md/plugins/goto-line-dialog/goto-line-dialog",
+    "../../plugin/editor.md/plugins/help-dialog/help-dialog",
+    "../../plugin/editor.md/plugins/html-entities-dialog/html-entities-dialog", 
+    "../../plugin/editor.md/plugins/preformatted-text-dialog/preformatted-text-dialog"
+];
+// markdown显示以来
+var depsShow = ["editormd"];
 
 /**
  * =============  公共方法  =============

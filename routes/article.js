@@ -157,6 +157,11 @@ router.get('/create', function(req, res) {
         return false;
     }
 
+    var editorModel = 'markdown';
+    if (req.query.editorModel) {
+        editorModel = req.query.editorModel
+    }
+
     // 先看信息是否完整
     usersInfosModel.getOne({
         key: "User_info",
@@ -182,6 +187,7 @@ router.get('/create', function(req, res) {
                     res.render('article/article_create', {
                         title: "添加文章",
                         captcha:true,
+                        editorModel: editorModel,
                         result: data// 返回分类信息
                     });
                 } else {
@@ -189,6 +195,7 @@ router.get('/create', function(req, res) {
                     req.session.captcha = null;
                     res.render('article/article_create', {
                         title: "添加文章",
+                        editorModel: editorModel,
                         result: data// 返回分类信息
                     });
                 }
@@ -444,6 +451,7 @@ router.post('/create', function(req, res) {
             linkUrl = req.body.linkUrl,
             cover = "",
             channelId = req.body.channelId,
+            editorModel = req.body.editorModel || "",
             tag = req.body.tag,
             source = req.body.source,
             sourceUrl = req.body.sourceUrl,
@@ -578,6 +586,7 @@ router.post('/create', function(req, res) {
                 body: {
                     type: type,
                     channelId:channelId,
+                    editorModel:editorModel,
                     title: title,
                     linkUrl: linkUrl,
                     diyType: diyType,
@@ -693,6 +702,7 @@ router.get('/edit/:id', function(req, res) {
         res.redirect("/user/activeAccount");
         return false;
     }
+
     var id = req.params.id;
     archiveModel.getAll({// 查询分类，为修改文章做准备
         key: "Article_channel"
@@ -721,6 +731,7 @@ router.get('/edit/:id', function(req, res) {
                             title: "修改文章",
                             captcha:true,
                             result: aricle,
+                            editorModel: aricle.editorModel || "ueditor",
                             channels: data
                         });
                     } else {
@@ -729,6 +740,7 @@ router.get('/edit/:id', function(req, res) {
                         res.render('article/article_edit', {
                             title: "修改文章",
                             result: aricle,
+                            editorModel: aricle.editorModel || "ueditor",
                             channels: data
                         });
                     }

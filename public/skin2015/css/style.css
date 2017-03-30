@@ -337,7 +337,7 @@ h3.login-error { display:none; color:#f00;}
 
 
 /* article */
-.article { background:#fff; padding-bottom:80px;}
+.article { background:#fff; padding-bottom:80px; text-align:left;}
 
 .article-head { padding:0 0 30px; zoom:1; overflow:hidden; position:relative;}
 
@@ -387,16 +387,23 @@ a.article-top-comment-link { color:#ff8400;}
 
 .article-con strong { font-weight:bold;}
 .article-con p { padding:10px 0;}
+.article-con h1
 .article-con h2,
 .article-con h3,
 .article-con h4,
 .article-con h5,
-.article-con h6 { font-size:14px; font-weight:bold; line-height:1.8em; border-left:4px solid #4183c4; padding:0 0 0 20px; margin:30px 0 15px; color:#333;}
-.article-con h2 { font-size:22px;}
+.article-con h6 { font-weight:bold; line-height:1.8em; border-left:4px solid #4183c4; padding:0 0 0 20px; margin:30px 0 15px; color:#333;}
+/*.article-con h2 { font-size:22px;}
 .article-con h3 { font-weight:bold; font-size:20px;}
 .article-con h4 { font-size:18px;}
 .article-con h5 { font-size:16px; padding-top:15px;}
-.article-con h6 { font-size:14px; padding-top:15px;}
+.article-con h6 { font-size:14px; padding-top:15px;}*/
+body .article-con h1 { font-size:28px;}
+body .article-con h2 { font-size:24px;}
+body .article-con h3 { font-size:22px;}
+body .article-con h4 { font-size:18px;}
+body .article-con h5 { font-size:16px;}
+body .article-con h6 { font-size:14px;}
 .article-con a { color:#4183c4;}
 .article-con a:hover { color:#f00;}
 
@@ -673,7 +680,7 @@ dl .content-tegs-list { margin-left:111px;}
 .addActive-form-item strong { float:left; width:130px; text-align:right;}
 .addActive-form-item input,
 .addActive-form-item select,
-.addActive-form-item textarea { padding-left:5px; width:250px; border-radius:5px; border:1px solid #ccc; line-height:28px; height:28px; box-shadow:3px 3px 5px #eee inset;}
+.addActive-form-item textarea { padding-left:5px; width:250px; border-radius:5px; border:1px solid #ccc; line-height:32px; height:32px; box-shadow:3px 3px 5px #eee inset; -webkit-box-sizing:border-box; box-sizing:border-box;}
 .addActive-form-item select { height:32px;}
 .addActive-form-item textarea { width:500px; height:60px; line-height:20px;}
 .addActive-form-item span { color:#999; padding-left:10px;}
@@ -698,7 +705,7 @@ dl .content-tegs-list { margin-left:111px;}
 .content-tegs-show a { color:#000; line-height:30px; height:30px; display:inline-block; padding:0 10px; border-radius:5px; background:#f7f7f7; margin-right:3px; font-size:14px; vertical-align:middle;}
 .content-tegs-show a:hover { background:#ddd;}
 .content-tegs-show a em { padding-left:6px; color:#c00; font-size:12px; vertical-align:middle; display:inline-block; margin-top:-2px;}
-.content-tegs input { border-radius:5px 0 0 5px; border-right:0;}
+.content-tegs input { border-radius:5px 0 0 5px; border-right:0; height:32px; padding-top:0; padding-bottom:0;}
 .content-tegs i,
 .content-tegs-list i { background:#007cc2; color:#fff; border:0; font:400 1em/32px "Microsoft YaHei"; height:32px; padding:0 10px; border-radius:0 5px 5px 0; cursor:pointer; display:inline-block; font-style:normal;}
 .content-tegs-list i { border-radius:5px; margin-left:5px; background:#999;}
@@ -996,13 +1003,15 @@ a.user-article-edit:hover { color:#fff; background:#3188de;}
 .sentResumes-form dl { width:100%; }
 
 
+/**/
+.add-article-markdown { width:100%; }
 
+.markdownLoading { text-align:center; padding:100px 0 200px; }
+.editormd-fullscreen { z-index:9999; }
 
-
-
-
-
-
+p.markdownShowLoading { text-align:center; padding:100px 0 200px; }
+.markdownShowLoading img { display:block; margin:10px auto;}
+.markdown-body em { font-style:italic;}
 
 
 

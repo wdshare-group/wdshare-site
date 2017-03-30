@@ -5,9 +5,16 @@
 <title>WDShare管理中心-修改文章</title>
 <meta name="auther" content="F7" />
 <% include ../etc/htmlhead.ejs %>
-<script src="/static/ueditor/manage.ueditor.config.js"></script>
+<% if (editorModel == 'ueditor') { %>
+<script src="/static/ueditor/ueditor.config.js"></script>
 <script src="/static/ueditor/ueditor.all.min.js"> </script>
 <script src="/static/ueditor/lang/zh-cn/zh-cn.js"></script>
+<% } %>
+<% if (editorModel == 'markdown') { %>
+<link rel="stylesheet" href="/static/plugin/editor.md/examples/css/style.css" />
+<link rel="stylesheet" href="/static/plugin/editor.md/lib/codemirror/codemirror.min.css" />
+<link rel="stylesheet" href="/static/plugin/editor.md/css/editormd.css" />
+<% } %>
 </head>
 
 <body>
@@ -92,10 +99,22 @@
               <label><strong>发布者邮箱：</strong><input type="text" name="email" value="<%=mamber.email?mamber.email:''%>" /><span>必须是本站会员的邮箱</span></label>
             </div>
 
+            <% if (editorModel == 'ueditor') { %>
             <div class="manage-addActive-form-item">
               <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong></label>
             </div>
             <div class="editor-box"><textarea name="content" id="editor" style="height:400px;"><%=result.content%></textarea></div>
+            <% } %>
+            <% if (editorModel == 'markdown') { %>
+            <div class="manage-addActive-form-item">
+              <label><strong><em style="font-size:26px; color:#f00; vertical-align:middle; padding-right:5px;">*</em>内容：</strong></label> &nbsp;&nbsp;&nbsp;&nbsp; <span style="color:blue;">MarkDown编辑器</span>
+            </div>
+            <input type="hidden" name="editorModel" value="markdown" />
+            <textarea name="content" style="display:none;"><%=result.content%></textarea>
+            <div class="wds-editormd" id="wds-editormd">
+              <p class="markdownLoading">MarkDown加载中...</p>
+            </div>
+            <% } %>
 
             <div class="manage-addActive-form-note" onclick="document.getElementById('js-article-gaoji').style.display='block'"><em>高级配置</em></div>
 
@@ -171,10 +190,12 @@
   </div>
 </div>
 
-<% include ../etc/foot.ejs %>
-
+<% if (editorModel == 'ueditor') { %>
 <script>
   var ue = UE.getEditor('editor');
 </script>
+<% } %>
+
+<% include ../etc/foot.ejs %>
 </body>
 </html>
